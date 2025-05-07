@@ -1,0 +1,55 @@
+<!-- Botón de hamburguesa para móviles -->
+<button class="mobile-menu-btn" 
+        (click)="toggleMobileMenu()" 
+        *ngIf="isMobileView && forceCollapsed">
+  <i class="bi bi-list" title="menu"></i>
+</button>
+
+<!-- Backdrop oscuro para móviles -->
+<div class="sidebar-backdrop" 
+     *ngIf="isMobileView && !forceCollapsed"
+     (click)="closeMenuOnMobile()"></div>
+
+<!-- Contenedor del menú lateral -->
+<div 
+  #sidebarContainer
+  class="sidebar-container"
+  [class.expanded]="isHovered || !forceCollapsed"
+  [class.mobile-view]="isMobileView"
+  (mouseenter)="!isMobileView && (isHovered = true)"
+  (mouseleave)="!isMobileView && (isHovered = false)"
+>
+  <!-- Header (solo visible cuando está expandido) -->
+  <div *ngIf="isHovered || !forceCollapsed" class="header-section">
+    <img src="assets/splash/logo.jpg" alt="Logo" class="logo">
+    <div class="username">{{ nombreUsuario }}</div>
+  </div>
+
+  <!-- Menú principal -->
+  <ul class="menu-list">
+    <li *ngFor="let item of visibleMenuItems">
+      <!-- Ítem principal -->
+      <div class="menu-item" (click)="toggleSubmenu(item)">
+        <i [class]="item.icon + ' menu-icon'"></i>
+        <span class="menu-label">{{ item.label }}</span>
+        <i *ngIf="item.submenus && (isHovered || !forceCollapsed)"
+           class="bi chevron-icon"
+           [class.bi-chevron-down]="!item.expanded"
+           [class.bi-chevron-up]="item.expanded"></i>
+      </div>
+
+      <!-- Submenús -->
+      <div *ngIf="item.submenus && (item.expanded || (!isMobileView && isHovered))" 
+           class="submenu-container">
+        <a *ngFor="let sub of item.submenus"
+           [routerLink]="sub.route"
+           (click)="closeMenuOnMobile()"
+           routerLinkActive="bg-gray-700"
+           class="submenu-item">
+          <i [class]="sub.icon + ' submenu-icon'"></i>
+          <span class="submenu-label">{{ sub.label }}</span>
+        </a>
+      </div>
+    </li>
+  </ul>
+</div>

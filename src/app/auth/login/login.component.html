@@ -1,0 +1,138 @@
+<section class="login-section bg-black text-white min-h-screen flex items-center justify-center p-4">
+    <div class="flex flex-col md:flex-row items-center justify-center w-full max-w-6xl gap-8">
+      
+      <!-- Logo - Arriba en móvil, izquierda en desktop -->
+      <div class="w-full md:w-1/2 flex justify-center order-1 md:order-1">
+        <img
+        src="assets/splash/logo.jpg"
+        alt="Logo Restaurante"
+        class="w-48 h-48 sm:w-56 sm:h-56 md:w-72 md:h-72 lg:w-120 lg:h-80 object-contain mx-auto hover:scale-105 transition-transform duration-300"
+      />
+      
+      </div>
+  
+      <!-- Contenedor del Formulario - Abajo en móvil, derecha en desktop -->
+      <div class="w-full md:w-1/2 flex justify-center order-2 md:order-2">
+        <div class="w-full max-w-md perspective-1000 min-h-[400px]">
+          <div class="relative w-full h-full transition-all duration-700 transform-style-preserve-3d"
+               [class.rotate-y-180]="!showLogin">
+  
+            <!-- Login Form -->
+            <div *ngIf="showLogin" class="card bg-gray-800 text-white border border-gray-700 rounded-xl shadow-xl w-full backface-hidden absolute p-6"
+                 (click)="$event.stopPropagation()">
+              <h2 class="text-2xl font-bold text-center text-yellow-400 mb-6">Iniciar Sesión</h2>
+              
+              <form (ngSubmit)="login()">
+                <div class="mb-4">
+                  <input
+                    type="text"
+                    class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/50 transition-all"
+                    placeholder="Usuario"
+                    [(ngModel)]="username"
+                    name="username"
+                    required
+                    [disabled]="isLoading"
+                  />
+                </div>
+                
+                <div class="mb-6">
+                  <input
+                    type="password"
+                    class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/50 transition-all"
+                    placeholder="Contraseña"
+                    [(ngModel)]="password"
+                    name="password"
+                    required
+                    [disabled]="isLoading"
+                  />
+                </div>
+                
+                <button 
+                  type="submit" 
+                  class="w-full py-3 bg-yellow-500 hover:bg-yellow-600 text-black font-bold rounded-lg transition-colors duration-300 flex items-center justify-center"
+                  [disabled]="isLoading"
+                >
+                  <span *ngIf="!isLoading">Iniciar Sesión</span>
+                  <span *ngIf="isLoading" class="loading-spinner"></span>
+                </button>
+                
+                <div class="text-center mt-4 text-gray-300">
+                  ¿No tienes cuenta? 
+                  <a 
+                    (click)="!isLoading && toggleForm()"
+                    class="text-yellow-400 font-semibold hover:text-yellow-300 cursor-pointer transition-colors"
+                  >
+                    Regístrate
+                  </a>
+                </div>
+              </form>
+            </div>
+  
+            <!-- Register Form -->
+            <div *ngIf="!showLogin" class="card bg-gray-800 text-white border border-gray-700 rounded-xl shadow-xl w-full backface-hidden absolute rotate-y-180 p-6"
+                 (click)="$event.stopPropagation()">
+              <h2 class="text-2xl font-bold text-center text-yellow-400 mb-6">Registro</h2>
+              
+              <form (ngSubmit)="register()">
+                <div class="mb-4">
+                  <input
+                    type="text"
+                    class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/50 transition-all"
+                    placeholder="Nombre de usuario"
+                    [(ngModel)]="registerUsername"
+                    name="username"
+                    required
+                    [disabled]="isLoading"
+                  />
+                </div>
+                
+                <div class="mb-4">
+                  <input
+                    type="email"
+                    class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/50 transition-all"
+                    placeholder="Correo electrónico"
+                    [(ngModel)]="registerEmail"
+                    name="email"
+                    required
+                    [disabled]="isLoading"
+                  />
+                </div>
+                
+                <div class="mb-6">
+                  <input
+                    type="password"
+                    class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/50 transition-all"
+                    placeholder="Contraseña"
+                    [(ngModel)]="registerPassword"
+                    name="password"
+                    required
+                    [disabled]="isLoading"
+                  />
+                </div>
+                
+                <button 
+                  type="submit" 
+                  class="w-full py-3 bg-yellow-500 hover:bg-yellow-600 text-black font-bold rounded-lg transition-colors duration-300 flex items-center justify-center"
+                  [disabled]="isLoading"
+                >
+                  <span *ngIf="!isLoading">Registrarse</span>
+                  <span *ngIf="isLoading" class="loading-spinner"></span>
+                </button>
+                
+                <div class="text-center mt-4 text-gray-300">
+                  ¿Ya tienes cuenta? 
+                  <a 
+                    (click)="!isLoading && toggleForm()"
+                    class="text-yellow-400 font-semibold hover:text-yellow-300 cursor-pointer transition-colors"
+                  >
+                    Iniciar sesión
+                  </a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  

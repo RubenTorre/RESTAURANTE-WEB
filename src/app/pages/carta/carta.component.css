@@ -1,0 +1,33 @@
+@media (min-width: 768px) and (max-width: 1023px) and (orientation: portrait) {
+    /* Fuerza diseño móvil en tablets verticales */
+    .lg-hidden {
+      display: block !important;
+    }
+    .lg-flex {
+      display: none !important;
+    }
+  }
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    #ticket-termico, #ticket-termico * {
+      visibility: visible;
+    }
+    #ticket-termico {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 58mm;
+    }
+  }
+  #ticket-termico {
+    width: 58mm;
+    border: 1px dashed #cbd5e0; /* Tailwind border-gray-400 */
+    background-color: white;
+    font-size: 0.75rem; /* Tailwind text-xs */
+    font-family: monospace; /* Tailwind font-mono */
+    padding: 1rem; /* Tailwind p-4 */
+    border-radius: 0.25rem; /* Tailwind rounded */
+  }
+  

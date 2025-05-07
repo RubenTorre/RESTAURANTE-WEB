@@ -1,0 +1,30 @@
+/* Contenedor del splash */
+.splash-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* 100% de la altura de la pantalla */
+    background-color: black; /* Fondo negro */
+    overflow: hidden; /* Evita el desbordamiento */
+  }
+  
+  /* Contenedor de la imagen */
+  .splash-logo img {
+    max-width: 100%; /* Hace la imagen responsiva */
+    max-height: 100%; /* Mantiene la imagen dentro del contenedor */
+    object-fit: contain; /* Mantiene la relación de aspecto */
+    animation: fadeIn 2s ease-in-out; /* Aplicamos la animación */
+  }
+  
+  /* Animación fade-in */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.8); /* Comienza pequeño */
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1); /* Llega a su tamaño normal */
+    }
+  }
+  

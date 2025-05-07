@@ -1,0 +1,355 @@
+/* side-bar.component.css */
+.sidebar-container {
+    width: 64px;
+    height: 100vh;
+    background-color: #000000;
+    color: white;
+    transition: width 0.3s ease;
+    overflow-y: hidden; /* Sin scroll por defecto */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Cuando el menú está expandido */
+.sidebar-container.expanded {
+    width: 256px;
+    overflow-y: auto; /* Activa el scroll solo cuando el menú está expandido */
+}
+
+/* Header del menú */
+.header-section {
+    text-align: center;
+    padding: 16px;
+}
+
+.restaurant-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fbbf24; /* Color amarillo */
+}
+
+.logo {
+    width: 100%;
+    height: 100px;
+    border: 2px solid #f59e0b; /* Borde naranja */
+    object-fit: cover; /* La imagen cubre todo el contenedor sin deformarse */
+    margin: 0 auto; /* Centra la imagen */
+    border-radius: 20px; /* Bordes ovalados, puedes ajustar el valor */
+}
+
+
+.username {
+    font-size: 0.875rem;
+    color: #d1d5db; /* Gris claro */
+    margin-top: 10px;
+}
+
+/* Ítems del menú principal */
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    cursor: pointer;
+    justify-content: center;
+}
+
+.sidebar-container.expanded .menu-item {
+    justify-content: flex-start;
+    padding: 12px 16px;
+}
+
+.menu-item:hover {
+    background-color: #333;
+}
+
+.menu-icon {
+    font-size: 1.25rem;
+    min-width: 24px;
+    text-align: center;
+}
+
+.menu-label {
+    margin-left: 12px;
+    white-space: nowrap;
+    display: none;
+}
+
+.sidebar-container.expanded .menu-label {
+    display: inline;
+}
+
+/* Submenús */
+.submenu-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sidebar-container.expanded .submenu-container {
+    align-items: stretch;
+    padding-left: 24px;
+}
+
+.submenu-item {
+    padding: 10px 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+}
+
+.sidebar-container.expanded .submenu-item {
+    justify-content: flex-start;
+    padding: 8px 16px;
+}
+
+.submenu-item:hover {
+    background-color: #333;
+}
+
+.submenu-icon {
+    font-size: 1.1rem;
+}
+
+.submenu-label {
+    display: none;
+    margin-left: 8px;
+}
+
+.sidebar-container.expanded .submenu-label {
+    display: inline;
+}
+
+/* Menú con scroll cuando está expandido y el contenido excede la altura */
+.menu-list {
+    flex-grow: 1; /* Toma todo el espacio disponible */
+    overflow-y: auto; /* Activar scroll solo cuando sea necesario */
+    padding-bottom: 16px; /* Espacio al final del menú */
+}
+
+/* Personalización de la barra de desplazamiento cuando el menú está expandido */
+.menu-list::-webkit-scrollbar {
+    width: 8px; /* Estilo de la barra */
+}
+
+.menu-list::-webkit-scrollbar-thumb {
+    background: #888; /* Color de la barra */
+    border-radius: 10px; /* Bordes redondeados */
+    transition: background 0.3s ease;
+}
+
+.menu-list::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Color más oscuro cuando se pasa el mouse */
+}
+
+.menu-list::-webkit-scrollbar-track {
+    background: #333; /* Fondo del track */
+    border-radius: 10px; /* Bordes redondeados */
+}
+
+/* Estilos cuando el menú está cerrado (sin barra de scroll) */
+.sidebar-container:not(.expanded) .menu-list {
+    overflow-y: hidden; /* No mostrar scroll cuando el menú está cerrado */
+}
+/* Botón móvil */
+.mobile-menu-btn {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1001;
+    background: #2d3748;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+  
+  /* Sidebar en móvil */
+  .sidebar-container.mobile-view {
+    position: fixed;
+    z-index: 1000;
+    height: 100vh;
+    transition: transform 0.3s ease;
+  }
+  
+  .sidebar-container.mobile-view:not(.expanded) {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar-container.mobile-view.expanded {
+    transform: translateX(0);
+    box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+  }
+  
+  /* Ajustes para submenús en móvil */
+  .sidebar-container.mobile-view:not(.expanded) .menu-label,
+  .sidebar-container.mobile-view:not(.expanded) .header-section,
+  .sidebar-container.mobile-view:not(.expanded) .chevron-icon {
+    display: none;
+  }
+  
+  .sidebar-container.mobile-view:not(.expanded) .menu-item {
+    justify-content: center;
+  }
+  
+  /* Desktop behavior */
+  @media (min-width: 768px) {
+    .mobile-menu-btn {
+      display: none;
+    }
+    
+    .sidebar-container.mobile-view {
+      position: relative;
+      transform: none !important;
+    }
+  }
+  /* Botón móvil */
+.mobile-menu-btn {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1001;
+    background: #2d3748;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+  }
+  
+  /* Ocultar el botón cuando el menú está abierto */
+  .sidebar-container.mobile-view.expanded ~ .mobile-menu-btn {
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  /* Resto de tus estilos permanece igual */
+  .mobile-menu-btn {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1001;
+    background: rgba(45, 55, 72, 0.9);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .mobile-menu-btn:hover {
+    background: #2d3748;
+    transform: scale(1.05);
+  }
+  
+  .sidebar-container.mobile-view.expanded ~ .mobile-menu-btn {
+    transform: translateX(calc(80% - 15px));
+    opacity: 0;
+    pointer-events: none;
+  }
+  /* Fondo oscuro cuando el menú está abierto en móvil */
+.sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  
+  .sidebar-container.mobile-view.expanded ~ .sidebar-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  /* Asegurar que el menú esté sobre el backdrop */
+  .sidebar-container.mobile-view {
+    z-index: 1000;
+  }
+  /* Botón móvil */
+.mobile-menu-btn {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1001;
+    background: rgba(45, 55, 72, 0.9);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .mobile-menu-btn:hover {
+    background: #2d3748;
+    transform: scale(1.05);
+  }
+  
+  /* Backdrop para móviles */
+  .sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
+  
+  /* Sidebar en móvil */
+  .sidebar-container.mobile-view {
+    position: fixed;
+    z-index: 1000;
+    height: 100vh;
+    transition: transform 0.3s ease;
+    left: 0;
+    top: 0;
+  }
+  
+  .sidebar-container.mobile-view:not(.expanded) {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar-container.mobile-view.expanded {
+    transform: translateX(0);
+    box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+  }
+  
+  /* Desktop behavior */
+  @media (min-width: 768px) {
+    .mobile-menu-btn, .sidebar-backdrop {
+      display: none;
+    }
+    
+    .sidebar-container.mobile-view {
+      position: relative;
+      transform: none !important;
+      box-shadow: none;
+      height: auto;
+    }
+  }

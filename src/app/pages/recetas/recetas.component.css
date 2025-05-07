@@ -1,0 +1,14 @@
+/* Estilos solo para el botón de eliminación */
+.eliminar-ingrediente {
+    color: red;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;  /* Ajusta el tamaño si es necesario */
+    transition: color 0.2s ease-in-out;  /* Efecto de transición para el cambio de color */
+  }
+  
+  .eliminar-ingrediente:hover {
+    color: #ff4747;  /* Cambia el color cuando el cursor esté sobre el botón */
+  }
+  
