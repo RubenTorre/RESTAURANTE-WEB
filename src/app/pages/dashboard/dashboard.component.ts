@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { SupabaseService } from '../../Services/supabase.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,5 +8,10 @@ import { Component } from '@angular/core';
   styleUrl: './dashboard.component.css'
 })
 export default class DashboardComponent {
+
+  constructor(private supabaseservice:SupabaseService){}
+
+ 
+  
 
 }

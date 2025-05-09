@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { SupabaseService } from '../../Services/supabase.service';
 import printJS from 'print-js';
 import { UserService } from '../../Services/user.service';
+import Swal from 'sweetalert2';
 
 interface Producto {
   nombre: string;
@@ -220,10 +221,27 @@ limpiarBusqueda() {
   async pagarFactura() {
     if (!this.pedidoSeleccionado) return;
 
-    if (this.formaPago === 'transferencia' && !this.codigoTransferencia.trim()) {
-        alert('Debe ingresar el código de la transferencia');
-        return;
+     // Validación para transferencia
+  if (this.formaPago === 'transferencia' && !this.codigoTransferencia.trim()) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Código requerido',
+      text: 'Debe ingresar el código de la transferencia',
+    });
+    return;
+  }
+
+  // ✅ Validación para efectivo con Swal
+  if (this.formaPago === 'efectivo') {
+    if (!this.montoRecibido || this.montoRecibido < this.total) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Monto insuficiente',
+        text: 'Debe ingresar un monto recibido mayor o igual al total.',
+      });
+      return;
     }
+  }
 
     this.calcularTotales();
 
@@ -273,7 +291,7 @@ limpiarBusqueda() {
           <tr>
             <th style="width: 15%; text-align: left;">Cant</th>
             <th style="width: 40%; text-align: left;">Producto</th>
-             <th style="width: 30%; text-align: right; padding-right: 25px">Total</th>
+            <th style="width: 30%; text-align: right; padding-right: 25px">Total</th>
           </tr>
         </thead>
         <tbody>
@@ -304,10 +322,9 @@ limpiarBusqueda() {
       <p style="text-align: center; font-size: 11px; margin-top: 10px;">¡Gracias por su visita!</p>
       <p style="text-align: center; font-size: 10px;">Elaborado por Afuego Lento</p>
     </div>
-  `;
-  
-    
-      printJS({
+    `;
+
+    printJS({
         printable: htmlFactura,
         type: 'raw-html',
         style: `
@@ -333,54 +350,52 @@ limpiarBusqueda() {
             }
           }
         `
-      });
+    });
 
-    // Generar un número de factura único
-    const numeroFactura = `FAC-${new Date().getTime()}`; // Número único basado en el timestamp
+    const numeroFactura = `FAC-${new Date().getTime()}`;
     const facturaData = {
-        pedido_id: this.pedidoSeleccionado.id, // ID del pedido
-        numero_factura: numeroFactura, // Número de la factura
-        forma_pago: this.formaPago, // Forma de pago
-        monto: this.total, // Monto total
-        productos: todosPagados, // Productos de la factura
-        es_extra: this.recetasSeleccionadas.length > 0, // Si hay productos adicionales
-        codigo_transferencia:this.codigoTransferencia,
+        pedido_id: this.pedidoSeleccionado.id,
+        numero_factura: numeroFactura,
+        forma_pago: this.formaPago,
+        monto: this.total,
+        productos: todosPagados,
+        es_extra: this.recetasSeleccionadas.length > 0,
+        codigo_transferencia: this.codigoTransferencia,
     };
 
     try {
-      // Llamar a SupabaseService para crear la factura
-      const factura = await this.supabase.crearFactura(facturaData);
-      console.log('Factura creada con éxito:', factura);
-  
-      // Actualizar el pedido con el número de factura y estado 'pagado'
-      await this.supabase.actualizarPedido(this.pedidoSeleccionado.id, numeroFactura);
-      console.log('Pedido actualizado con número de factura');
-  } catch (error) {
-      console.error('Error al crear factura o actualizar pedido:', error);
-  }
-  
+        await this.supabase.crearFactura(facturaData);
 
-    // Actualizar los productos del pedido después del pago
-    this.pedidoSeleccionado.productos = this.pedidoSeleccionado.productos.map((p: Producto) => {
-        const cantidadPagada = this.pagoSeparado ? p.asignado : p.cantidad;
-        if (cantidadPagada > 0) {
-            p.cantidad -= cantidadPagada;
-            p.asignado = 0;
-        }
-        return p;
-    }).filter(p => p.cantidad > 0);
+        // Actualizar productos pagados y limpiar los asignados
+        this.pedidoSeleccionado.productos = this.pedidoSeleccionado.productos.map((p: Producto) => {
+            const cantidadPagada = this.pagoSeparado ? p.asignado : p.cantidad;
+            if (cantidadPagada > 0) {
+                p.cantidad -= cantidadPagada;
+                p.asignado = 0;
+            }
+            return p;
+        }).filter(p => p.cantidad > 0); // eliminar los que ya no tienen cantidades
+
+        // Verificar si ya no hay productos por pagar
+        const todosPagados = this.pedidoSeleccionado.productos.length === 0;
+        const nuevoEstado = todosPagados ? 'abierta' : 'ocupado';
+
+        await this.supabase.actualizarPedido(this.pedidoSeleccionado.id, numeroFactura, nuevoEstado);
+        this.pedidoSeleccionado.estado = nuevoEstado;
+        await this.cargarMesasConPedidos();
+
+    } catch (error) {
+        console.error('Error al crear factura o actualizar pedido:', error);
+    }
 
     this.recetasSeleccionadas = [];
     this.resetValores();
 
-    // Si ya no hay productos en el pedido, marcar el pedido como pagado
     if (this.pedidoSeleccionado.productos.length === 0) {
-        this.pedidoSeleccionado.estado = 'pagado';
         this.pedidoSeleccionado = null;
     }
 }
 
-  
   
   togglePagoSeparado() {
     this.pagoSeparado = !this.pagoSeparado;

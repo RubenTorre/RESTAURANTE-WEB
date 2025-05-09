@@ -339,7 +339,6 @@ filtrarRecetas() {
         ...ing
       }))
     };
-    console.log('Receta cargada para editar:', this.receta);  // Verifica los valores cargados
     this.mostrarModalEditarReceta = true;
   
     // Recalcular el precio automáticamente

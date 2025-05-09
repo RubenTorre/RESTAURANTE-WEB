@@ -39,7 +39,6 @@ export default class ImprimirFacturasComponent {
   async cargarPedidosDelDia() {
     const pedidos = await this.supabaseService.getFacturasDelDia();
     this.pedidosDelDia = pedidos.filter((p: Pedido) => p.estado === 'ocupada');
-    console.log('pedidos', this.pedidosDelDia);
   }
 
   abrirModal(pedido: Pedido) {

@@ -351,7 +351,6 @@ async guardarEdicionCategoria() {
   };
 
   // Mostrar en consola lo que se va a enviar
-  console.log('Producto a enviar:', producto);
 
   try {
     await this.supabaseService.agregarProducto(producto);

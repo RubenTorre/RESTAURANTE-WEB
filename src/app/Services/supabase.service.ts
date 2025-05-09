@@ -32,12 +32,20 @@ interface ProductoPedido {
   precio: number;
   cantidad: number;
   notas?: string;
+  
+}
+interface Notificacion {
+  id: number;
+  mensaje: string;
+  fecha: string;
+  // Agrega otros campos que tenga tu tabla notificaciones
 }
 
 
 
 const SUPABASE_URL = 'https://wxbtlgxzsxswwdulbukt.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4YnRsZ3h6c3hzd3dkdWxidWt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU1MzM4NTQsImV4cCI6MjA2MTEwOTg1NH0.LaODzvfkY3q0KktHjTc_iqJ3kXAgazbsHBz4Grz3Fp4';
+
 
 @Injectable({
   providedIn: 'root'
@@ -541,22 +549,101 @@ export class SupabaseService {
   
 
   // Método para actualizar un pedido
-  async actualizarPedido(id: string, numeroFactura: string) {
+  async actualizarPedido(id: string, numeroFactura: string, estado: string) {
     const { data, error } = await this.supabase
-      .from('pedidos')  // Nombre de la tabla 'pedidos'
+      .from('pedidos')
       .update({ 
         numero_factura: numeroFactura, 
-        estado: 'abierta' 
+        estado 
       })
-      .eq('id', id);  // Asegúrate de que 'id' esté correctamente referenciado
+      .eq('id', id);
   
     if (error) {
       console.error('Error al actualizar pedido:', error);
-      throw error;  // Lanza el error si ocurre
+      throw error;
     }
-
-    return data;  // Devuelve el registro actualizado
+  
+    return data;
   }
   
-  
+
+ // Función para escuchar los cambios en la tabla `notificaciones`
+
+ 
+ async fetchLastNotification() {
+  // Consulta la última notificación insertada
+  const { data, error } = await this.supabase
+    .from('notificaciones')
+    .select('mensaje')  // Seleccionamos el campo 'mensaje' de la notificación
+    .order('id', { ascending: false }) // Ordenamos por ID (debe ser autoincremental o similar)
+    .limit(1) // Traemos solo la última notificación
+    .single();  // Como solo esperamos una notificación, usamos .single()
+
+  if (error) {
+    console.error('Error al obtener la última notificación:', error);
+    return null;  // Si hay error, retornamos null
+  }
+
+  return data;  // Retornamos los datos de la última notificación
+}
+// Dentro de tu SupabaseService actual
+private notificationChannel: any;
+
+// Escucha notificaciones en tiempo real y envía a Telegram
+// Luego modifica tu función así:
+listenNotifications(callback: (notificacion: Notificacion) => void) {
+  if (this.notificationChannel) {
+    this.supabase.removeChannel(this.notificationChannel);
+  }
+
+  this.notificationChannel = this.supabase
+    .channel('notificaciones-channel')
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'notificaciones',
+      },
+      async (payload) => {
+        const nuevaNotificacion = payload.new as Notificacion;
+        
+        // 1. Ejecuta el callback
+        callback(nuevaNotificacion);
+        
+       // 2. Envía a múltiples usuarios de Telegram
+if (nuevaNotificacion['mensaje']) {
+  try {
+    const mensaje = `🚨 ALERTA 🚨\n${nuevaNotificacion['mensaje']}\n\nFecha: ${new Date(nuevaNotificacion['fecha']).toLocaleString()}`;
+    const mensajeCodificado = encodeURIComponent(mensaje);
+
+    const chatIds = [
+      '1977431625', // Ruben
+      '5941338034', // Santiago
+    ];
+
+    for (const chatId of chatIds) {
+      const telegramUrl = `https://api.telegram.org/bot7752238645:AAFbz7UPuDnkxFCTYvFyIRhMuVmsP2b17Lc/sendMessage?chat_id=${chatId}&text=${mensajeCodificado}`;
+      const response = await fetch(telegramUrl);
+      const result = await response.json();
+    }
+  } catch (error) {
+    console.error('❌ Error al enviar a uno o más chats de Telegram:', error);
+  }
+
+        }
+      }
+    )
+    .subscribe();
+}
+
+// Limpieza al destruir el servicio
+ngOnDestroy() {
+  if (this.notificationChannel) {
+    this.supabase.removeChannel(this.notificationChannel);
+  }
+}
+
+
+
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,OnDestroy  } from '@angular/core';
 import { SupabaseService } from '../../Services/supabase.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -66,9 +66,10 @@ export default class CartaComponent {
   // Para simular el carrito visualmente (sin funcionalidad)
   carrito: any[] = [];
 
-  
+  ultimaNotificacion: any; // Añade esta propiedad
 
-  constructor(private supabaseService: SupabaseService,private userService: UserService) {}
+  constructor(private supabaseService: SupabaseService,private userService: UserService,
+  ) {}
   
   async ngOnInit() {
     this.userService.nombreUsuario$.subscribe(nombre => {
@@ -76,7 +77,31 @@ export default class CartaComponent {
     });
     this.inicializarMesas();
     await this.cargarRecetas();
+    
+    // Inicia la escucha de notificaciones
+    this.supabaseService.listenNotifications((notificacion) => {
+      this.ultimaNotificacion = notificacion;
+      this.mostrarNotificacion(notificacion.mensaje);
+    });
   }
+
+  ngOnDestroy() {
+    // Limpieza opcional (si SupabaseService no maneja la desuscripción automática)
+    // this.supabaseService.detenerNotificaciones();
+  }
+
+  mostrarNotificacion(mensaje: string) {
+    Swal.fire({
+      title: '¡Nueva notificación!',
+      text: mensaje,
+      icon: 'info',
+      confirmButtonText: 'Entendido'
+    });
+
+   
+   
+  }
+
   
   async inicializarMesas() {
     this.mesas = Array.from({ length: 26 }, (_, i) => ({
@@ -86,7 +111,6 @@ export default class CartaComponent {
     }));
   
     const facturasDelDia = await this.supabaseService.getFacturasDelDia();  // No hace falta filtrar aquí
-  console.log(facturasDelDia)
     facturasDelDia.forEach(factura => {
       const mesa = this.mesas.find(m => m.id === factura.mesa_id); // asegúrate que factura.mesa_id existe
       if (mesa) {
@@ -358,4 +382,6 @@ export default class CartaComponent {
       this.carrito = [];
     }
     
+
+   
 }

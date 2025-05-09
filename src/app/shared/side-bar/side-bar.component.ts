@@ -96,7 +96,7 @@ export class SideBarComponent implements OnInit {
       label: 'Dashboard',
       route: '/dashboard',
       submenus: [
-        { label: 'Resumen', route: '/dashboard/resumen', icon: 'bi bi-house-door' },
+        { label: 'Resumen', route: '/dashboard', icon: 'bi bi-house-door' },
         { label: 'Reportes', route: '/dashboard/reportes', icon: 'bi bi-file-earmark' },
       ],
       expanded: true
