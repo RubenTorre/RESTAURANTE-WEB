@@ -1,1 +1,0 @@
-import{Aa as o,Oa as n,Pa as s,bb as p}from"./chunk-DNO7NU24.js";import"./chunk-FK42CRUA.js";var t=class a{static \u0275fac=function(e){return new(e||a)};static \u0275cmp=o({type:a,selectors:[["app-dashboard"]],decls:2,vars:0,template:function(e,d){e&1&&(n(0,"p"),p(1,"dashboard works!"),s())},encapsulation:2})};export{t as default};
