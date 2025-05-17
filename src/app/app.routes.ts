@@ -37,7 +37,27 @@ export const routes: Routes = [
                 path:'facturas/imprimir',
                 loadComponent:() => import('./pages/imprimir-facturas/imprimir-facturas.component')
 
-            }
+            },
+            {
+                path:'Usuarios',
+                loadComponent:() => import('./pages/usuarios/usuarios.component')
+
+            },
+            {
+                path:'perfil',
+                loadComponent:() => import('./pages/perfil/perfil.component')
+
+            },
+            {
+                path:'egresos',
+                loadComponent:() => import('./pages/gastos/gastos.component')
+
+            },
+            {
+                path:'Contratos',
+                loadComponent:() => import('./pages/almuerzos-contrato/almuerzos-contrato.component')
+
+            },
         ]
     }
 ];

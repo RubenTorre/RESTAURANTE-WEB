@@ -1,1 +1,411 @@
-<p>dashboard works!</p>
+<div class="min-h-screen bg-gray-50 p-6">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <!-- Ventas Totales -->
+      <div class="dashboard-card bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-emerald-500">
+        <div class="p-5">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-sm font-medium text-gray-500">Ventas Totales Hoy</p>
+              <h3 class="text-2xl font-bold text-gray-800 mt-1">$1,230.50</h3>
+              <p class="text-xs text-emerald-500 mt-2 flex items-center">
+                <i class="fas fa-arrow-up mr-1"></i> 12% desde ayer
+              </p>
+            </div>
+            <div class="bg-emerald-100 p-3 rounded-lg">
+              <i class="fas fa-dollar-sign text-emerald-500 text-xl"></i>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-r from-emerald-500 to-emerald-400 h-1"></div>
+      </div>
+  
+      <!-- Pedidos Activos -->
+      <div class="dashboard-card bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-amber-500">
+        <div class="p-5">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-sm font-medium text-gray-500">Pedidos Activos</p>
+              <h3 class="text-2xl font-bold text-gray-800 mt-1">5</h3>
+              <p class="text-xs text-amber-500 mt-2">2 en preparación, 3 pendientes</p>
+            </div>
+            <div class="bg-amber-100 p-3 rounded-lg">
+              <i class="fas fa-utensils text-amber-500 text-xl"></i>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-r from-amber-500 to-amber-400 h-1"></div>
+      </div>
+  
+      <!-- Gastos del Día -->
+      <div class="dashboard-card bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-rose-500">
+        <div class="p-5">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-sm font-medium text-gray-500">Gastos del Día</p>
+              <h3 class="text-2xl font-bold text-gray-800 mt-1">$450.75</h3>
+              <p class="text-xs text-rose-500 mt-2 flex items-center">
+                <i class="fas fa-arrow-down mr-1"></i> 5% desde ayer
+              </p>
+            </div>
+            <div class="bg-rose-100 p-3 rounded-lg">
+              <i class="fas fa-file-invoice-dollar text-rose-500 text-xl"></i>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-r from-rose-500 to-rose-400 h-1"></div>
+      </div>
+  
+      <!-- Balance Neto -->
+      <div class="dashboard-card bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-blue-500">
+        <div class="p-5">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-sm font-medium text-gray-500">Balance Neto</p>
+              <h3 class="text-2xl font-bold text-gray-800 mt-1">$779.75</h3>
+              <p class="text-xs text-blue-500 mt-2 flex items-center">
+                <i class="fas fa-arrow-up mr-1"></i> 8% desde ayer
+              </p>
+            </div>
+            <div class="bg-blue-100 p-3 rounded-lg">
+              <i class="fas fa-chart-pie text-blue-500 text-xl"></i>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-r from-blue-500 to-blue-400 h-1"></div>
+      </div>
+    </div>
+  
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <!-- Ventas Diarias Chart -->
+      <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-semibold text-gray-700">Ventas Diarias</h3>
+          <div class="flex space-x-2">
+            <button class="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-md">Semana</button>
+            <button class="text-xs text-gray-500 px-2 py-1 rounded-md">Mes</button>
+            <button class="text-xs text-gray-500 px-2 py-1 rounded-md">Año</button>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="salesChart"></canvas>
+        </div>
+      </div>
+  
+      <!-- Gastos por Categoría Chart -->
+      <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-semibold text-gray-700">Gastos por Categoría</h3>
+          <button class="text-gray-400 hover:text-gray-600">
+            <i class="fas fa-ellipsis-v"></i>
+          </button>
+        </div>
+        <div class="chart-container">
+          <canvas id="expensesChart"></canvas>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Platos Más Vendidos y Stock Bajo -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <!-- Platos Más Vendidos -->
+      <div class="bg-white rounded-xl shadow-md p-6">
+        <h3 class="font-semibold text-gray-700 mb-4">Platos Más Vendidos</h3>
+        <div class="space-y-4">
+          <div class="flex items-center">
+            <img src="assets/placeholder.svg" alt="Plato 1" class="w-12 h-12 rounded-lg object-cover mr-4">
+            <div class="flex-1">
+              <div class="flex justify-between">
+                <h4 class="font-medium">Paella Valenciana</h4>
+                <span class="text-amber-600 font-medium">32 vendidos</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                <div class="bg-amber-500 h-2 rounded-full" style="width: 85%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <img src="assets/placeholder.svg" alt="Plato 2" class="w-12 h-12 rounded-lg object-cover mr-4">
+            <div class="flex-1">
+              <div class="flex justify-between">
+                <h4 class="font-medium">Risotto de Setas</h4>
+                <span class="text-amber-600 font-medium">28 vendidos</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                <div class="bg-amber-500 h-2 rounded-full" style="width: 75%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <img src="assets/placeholder.svg" alt="Plato 3" class="w-12 h-12 rounded-lg object-cover mr-4">
+            <div class="flex-1">
+              <div class="flex justify-between">
+                <h4 class="font-medium">Solomillo Wellington</h4>
+                <span class="text-amber-600 font-medium">24 vendidos</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                <div class="bg-amber-500 h-2 rounded-full" style="width: 65%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <img src="assets/placeholder.svg" alt="Plato 4" class="w-12 h-12 rounded-lg object-cover mr-4">
+            <div class="flex-1">
+              <div class="flex justify-between">
+                <h4 class="font-medium">Tiramisú Clásico</h4>
+                <span class="text-amber-600 font-medium">20 vendidos</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                <div class="bg-amber-500 h-2 rounded-full" style="width: 55%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Productos con Stock Bajo -->
+      <div class="bg-white rounded-xl shadow-md p-6">
+        <h3 class="font-semibold text-gray-700 mb-4">Productos con Stock Bajo</h3>
+        <div class="space-y-4">
+          <div class="flex items-center p-3 bg-red-50 rounded-lg">
+            <div class="bg-red-100 p-2 rounded-lg mr-4">
+              <i class="fas fa-exclamation-triangle text-red-500"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between">
+                <h4 class="font-medium">Langostinos frescos</h4>
+                <span class="text-red-600 font-medium">3 kg</span>
+              </div>
+              <p class="text-xs text-gray-500">Nivel crítico</p>
+            </div>
+            <button class="text-xs bg-red-100 text-red-600 px-3 py-1 rounded-full">
+              Pedir
+            </button>
+          </div>
+          <div class="flex items-center p-3 bg-red-50 rounded-lg">
+            <div class="bg-red-100 p-2 rounded-lg mr-4">
+              <i class="fas fa-exclamation-triangle text-red-500"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between">
+                <h4 class="font-medium">Aceite de trufa</h4>
+                <span class="text-red-600 font-medium">2 botellas</span>
+              </div>
+              <p class="text-xs text-gray-500">Nivel crítico</p>
+            </div>
+            <button class="text-xs bg-red-100 text-red-600 px-3 py-1 rounded-full">
+              Pedir
+            </button>
+          </div>
+          <div class="flex items-center p-3 bg-amber-50 rounded-lg">
+            <div class="bg-amber-100 p-2 rounded-lg mr-4">
+              <i class="fas fa-exclamation-circle text-amber-500"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between">
+                <h4 class="font-medium">Queso Parmesano</h4>
+                <span class="text-amber-600 font-medium">4 kg</span>
+              </div>
+              <p class="text-xs text-gray-500">Nivel bajo</p>
+            </div>
+            <button class="text-xs bg-amber-100 text-amber-600 px-3 py-1 rounded-full">
+              Pedir
+            </button>
+          </div>
+          <div class="flex items-center p-3 bg-amber-50 rounded-lg">
+            <div class="bg-amber-100 p-2 rounded-lg mr-4">
+              <i class="fas fa-exclamation-circle text-amber-500"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between">
+                <h4 class="font-medium">Vino Tinto Reserva</h4>
+                <span class="text-amber-600 font-medium">5 botellas</span>
+              </div>
+              <p class="text-xs text-gray-500">Nivel bajo</p>
+            </div>
+            <button class="text-xs bg-amber-100 text-amber-600 px-3 py-1 rounded-full">
+              Pedir
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Tabla de Pedidos Recientes -->
+    <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-semibold text-gray-700">Pedidos Recientes</h3>
+        <button class="text-sm text-amber-600 hover:text-amber-700 font-medium">Ver todos</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead>
+            <tr class="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-6 py-3 rounded-l-lg"># Pedido</th>
+              <th class="px-6 py-3">Cliente</th>
+              <th class="px-6 py-3">Fecha</th>
+              <th class="px-6 py-3">Estado</th>
+              <th class="px-6 py-3">Total</th>
+              <th class="px-6 py-3 rounded-r-lg">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="font-medium">#001</span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <img src="https://randomuser.me/api/portraits/men/1.jpg" class="w-8 h-8 rounded-full mr-2">
+                  <span>Juan Pérez</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                12 Mayo, 14:30
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">
+                  Pendiente
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap font-medium">
+                $45.00
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button class="text-amber-600 hover:text-amber-900 mr-3">Ver</button>
+                <button class="text-gray-600 hover:text-gray-900">Editar</button>
+              </td>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="font-medium">#002</span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <img src="https://randomuser.me/api/portraits/women/2.jpg" class="w-8 h-8 rounded-full mr-2">
+                  <span>María López</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                12 Mayo, 13:45
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                  En preparación
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap font-medium">
+                $30.00
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button class="text-amber-600 hover:text-amber-900 mr-3">Ver</button>
+                <button class="text-gray-600 hover:text-gray-900">Editar</button>
+              </td>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="font-medium">#003</span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <img src="https://randomuser.me/api/portraits/men/3.jpg" class="w-8 h-8 rounded-full mr-2">
+                  <span>Carlos García</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                12 Mayo, 12:15
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                  Completado
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap font-medium">
+                $60.00
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button class="text-amber-600 hover:text-amber-900 mr-3">Ver</button>
+                <button class="text-gray-600 hover:text-gray-900">Editar</button>
+              </td>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="font-medium">#004</span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <img src="https://randomuser.me/api/portraits/women/4.jpg" class="w-8 h-8 rounded-full mr-2">
+                  <span>Ana Martínez</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                12 Mayo, 11:30
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                  Completado
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap font-medium">
+                $75.50
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button class="text-amber-600 hover:text-amber-900 mr-3">Ver</button>
+                <button class="text-gray-600 hover:text-gray-900">Editar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
+    <!-- Reservas del Día -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-semibold text-gray-700">Reservas del Día</h3>
+        <button class="text-sm text-amber-600 hover:text-amber-700 font-medium">Ver calendario</button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+          <div class="flex justify-between items-start">
+            <div>
+              <h4 class="font-medium">Mesa 5 - 4 personas</h4>
+              <p class="text-sm text-gray-500 mt-1">Familia Rodríguez</p>
+            </div>
+            <span class="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full">13:30</span>
+          </div>
+          <div class="flex items-center mt-3 text-xs text-gray-500">
+            <i class="fas fa-utensils mr-1"></i>
+            <span>Celebración de cumpleaños</span>
+          </div>
+        </div>
+        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+          <div class="flex justify-between items-start">
+            <div>
+              <h4 class="font-medium">Mesa 8 - 2 personas</h4>
+              <p class="text-sm text-gray-500 mt-1">Sr. y Sra. Gómez</p>
+            </div>
+            <span class="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full">14:00</span>
+          </div>
+          <div class="flex items-center mt-3 text-xs text-gray-500">
+            <i class="fas fa-utensils mr-1"></i>
+            <span>Aniversario</span>
+          </div>
+        </div>
+        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+          <div class="flex justify-between items-start">
+            <div>
+              <h4 class="font-medium">Mesa 12 - 6 personas</h4>
+              <p class="text-sm text-gray-500 mt-1">Grupo Empresarial</p>
+            </div>
+            <span class="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full">20:30</span>
+          </div>
+          <div class="flex items-center mt-3 text-xs text-gray-500">
+            <i class="fas fa-utensils mr-1"></i>
+            <span>Cena de negocios</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

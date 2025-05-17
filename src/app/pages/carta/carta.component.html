@@ -1,35 +1,118 @@
 
-<div class="w-full min-h-screen flex flex-col items-center justify-start bg-gray-100 p-4 md:p-6">
+<div class="w-full min-h-screen flex flex-col items-stretch justify-start bg-gray-100 p-0">
     <!-- Selección de Mesas -->
-    <div *ngIf="!mesaSeleccionada" class="w-full flex flex-col items-center justify-start space-y-4 md:space-y-6 overflow-y-auto">
-        <h3 class="text-2xl md:text-3xl font-bold text-center text-gray-800">Selecciona una Mesa</h3>
-    
-        <!-- Contenedor de las mesas -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-6 w-full max-w-6xl">
-            <button 
-              *ngFor="let mesa of mesas"
-              (click)="seleccionarSiAbierta(mesa)"
+<div *ngIf="!mesaSeleccionada" class="w-full min-h-screen py-12 px-6 bg-gradient-to-br from-white to-gray-100 flex flex-col items-center overflow-y-auto">
 
-              [disabled]="mesa.estado === 'ocupada'"
-              [ngClass]="{
-                'bg-green-500 hover:bg-green-600 active:bg-green-700': mesa.estado === 'abierta',
-                'bg-red-500 cursor-not-allowed': mesa.estado === 'ocupada',
-                'bg-yellow-500': mesa.estado !== 'abierta' && mesa.estado !== 'ocupada'
-                }"
-
-              class="p-3 md:p-6 rounded-lg md:rounded-xl shadow-md md:shadow-lg text-white font-semibold transition duration-200 ease-in-out text-base md:text-lg transform hover:scale-105 active:scale-95 flex flex-col items-center justify-center space-y-1 md:space-y-2"
-            >
-              <div>
-                <i class="bi bi-table text-3xl md:text-5xl"></i>
-              </div>
-              <span class="text-center text-lg md:text-xl font-bold">{{ mesa.nombre }}</span>
-              <span *ngIf="mesa.estado === 'ocupada'" class="text-xs block text-center text-red-200 font-semibold">
-                Mesa Ocupada
-              </span>
-            </button>
-        </div>
+    <!-- Encabezado -->
+    <div class="text-center mb-8">
+      <h1 class="text-5xl font-extrabold text-amber-600 tracking-tight">Mesas Disponibles</h1>
+      <p class="text-lg text-gray-500 mt-2">Selecciona una mesa para comenzar un pedido</p>
     </div>
-    
+  
+    <!-- Leyenda de Estados -->
+    <div class="flex flex-wrap justify-center gap-6 mb-8 text-sm font-medium">
+      <div class="flex items-center gap-2 text-gray-600">
+        <div class="w-4 h-4 rounded-full bg-emerald-500 shadow-md"></div>
+        Disponible
+      </div>
+      <div class="flex items-center gap-2 text-gray-600">
+        <div class="w-4 h-4 rounded-full bg-red-500 shadow-md"></div>
+        Ocupada
+      </div>
+      
+    </div>
+  
+    <!-- Rejilla de Mesas -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8 w-full max-w-6xl">
+      <button
+        *ngFor="let mesa of mesas"
+        (click)="seleccionarSiAbierta(mesa)"
+        [disabled]="mesa.estado === 'ocupada'"
+        [ngClass]="{
+          'bg-white ring-2 ring-emerald-400 hover:bg-emerald-100 text-emerald-700': mesa.estado === 'abierta',
+          'bg-red-100 ring-2 ring-red-400 text-red-700 cursor-not-allowed': mesa.estado === 'ocupada',
+          'bg-amber-100 ring-2 ring-amber-400 text-amber-700': mesa.estado === 'reservada'
+        }"
+        class="relative p-6 rounded-3xl shadow-lg transition-all duration-300 hover:scale-105 active:scale-100 touch-manipulation text-center flex flex-col items-center space-y-4"
+      >
+        <!-- Icono central -->
+        <div class="transition-transform duration-200">
+            <div *ngIf="mesa.estado === 'abierta'" class="h-12 w-12">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-full h-full text-green-500" fill="currentColor">
+                  <path d="M260.146,87.184c93.234,0,168.822,75.588,168.822,168.822S353.38,424.827,260.146,424.827 S91.324,349.239,91.324,256.006S166.912,87.184,260.146,87.184z" fill="#99D9FF"></path>
+                  <path d="M260.146,131.465v249.081c68.78,0,124.541-55.761,124.541-124.541S328.925,131.465,260.146,131.465z" fill="#CCECFF"></path>
+                  <path d="M260.146,131.465c56.547,0,102.4,55.761,102.4,124.541s-45.853,124.541-102.4,124.541 c-68.78,0-124.541-55.761-124.541-124.541S191.366,131.465,260.146,131.465z" fill="#FFFFFF"></path>
+                  <path d="M289.505,214.905l-99.804,99.804c-3.242,3.242-3.242,8.5,0,11.741 c1.622,1.621,3.747,2.432,5.872,2.432s4.25-0.81,5.872-2.432l99.804-99.804L289.505,214.905z" fill="#668A30"></path>
+                  <path d="M324.731,191.42c8.869,31.147,2.623,63.914-19.57,86.107c-22.193,22.193-54.959,28.438-86.107,19.57 l38.356-73.582L324.731,191.42z" fill="#84B044"></path>
+                  <path d="M324.731,191.42L219.055,297.096c-8.869-31.147-2.623-63.914,19.57-86.107 S293.585,182.551,324.731,191.42z" fill="#A2C352"></path>
+                  <g>
+                    <path d="M41.514,87.173c-4.585,0-8.303,3.717-8.303,8.303v84.134h16.605V95.476 C49.816,90.89,46.099,87.173,41.514,87.173z" fill="#66C6FE"></path>
+                    <path d="M74.724,87.173c-4.585,0-8.303,3.717-8.303,8.303v84.134l16.605-34.871V95.476 C83.027,90.89,79.31,87.173,74.724,87.173z" fill="#66C6FE"></path>
+                    <path d="M8.303,87.173C3.717,87.173,0,90.89,0,95.476v49.263l16.605,34.871V95.476 C16.605,90.89,12.888,87.173,8.303,87.173z" fill="#66C6FE"></path>
+                    <polygon points="511.989,267.065 511.989,300.276 495.384,330.73 478.778,300.276 478.778,250.47 " fill="#66C6FE"></polygon>
+                  </g>
+                  <g>
+                    <path d="M511.989,300.276v107.946c0,9.166-7.439,16.605-16.605,16.605c-9.166,0-16.605-7.439-16.605-16.605 V300.276H511.989z" fill="#99D9FF"></path>
+                    <path d="M487.092,87.173c-13.757,0-24.908,11.152-24.908,24.908v130.076 c0,13.757,11.151,24.908,24.908,24.908H512c0-71.9,0-154.984,0-154.984C512,98.325,500.849,87.173,487.092,87.173z" fill="#99D9FF"></path>
+                    <path d="M0,144.738v18.271c0,17.022,10.249,31.642,24.908,38.05v207.151c0,9.171,7.435,16.605,16.605,16.605 s16.605-7.435,16.605-16.605V201.059c14.659-6.407,24.908-21.028,24.908-38.05v-18.271H0z" fill="#99D9FF"></path>
+                  </g>
+                </svg>
+              </div>
+              
+          <div *ngIf="mesa.estado === 'ocupada'" class="h-12 w-12">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-full h-full text-red-500" fill="currentColor">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                    <path class="path-fill-1" d="M256,22.505L188.484,256L256,489.495c128.955,0,233.495-104.539,233.495-233.495 S384.955,22.505,256,22.505z"></path>
+                    <g>
+                        <path class="path-fill-2" d="M22.505,256c0,128.955,104.539,233.495,233.495,233.495V22.505 C127.045,22.505,22.505,127.045,22.505,256z"></path>
+                        <path class="path-fill-2" d="M257.992,67.528v376.945C361.011,443.403,444.484,359.266,444.484,256 S361.011,68.597,257.992,67.528z"></path>
+                    </g>
+                    <path class="path-fill-3" d="M257.992,67.528C342.399,68.844,410.725,152.88,410.725,256s-68.327,187.156-152.734,188.472 c-0.664,0.011-1.328,0.011-1.992,0.011C152.07,444.484,67.516,359.93,67.516,256S152.07,67.516,256,67.516 C256.664,67.516,257.328,67.516,257.992,67.528z"></path>
+                    <polygon class="path-fill-4" points="402.287,0 402.276,512 377.902,489.495 368.529,498.142 285.99,256.011 368.529,13.844 377.913,22.505 "></polygon>
+                    <polygon class="path-fill-5" points="353.506,0.023 368.529,13.844 368.529,498.142 353.506,512 329.133,489.495 304.759,512 280.375,489.495 255.99,512 231.616,489.495 207.22,512 182.847,489.495 158.474,512 134.089,489.495 109.715,512 109.715,0 134.089,22.505 158.485,0 182.858,22.505 207.243,0 231.628,22.505 256.001,0 280.375,22.505 304.771,0 329.144,22.505 "></polygon>
+                    <g>
+                        <path class="path-fill-6" d="M329.141,145.717c-2.047,0-4.1-0.74-5.722-2.238l-18.653-17.22l-18.653,17.22 c-3.233,2.984-8.217,2.984-11.45,0l-18.654-17.221l-18.663,17.222c-3.234,2.983-8.217,2.983-11.449-0.001l-18.654-17.221 l-18.663,17.222c-3.425,3.161-8.765,2.947-11.926-0.478c-3.161-3.425-2.947-8.765,0.478-11.926l24.388-22.505 c3.234-2.983,8.217-2.982,11.449,0.001l18.654,17.221l18.663-17.222c3.234-2.983,8.217-2.982,11.449,0.001l18.653,17.20 l18.653-17.20c3.233-2.984,8.217-2.984,11.45,0l24.378,22.505c3.424,3.162,3.638,8.501,0.476,11.926 C333.68,144.805,331.414,145.717,329.141,145.717z"></path>
+                        <path class="path-fill-6" d="M329.143,189.052h-14.997c-4.661,0-8.44-3.779-8.44-8.44c0-4.661,3.779-8.44,8.44-8.44h14.997 c4.661,0,8.44,3.779,8.44,8.44C337.582,185.273,333.804,189.052,329.143,189.052z"></path>
+                    </g>
+                    <path class="path-fill-7" d="M280.388,189.052h-97.531c-4.661,0-8.44-3.779-8.44-8.44c0-4.661,3.779-8.44,8.44-8.44h97.531 c4.661,0,8.44,3.779,8.44,8.44C288.828,185.273,285.049,189.052,280.388,189.052z"></path>
+                    <path class="path-fill-6" d="M329.143,222.81h-14.997c-4.661,0-8.44-3.779-8.44-8.44c0-4.661,3.779-8.44,8.44-8.44h14.997 c4.661,0,8.44,3.779,8.44,8.44C337.582,219.031,333.804,222.81,329.143,222.81z"></path>
+                    <path class="path-fill-7" d="M280.388,222.81h-97.531c-4.661,0-8.44-3.779-8.44-8.44c0-4.661,3.779-8.44,8.44-8.44h97.531 c4.661,0,8.44,3.779,8.44,8.44C288.828,219.031,285.049,222.81,280.388,222.81z"></path>
+                    <path class="path-fill-6" d="M329.143,256.568h-14.997c-4.661,0-8.44-3.779-8.44-8.44s3.779-8.44,8.44-8.44h14.997 c4.661,0,8.44,3.779,8.44,8.44S333.804,256.568,329.143,256.568z"></path>
+                    <path class="path-fill-7" d="M280.388,256.568h-97.531c-4.661,0-8.44-3.779-8.44-8.44s3.779-8.44,8.44-8.44h97.531 c4.661,0,8.44,3.779,8.44,8.44S285.049,256.568,280.388,256.568z"></path>
+                    <path class="path-fill-6" d="M329.143,290.327h-14.997c-4.661,0-8.44-3.779-8.44-8.44s3.779-8.44,8.44-8.44h14.997 c4.661,0,8.44,3.779,8.44,8.44S333.804,290.327,329.143,290.327z"></path>
+                    <path class="path-fill-7" d="M280.388,290.327h-97.531c-4.661,0-8.44-3.779-8.44-8.44s3.779-8.44,8.44-8.44h97.531 c4.661,0,8.44,3.779,8.44,8.44S285.049,290.327,280.388,290.327z"></path>
+                    <path class="path-fill-6" d="M329.143,405.667h-14.997c-4.661,0-8.44-3.779-8.44-8.44s3.779-8.44,8.44-8.44h14.997 c4.661,0,8.44,3.779,8.44,8.44S333.804,405.667,329.143,405.667z"></path>
+                    <path class="path-fill-7" d="M280.388,405.667h-97.531c-4.661,0-8.44-3.779-8.44-8.44s3.779-8.44,8.44-8.44h97.531 c4.661,0,8.44,3.779,8.44,8.44S285.049,405.667,280.388,405.667z"></path>
+                </g>
+                            </svg>
+            
+          </div>
+          
+          <svg *ngIf="mesa.estado === 'reservada'" class="h-12 w-12 text-amber-500" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+  
+        <!-- Número de Mesa -->
+        <div class="text-lg sm:text-xl font-bold tracking-wide">{{ mesa.nombre }}</div>
+  
+        <!-- Estado flotante -->
+        <div
+          class="absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-semibold shadow-md uppercase"
+          [ngClass]="{
+            'bg-emerald-600 text-white animate-pulse': mesa.estado === 'abierta',
+            'bg-red-600 text-white': mesa.estado === 'ocupada',
+            'bg-amber-600 text-white': mesa.estado === 'reservada'
+          }"
+        >
+          {{ mesa.estado === 'abierta' ? 'Libre' : mesa.estado.charAt(0).toUpperCase() + mesa.estado.slice(1) }}
+        </div>
+      </button>
+    </div>
+  </div>
+  
    <!-- Contenido Principal (Menú + Carrito) -->
 <div *ngIf="mesaSeleccionada" class="w-full flex flex-col lg:flex-row h-auto md:h-screen">
   
@@ -142,7 +225,45 @@
           [(ngModel)]="terminoBusquedaReceta"
         />
       </div>
+      <!--Almuerzos-->
+      <div  class="relative overflow-hidden bg-white rounded-xl shadow-lg border-2 border-orange-400 hover:border-orange-500 hover:shadow-xl transition-all duration-300 cursor-pointer group mb-6"
+  (click)="abrirModalAlmuerzo()">
   
+  <!-- Fondo decorativo con patrón sutil -->
+  <div class="background-decorativo"></div>
+  
+  <!-- Contenido principal -->
+  <div class="relative p-4 md:p-5">
+    <!-- Encabezado con icono -->
+    <div class="flex items-center justify-center mb-3">
+      <div class="bg-orange-500 text-white p-2 rounded-full shadow-md transform group-hover:scale-110 transition-transform duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+      </div>
+    </div>
+    
+    <!-- Título -->
+    <h3 class="text-lg md:text-xl font-semibold text-black mb-2 text-center">Almuerzo del Día</h3>
+    
+    <!-- Botón de acción -->
+    <div class="mt-2 flex justify-center">
+      <div class="inline-flex items-center justify-center px-4 py-2 bg-orange-500 text-white font-medium rounded-lg shadow group-hover:bg-orange-600 transition-colors duration-300">
+        Configurar ahora
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Decoración de esquina -->
+  <div class="absolute top-0 right-0 w-16 h-16 overflow-hidden">
+    <div class="absolute transform rotate-45 bg-yellow-400 text-white font-bold py-1 right-[-35px] top-[15px] w-[140px] text-center text-xs">
+      ESPECIAL
+    </div>
+  </div>
+        </div>
       <!-- Productos -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         <div *ngFor="let receta of recetasFiltradas" class="bg-white p-4 md:p-6 rounded-lg shadow-md border hover:shadow-lg transition duration-200 ease-in-out">
@@ -157,97 +278,121 @@
           </div>
   
           <button 
-            (click)="agregarAlCarrito(receta)"
-            class="w-full py-2 md:py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-md text-sm md:text-lg transition transform hover:scale-105 active:scale-95"
-          >
-            Agregar al Carrito
-          </button>
+  (click)="abrirModalModificaciones(receta)"
+  class="w-full py-2 md:py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-md text-sm md:text-lg transition transform hover:scale-105 active:scale-95"
+>
+  Agregar al Carrito
+</button>
+
         </div>
       </div>
     </div>
-  
-    <!-- Carrito de Compras - Versión Desktop/Tablet Horizontal -->
-    <div class="hidden lg:flex lg:w-2/5 bg-gray-100 border-l p-6 overflow-y-auto flex flex-col max-h-screen">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-2xl font-semibold text-black">Carrito</h3>
-        <div class="flex items-center space-x-3">
-          <span class="bg-green-500 text-white rounded-full px-3 py-1 text-sm">
-           {{ mesaSeleccionada.nombre }}
-          </span>
-        </div>
-      </div>
-  
-      <!-- Badge de cantidad de productos -->
-      <div *ngIf="carrito.length > 0" class="bg-red-500 text-white rounded-full h-7 w-7 flex items-center justify-center text-sm mb-4 ml-auto">
-        {{ carrito.length }}
-      </div>
-  
-      <div class="mb-6 flex-grow overflow-y-auto">
-        <div *ngIf="carrito.length === 0" class="text-center text-gray-500 h-full flex items-center justify-center py-8">
-          <div>
-            <i class="bi bi-cart-x text-4xl text-gray-300 mb-2"></i>
-            <p class="text-lg">El carrito está vacío</p>
-          </div>
-        </div>
-  
-        <!-- Productos -->
-        <div *ngFor="let item of carrito; let i = index" class="flex justify-between items-center mb-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition">
-            <div class="flex-grow">
-                <!-- Nombre del producto -->
-                <span class="text-black font-medium text-lg block mb-3">{{ item.nombre }}</span>
-              
-                <!-- Contenedor de botones de cantidad -->
-                <div class="flex justify-center items-center mt-4 space-x-4">
-                  <!-- Botón para disminuir la cantidad -->
-                  <button 
-                    (click)="disminuirCantidad(i)" 
-                    class="text-gray-500 px-4 py-3 bg-gray-100 rounded-full hover:bg-gray-200 transition-all duration-200 focus:outline-none"
-                  >
-                    -
-                  </button>
-              
-                  <!-- Cantidad centrada -->
-                  <span class="text-xl font-semibold text-gray-800 mx-4">{{ item.cantidad }}</span>
-              
-                  <!-- Botón para aumentar la cantidad -->
-                  <button 
-                    (click)="aumentarCantidad(i)" 
-                    class="text-gray-500 px-4 py-3 bg-gray-100 rounded-full hover:bg-gray-200 transition-all duration-200 focus:outline-none"
-                  >
-                    +
-                  </button>
+        <!-- Carrito de Compras - Versión Mejorada -->
+        <div class="hidden lg:flex lg:w-2/3 bg-white border-l border-gray-200 p-6 overflow-y-auto flex flex-col max-h-screen shadow-lg">
+            <!-- Encabezado del carrito -->
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+                <div class="flex items-center space-x-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <h3 class="text-2xl font-bold text-gray-800">Tu Carrito</h3>
                 </div>
-              </div>
+                <div class="flex items-center space-x-3">
+                    <span class="bg-green-600 text-white rounded-full px-4 py-1.5 text-sm font-medium flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        {{ mesaSeleccionada.nombre }}
+                    </span>
+                </div>
+            </div>
+        
+            <!-- Badge de cantidad de productos -->
+            <div *ngIf="carrito.length > 0" class="bg-red-600 text-white rounded-full h-6 w-6 flex items-center justify-center text-xs font-bold mb-4 ml-auto shadow-sm">
+                {{ carrito.length }}
+            </div>
+        
+            <!-- Lista de productos en el carrito -->
+            <div class="mb-6 flex-grow space-y-4 overflow-y-auto pr-2">
+                <div *ngIf="carrito.length === 0" class="text-center text-gray-500 flex flex-col items-center justify-center h-full py-12">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <p class="text-lg font-medium text-gray-400">Tu carrito está vacío</p>
+                    <p class="text-sm text-gray-300 mt-1">Agrega productos para continuar</p>
+                </div>
+        
               
-          <button (click)="eliminarProducto(i)" class="text-red-500 ml-3 p-1 hover:bg-red-50 rounded-full" title="Eliminar">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-            </svg>
-          </button>
+                <!-- Producto individual -->
+                <div *ngFor="let item of carrito; let i = index" class="flex items-center p-4 bg-white rounded-xl border border-gray-100 hover:border-green-100 hover:bg-green-50 transition-all duration-200 group">
+                    <div class="flex-grow">
+                      <div class="flex justify-between items-start">
+                        <div>
+                          <span class="text-gray-800 font-semibold text-lg">{{ item.nombre }}</span>
+                  
+                          <!-- Mostrar modificaciones si existen -->
+                          <div *ngIf="item.modificaciones?.length > 0" class="mt-1 text-sm text-gray-500">
+                            <ul class="list-disc list-inside space-y-0.5">
+                              <li *ngFor="let mod of item.modificaciones" class="italic text-gray-500">→ {{ mod }}</li>
+                            </ul>
+                          </div>
+                  
+                          <!-- Mostrar porciones extras -->
+                          <div *ngIf="item.extras?.length > 0" class="mt-1 text-sm text-gray-500">
+                            <ul class="list-disc list-inside space-y-0.5">
+                              <li *ngFor="let porcion of item.extras" class="italic text-gray-500">→ {{ porcion.nombre }}</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                  
+                      <div class="flex items-center space-x-3 mt-3">
+                        <button (click)="disminuirCantidad(i)" class="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg text-gray-600 hover:text-gray-800 transition flex items-center justify-center h-8 w-8">
+                          <span class="mb-0.5">-</span>
+                        </button>
+                  
+                        <span class="text-lg font-semibold w-8 text-center">{{ item.cantidad }}</span>
+                  
+                        <button (click)="aumentarCantidad(i)" class="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg text-gray-600 hover:text-gray-800 transition flex items-center justify-center h-8 w-8">
+                          <span class="mb-0.5">+</span>
+                        </button>
+                      </div>
+                    </div>
+                  
+                    <button (click)="eliminarProducto(i)" class="ml-4 text-gray-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-full transition" title="Eliminar">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  
+  
+            </div>
+        
+            <!-- Resumen y botón de pedido -->
+            <div class="mt-auto pt-4 border-t border-gray-100">
+            
+                <button 
+                    class="w-full py-3 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 text-lg font-semibold transition shadow-md hover:shadow-lg"
+                    (click)="realizarPedido()"
+                    [disabled]="carrito.length === 0"
+                    [class.opacity-50]="carrito.length === 0"
+                    [class.cursor-not-allowed]="carrito.length === 0"
+                >
+                    <div class="flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Realizar Pedido
+                    </div>
+                </button>
+            </div>
         </div>
-      </div>
-  
-    
-      <!-- Botón Realizar Pedido -->
-      <div class="mt-4">
-        <button 
-          class="w-full py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 text-lg font-semibold transition"
-          (click)="realizarPedido()"
-          [disabled]="carrito.length === 0"
-          [class.opacity-50]="carrito.length === 0"
-          [class.cursor-not-allowed]="carrito.length === 0"
-        >
-          <i class="bi bi-check2-circle"></i>
-          <span>Realizar Pedido</span>
-        </button>
-      </div>
-    </div>
-  
   </div>
-  
 </div>
 
-<!-- Modal de Vista Previa -->
+<!-- Modal de tiket -->
 <div *ngIf="mostrarVistaPrevia" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 z-50">
     <div class="bg-white rounded-lg w-full max-w-[240px] max-h-[95vh] overflow-y-auto p-4 shadow-lg">
   
@@ -256,55 +401,377 @@
         <h4 class="text-center font-bold text-sm mb-2">
           TICKET #{{ ticketNumero }}
         </h4>
-      
+  
         <p class="text-center mb-1">{{ currentDate | date:'medium' }}</p>
         <p class="text-center mb-1">Mesa: {{ mesaSeleccionada?.nombre || 'N/A' }}</p>
         <p class="text-center mb-2">Mesero: {{ nombreUsuario || 'N/A' }}</p>
-      
+  
         <hr class="border-t border-dashed border-gray-400 my-2">
-      
-        <div class="row font-bold mb-1">
-          <div class="col-producto">PRODUCTO</div>
-          <div class="col-cant">CANT</div>
+  
+        <!-- Títulos de las columnas -->
+        <div class="cart-container">
+          <!-- Encabezados -->
+          <div class="row header mb-2">
+            <div class="col-producto font-semibold">PRODUCTO</div>
+            <div class="col-cant font-semibold">CANT</div>
+          </div>
+          
+          <!-- Iteración sobre los productos del carrito -->
+          <div *ngFor="let item of carrito" class="row mb-3">
+            <div class="col-producto">
+              <div class="product-name">{{ item.nombre }}</div>
+              <!-- Mostrar las modificaciones si existen -->
+              <div *ngIf="item.modificaciones && item.modificaciones.length > 0" class="modifications">
+                <div *ngFor="let mod of item.modificaciones" class="mod-item">- {{ mod }}</div>
+              </div>
+              <!-- Mostrar extras si existen -->
+              <div *ngIf="item.extras && item.extras.length > 0" class="extras">
+                <div *ngFor="let extra of item.extras" class="extra-item">- {{ extra.nombre }}</div>
+              </div>
+            </div>
+            <div class="col-cant">{{ item.cantidad }}</div>
+          </div>
         </div>
-      
-        <div *ngFor="let item of carrito" class="row mb-1">
-          <div class="col-producto">{{ item.nombre }}</div>
-          <div class="col-cant">{{ item.cantidad }}</div>
-        </div>
-      
+  
         <hr class="border-t border-dashed border-gray-400 mt-2">
       </div>
+  
+      <!-- Botones -->
+      <div class="flex flex-col space-y-3 mt-4">
+        <button 
+          (click)="confirmarYImprimir()"
+          class="w-full px-4 py-2 flex items-center justify-center gap-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
+               viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M5 13l4 4L19 7" />
+          </svg>
+          Confirmar
+        </button>
+  
+        <button 
+          (click)="mostrarVistaPrevia = false"
+          class="w-full px-4 py-2 flex items-center justify-center gap-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
+               viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          Cancelar
+        </button>
+      </div>
+  
+    </div>
+</div>
+  <!--modal almuerzo-->
+  <div *ngIf="mostrarModalAlmuerzo" class="fixed inset-0 z-50 flex items-center justify-center">
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-black/70" (click)="cerrarModalAlmuerzo()"></div>
+    
+    <!-- Contenedor del modal con altura máxima y scroll -->
+    <div class="relative bg-white rounded-lg w-full max-w-lg mx-4 flex flex-col max-h-[90vh] shadow-2xl">
+      <!-- Encabezado fijo -->
+      <div class="bg-orange-500 p-4 flex justify-between items-center sticky top-0 z-10">
+        <h2 class="text-xl font-bold text-white">Almuerzo</h2>
+        <button (click)="cerrarModalAlmuerzo()" class="text-white hover:text-yellow-300 transition-colors cursor-pointer" title="cerrar">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
       
+      <!-- Contenido con scroll -->
+      <div class="overflow-y-auto p-5 flex-grow">
+        <!-- Selección de tipo -->
+        <div class="mb-6">
+          <label class="block mb-2 text-sm font-bold text-black">Tipo de almuerzo</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer transition-all hover:border-orange-300" [class.border-orange-500]="tipoAlmuerzo === 'completo'" [class.bg-orange-50]="tipoAlmuerzo === 'completo'">
+              <input 
+                type="radio" 
+                [(ngModel)]="tipoAlmuerzo" 
+                value="completo" 
+                class="sr-only"
+              />
+              <span class="w-4 h-4 mr-2 border-2 rounded-full flex items-center justify-center" [class.border-orange-500]="tipoAlmuerzo === 'completo'" [class.bg-orange-500]="tipoAlmuerzo === 'completo'"></span>
+              <span class="font-medium" [class.text-orange-700]="tipoAlmuerzo === 'completo'">Completo</span>
+            </label>
+            
+            <label class="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer transition-all hover:border-orange-300" [class.border-orange-500]="tipoAlmuerzo === 'solo_segundo'" [class.bg-orange-50]="tipoAlmuerzo === 'solo_segundo'">
+              <input 
+                type="radio" 
+                [(ngModel)]="tipoAlmuerzo" 
+                value="solo_segundo" 
+                class="sr-only"
+              />
+              <span class="w-4 h-4 mr-2 border-2 rounded-full flex items-center justify-center" [class.border-orange-500]="tipoAlmuerzo === 'solo_segundo'" [class.bg-orange-500]="tipoAlmuerzo === 'solo_segundo'"></span>
+              <span class="font-medium" [class.text-orange-700]="tipoAlmuerzo === 'solo_segundo'">Solo segundo</span>
+            </label>
+            
+            <label class="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer transition-all hover:border-orange-300" [class.border-orange-500]="tipoAlmuerzo === 'media_sopa_segundo'" [class.bg-orange-50]="tipoAlmuerzo === 'media_sopa_segundo'">
+              <input 
+                type="radio" 
+                [(ngModel)]="tipoAlmuerzo" 
+                value="media_sopa_segundo" 
+                class="sr-only"
+              />
+              <span class="w-4 h-4 mr-2 border-2 rounded-full flex items-center justify-center" [class.border-orange-500]="tipoAlmuerzo === 'media_sopa_segundo'" [class.bg-orange-500]="tipoAlmuerzo === 'media_sopa_segundo'"></span>
+              <span class="font-medium" [class.text-orange-700]="tipoAlmuerzo === 'media_sopa_segundo'">Media sopa + segundo</span>
+            </label>
+            
+            <label class="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer transition-all hover:border-orange-300" [class.border-orange-500]="tipoAlmuerzo === 'solo_sopa'" [class.bg-orange-50]="tipoAlmuerzo === 'solo_sopa'">
+              <input 
+                type="radio" 
+                [(ngModel)]="tipoAlmuerzo" 
+                value="solo_sopa" 
+                class="sr-only"
+              />
+              <span class="w-4 h-4 mr-2 border-2 rounded-full flex items-center justify-center" [class.border-orange-500]="tipoAlmuerzo === 'solo_sopa'" [class.bg-orange-500]="tipoAlmuerzo === 'solo_sopa'"></span>
+              <span class="font-medium" [class.text-orange-700]="tipoAlmuerzo === 'solo_sopa'">Solo sopa</span>
+            </label>
+          </div>
+        </div>
+    
+        <!-- Selección del segundo (solo visible si no es "solo sopa") -->
+        <div *ngIf="tipoAlmuerzo !== 'solo_sopa'" class="space-y-6">
+          <div>
+            <label class="block mb-2 text-sm font-bold text-black">Proteína</label>
+            <div class="grid grid-cols-3 gap-2">
+              <button 
+                *ngFor="let proteina of proteinas"
+                (click)="seleccionarProteina(proteina)"
+                class="py-2 px-3 rounded-md text-sm font-medium border-2 transition-all cursor-pointer"
+                [class.bg-yellow-400]="proteina === proteinaSeleccionada"
+                [class.border-yellow-500]="proteina === proteinaSeleccionada"
+                [class.text-black]="proteina === proteinaSeleccionada"
+                [class.border-gray-200]="proteina !== proteinaSeleccionada"
+                [class.hover:border-yellow-300]="proteina !== proteinaSeleccionada"
+              >
+                {{ proteina }}
+              </button>
+            </div>
+          </div>
+    
+          <div>
+            <label class="block mb-2 text-sm font-bold text-black">Preparación</label>
+            <div class="grid grid-cols-3 gap-2 ">
+              <button 
+                *ngFor="let preparacion of preparaciones"
+                (click)="seleccionarPreparacion(preparacion)"
+                class="py-2 px-3 rounded-md text-sm font-medium border-2 transition-all cursor-pointer "
+                [class.bg-orange-400]="preparacion === preparacionSeleccionada "
+                [class.border-orange-500]="preparacion === preparacionSeleccionada"
+                [class.text-white]="preparacion === preparacionSeleccionada"
+                [class.border-gray-200]="preparacion !== preparacionSeleccionada"
+                [class.hover:border-orange-300]="preparacion !== preparacionSeleccionada"
+              >
+                {{ preparacion }}
+              </button>
+            </div>
+          </div>
+        </div>
+    
+        <!-- Modificadores (siempre visibles) -->
+        <div class="mt-6">
+            <label class="block mb-2 text-sm font-bold text-black">Modificadores</label>
+          
+            <!-- Mostrar solo modificadores completos si NO es solo sopa -->
+            <div class="grid grid-cols-2 gap-3" *ngIf="tipoAlmuerzo !== 'solo_sopa'">
+              <!-- Sin arroz -->
+              <label class="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer transition-all hover:border-orange-300" 
+                     [class.border-orange-400]="sinArroz" [class.bg-orange-50]="sinArroz">
+                <input 
+                  type="checkbox" 
+                  [(ngModel)]="sinArroz" 
+                  class="sr-only"
+                />
+                <span class="w-5 h-5 mr-2 border-2 rounded flex items-center justify-center" 
+                      [class.border-orange-500]="sinArroz" 
+                      [class.bg-orange-500]="sinArroz">
+                  <svg *ngIf="sinArroz" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                </span>
+                <span class="font-medium">Sin arroz</span>
+              </label>
+          
+              <!-- Sin menestra -->
+              <label class="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer transition-all hover:border-orange-300" 
+                     [class.border-orange-400]="sinMenestra" [class.bg-orange-50]="sinMenestra">
+                <input 
+                  type="checkbox" 
+                  [(ngModel)]="sinMenestra" 
+                  class="sr-only"
+                />
+                <span class="w-5 h-5 mr-2 border-2 rounded flex items-center justify-center" 
+                      [class.border-orange-500]="sinMenestra" 
+                      [class.bg-orange-500]="sinMenestra">
+                  <svg *ngIf="sinMenestra" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                </span>
+                <span class="font-medium">Sin menestra</span>
+              </label>
+          
+              <!-- Sin ensalada -->
+              <label class="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer transition-all hover:border-orange-300" 
+                     [class.border-orange-400]="sinEnsalada" [class.bg-orange-50]="sinEnsalada">
+                <input 
+                  type="checkbox" 
+                  [(ngModel)]="sinEnsalada" 
+                  class="sr-only"
+                />
+                <span class="w-5 h-5 mr-2 border-2 rounded flex items-center justify-center" 
+                      [class.border-orange-500]="sinEnsalada" 
+                      [class.bg-orange-500]="sinEnsalada">
+                  <svg *ngIf="sinEnsalada" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                </span>
+                <span class="font-medium">Sin ensalada</span>
+              </label>
+          
+              <!-- Sin guarnición -->
+              <label class="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer transition-all hover:border-orange-300" 
+                     [class.border-orange-400]="alaplancha" [class.bg-orange-50]="alaplancha">
+                <input 
+                  type="checkbox" 
+                  [(ngModel)]="alaplancha" 
+                  class="sr-only"
+                />
+                <span class="w-5 h-5 mr-2 border-2 rounded flex items-center justify-center" 
+                      [class.border-orange-500]="alaplancha" 
+                      [class.bg-orange-500]="alaplancha">
+                  <svg *ngIf="alaplancha" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                </span>
+                <span class="font-medium">Sin guarnición</span>
+              </label>
+          
+              <!-- Para llevar -->
+              <label class="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer transition-all hover:border-orange-300 col-span-2" 
+                     [class.border-orange-400]="paraLlevar" [class.bg-orange-50]="paraLlevar">
+                <input 
+                  type="checkbox" 
+                  [(ngModel)]="paraLlevar" 
+                  class="sr-only"
+                />
+                <span class="w-5 h-5 mr-2 border-2 rounded flex items-center justify-center" 
+                      [class.border-orange-500]="paraLlevar" 
+                      [class.bg-orange-500]="paraLlevar">
+                  <svg *ngIf="paraLlevar" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                </span>
+                <span class="font-medium">Para llevar</span>
+              </label>
+            </div>
+          
+            <!-- Mostrar solo "Para llevar" si tipoAlmuerzo es 'solo_sopa' -->
+            <div class="grid grid-cols-1 gap-3" *ngIf="tipoAlmuerzo === 'solo_sopa'">
+              <label class="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer transition-all hover:border-orange-300 col-span-2" 
+                     [class.border-orange-400]="paraLlevar" [class.bg-orange-50]="paraLlevar">
+                <input 
+                  type="checkbox" 
+                  [(ngModel)]="paraLlevar" 
+                  class="sr-only"
+                />
+                <span class="w-5 h-5 mr-2 border-2 rounded flex items-center justify-center" 
+                      [class.border-orange-500]="paraLlevar" 
+                      [class.bg-orange-500]="paraLlevar">
+                  <svg *ngIf="paraLlevar" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                </span>
+                <span class="font-medium">Para llevar</span>
+              </label>
+            </div>
+          </div>
+          
+      </div>
+    
+      <!-- Resumen de selección (fijo en la parte inferior) -->
+      <div class="bg-gray-100 p-4 border-t border-gray-200 sticky bottom-0 z-10">
+        <div class="text-sm font-medium">
+          <p class="mb-1">
+            <span class="text-black">Selección:</span> 
+            <span class="text-orange-600">{{ tipoAlmuerzo === 'completo' ? 'Almuerzo completo' : 
+                                          tipoAlmuerzo === 'solo_segundo' ? 'Solo segundo' : 
+                                          tipoAlmuerzo === 'media_sopa_segundo' ? 'Media sopa + segundo' : 
+                                          'Solo sopa' }}</span>
+          </p>
+          <p *ngIf="tipoAlmuerzo !== 'solo_sopa' && proteinaSeleccionada" class="mb-1">
+            <span class="text-black">Proteína:</span> 
+            <span class="text-orange-600">{{ proteinaSeleccionada }}</span>
+          </p>
+          <p *ngIf="tipoAlmuerzo !== 'solo_sopa' && preparacionSeleccionada" class="mb-1">
+            <span class="text-black">Preparación:</span> 
+            <span class="text-orange-600">{{ preparacionSeleccionada }}</span>
+          </p>
+        </div>
+      </div>
+    
+      <!-- Botones de acción (fijos en la parte inferior) -->
+      <div class="bg-white px-5 py-4 flex justify-end gap-3 border-t border-gray-200 sticky bottom-0 z-10">
+        <button 
+          (click)="cerrarModalAlmuerzo()" 
+          class="px-4 py-2 rounded-md text-black border-2 border-gray-300 hover:bg-gray-100 transition-colors font-medium cursor-pointer"
+        >
+          Cancelar
+        </button>
+        <button 
+          (click)="agregarAlmuerzo()" 
+          class="px-6 py-2 rounded-md bg-orange-500 text-white font-medium hover:bg-orange-600 transition-colors shadow-md cursor-pointer"
+        >
+          Agregar al carrito
+        </button>
+      </div>
+    </div>
+  </div>
+
   
-     <!-- Botones -->
-<div class="flex flex-col space-y-3 mt-4">
-    <button 
-      (click)="confirmarYImprimir()"
-      class="w-full px-4 py-2 flex items-center justify-center gap-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
-           viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M5 13l4 4L19 7" />
-      </svg>
-      Confirmar e Imprimir
-    </button>
+  <!-- Modal: Modificaciones de receta -->
+
+  <div *ngIf="mostrarModalModificaciones" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
+      
+      <!-- Título -->
+      <h2 class="text-2xl font-semibold text-center text-gray-800 mb-4">
+        Modificaciones para: <span class="text-orange-500">{{ recetaSeleccionada?.nombre }}</span>
+      </h2>
   
-    <button 
-      (click)="mostrarVistaPrevia = false"
-      class="w-full px-4 py-2 flex items-center justify-center gap-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" 
-           viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M6 18L18 6M6 6l12 12" />
-      </svg>
-      Cancelar
-    </button>
+      <!-- Modificaciones -->
+      <div class="space-y-2 text-base text-gray-700 mb-4">
+        <label><input type="checkbox" [(ngModel)]="sinPapas" /> Sin papas</label><br />
+        <label><input type="checkbox" [(ngModel)]="sinEnsalada" /> Sin ensalada</label><br />
+        <label><input type="checkbox" [(ngModel)]="papasFritas" /> Papas fritas</label><br />
+        <label><input type="checkbox" [(ngModel)]="gratinadas" /> Gratinadas</label>
+      </div>
+  
+      <!-- Extras -->
+      <!-- Extras -->
+<div class="border-t pt-4 mt-4 space-y-2 text-base text-gray-700">
+    <h3 class="text-lg font-semibold text-gray-800">Extras</h3>
+    <div *ngFor="let extra of porcionesExtras">
+      <label class="flex items-center justify-between">
+        <div>
+          <input type="checkbox" [(ngModel)]="extra.seleccionado" />
+          {{ extra.nombre }}
+        </div>
+        <span class="text-sm text-gray-600">+ ${{ extra.precio }}</span>
+      </label>
+    </div>
   </div>
   
   
+      <!-- Botones -->
+      <div class="flex justify-end gap-2 mt-6">
+        <button class="px-4 py-2 bg-gray-300 rounded" (click)="mostrarModalModificaciones = false">Cancelar</button>
+        <button class="px-4 py-2 bg-orange-500 text-white rounded" (click)="confirmarAgregarAlCarrito()">Agregar</button>
+      </div>
     </div>
   </div>
   

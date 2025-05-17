@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+.dashboard-card {
+  transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.chart-container {
+  position: relative;
+  height: 250px;
+  width: 100%;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f8f9fa;
+}
+
+/* Estilos para las mesas */
+.table-free {
+  background-color: #ecfdf5;
+  border-color: #10b981;
+}
+
+.table-occupied {
+  background-color: #fee2e2;
+  border-color: #ef4444;
+}
+
+.table-reserved {
+  background-color: #fef3c7;
+  border-color: #f59e0b;
+}

@@ -11,7 +11,10 @@ interface Producto {
   precio: number;
   cantidad: number;
   asignado: number;
+  modificaciones?: string[];  // Modificaciones es opcional
+  extras?: { nombre: string; precio: number }[];  // Extras es opcional
 }
+
 
 interface Pedido {
   id:string;
@@ -39,22 +42,7 @@ interface Ingrediente {
   cantidad: number;
   precio_unitario: number;
 }
-interface FacturaData {
-  pedido_id: string;  // UUID del pedido
-  numero_factura: string;
-  forma_pago: 'efectivo' | 'tarjeta' | 'transferencia';  // Forma de pago seleccionada
-  monto: number;  // El monto total de la factura
-  monto_recibido?: number;  // Solo para 'efectivo', monto recibido
-  codigo_transferencia?: string;  // Solo para 'transferencia', el código de comprobante
-  productos?: ProductoFactura[];  // Lista de productos
-  es_extra?: boolean;  // Si tiene productos extras
-}
-interface ProductoFactura {
-  nombre: string;
-  precio: number;
-  cantidad: number;
-  total: number;
-}
+
 
 @Component({
   selector: 'app-facturas',
@@ -181,219 +169,261 @@ limpiarBusqueda() {
   }
 
   calcularTotales() {
-    let subtotalCalculado = 0;
-  
-    // Sumar subtotal de productos del pedido, si hay uno seleccionado
-    if (this.pedidoSeleccionado) {
-      if (this.pagoSeparado) {
-        subtotalCalculado += this.pedidoSeleccionado.productos.reduce((sum, p) => {
-          return sum + p.precio * (p.asignado || 0);
-        }, 0);
-      } else {
-        subtotalCalculado += this.pedidoSeleccionado.productos.reduce((sum, p) => {
-          return sum + p.precio * p.cantidad;
-        }, 0);
-      }
-    }
-  
-    // 👉 Sumar precios de recetas seleccionadas usando `precio_venta`
-    const subtotalRecetas = this.recetasSeleccionadas.reduce((sum, receta) => {
-      return sum + (receta.precio_venta || 0);
-    }, 0);
-  
-    subtotalCalculado += subtotalRecetas;
-  
-    this.subtotal = subtotalCalculado;
-  
-    // Calcular recargo si es tarjeta
-    const recargo = this.formaPago === 'tarjeta' ? this.subtotal * 0.08 : 0;
-    this.total = +(this.subtotal + recargo).toFixed(2);
-  
-    // Calcular vuelto si es efectivo
-    if (this.formaPago === 'efectivo') {
-      this.vuelto = +(this.montoRecibido - this.total).toFixed(2);
+  let subtotalCalculado = 0;
+
+  // Sumar subtotal de productos del pedido, si hay uno seleccionado
+  if (this.pedidoSeleccionado) {
+    if (this.pagoSeparado) {
+      subtotalCalculado += this.pedidoSeleccionado.productos.reduce((sum, p) => {
+        // Sumar el precio base del producto
+        const precioProducto = p.precio * (p.asignado || 0);
+
+        // Sumar los extras (si existen) al precio
+        const precioExtras = p.extras?.reduce((extraSum, extra) => {
+          return extraSum + (extra.precio || 0);
+        }, 0) || 0;
+
+        return sum + precioProducto + precioExtras;
+      }, 0);
     } else {
-      this.vuelto = 0;
+      subtotalCalculado += this.pedidoSeleccionado.productos.reduce((sum, p) => {
+        // Sumar el precio base del producto
+        const precioProducto = p.precio * p.cantidad;
+
+        // Sumar los extras (si existen) al precio
+        const precioExtras = p.extras?.reduce((extraSum, extra) => {
+          return extraSum + (extra.precio || 0);
+        }, 0) || 0;
+
+        return sum + precioProducto + precioExtras;
+      }, 0);
     }
   }
+
+  // 👉 Sumar precios de recetas seleccionadas usando `precio_venta`
+  const subtotalRecetas = this.recetasSeleccionadas.reduce((sum, receta) => {
+    return sum + (receta.precio_venta || 0);
+  }, 0);
+
+  subtotalCalculado += subtotalRecetas;
+
+  this.subtotal = subtotalCalculado;
+
+  // Calcular recargo si es tarjeta
+  const recargo = this.formaPago === 'tarjeta' ? this.subtotal * 0.08 : 0;
+  this.total = +(this.subtotal + recargo).toFixed(2);
+
+  // Calcular vuelto si es efectivo
+  if (this.formaPago === 'efectivo') {
+    this.vuelto = +(this.montoRecibido - this.total).toFixed(2);
+  } else {
+    this.vuelto = 0;
+  }
+}
+
   
  
-  async pagarFactura() {
-    if (!this.pedidoSeleccionado) return;
+async pagarFactura() {
+  if (!this.pedidoSeleccionado) return;
 
-     // Validación para transferencia
+  // Validación para transferencia
   if (this.formaPago === 'transferencia' && !this.codigoTransferencia.trim()) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Código requerido',
-      text: 'Debe ingresar el código de la transferencia',
-    });
-    return;
+      Swal.fire({
+          icon: 'warning',
+          title: 'Código requerido',
+          text: 'Debe ingresar el código de la transferencia',
+      });
+      return;
   }
 
   // ✅ Validación para efectivo con Swal
   if (this.formaPago === 'efectivo') {
-    if (!this.montoRecibido || this.montoRecibido < this.total) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Monto insuficiente',
-        text: 'Debe ingresar un monto recibido mayor o igual al total.',
-      });
-      return;
-    }
+      if (!this.montoRecibido || this.montoRecibido < this.total) {
+          Swal.fire({
+              icon: 'warning',
+              title: 'Monto insuficiente',
+              text: 'Debe ingresar un monto recibido mayor o igual al total.',
+          });
+          return;
+      }
   }
 
-    this.calcularTotales();
+  this.calcularTotales();
 
-    const productosPagados = this.pagoSeparado
-        ? this.pedidoSeleccionado.productos.filter(p => p.asignado > 0)
-        : this.pedidoSeleccionado.productos.map(p => ({ ...p, asignado: p.cantidad }));
+  const productosPagados = this.pagoSeparado
+      ? this.pedidoSeleccionado.productos.filter(p => p.asignado > 0)
+      : this.pedidoSeleccionado.productos.map(p => ({ ...p, asignado: p.cantidad }));
 
-    const extrasPagados = this.recetasSeleccionadas.map(receta => ({
-        nombre: receta.nombre + ' (Extra)',
-        precio: receta.precio_venta,
-        cantidad: 1,
-        total: receta.precio_venta
-    }));
+  const extrasPagados = this.recetasSeleccionadas.map(receta => ({
+      nombre: receta.nombre + ' (Extra)',
+      precio: receta.precio_venta,
+      cantidad: 1,
+      total: receta.precio_venta
+  }));
 
-    const todosPagados = [
-        ...productosPagados.map((p: Producto) => ({
-            nombre: p.nombre,
-            precio: p.precio,
-            cantidad: p.asignado,
-            total: p.precio * p.asignado
-        })),
-        ...extrasPagados
-    ];
+  // Incluir los extras en el total de cada producto
+  const todosPagados = [
+      ...productosPagados.map((p: Producto) => {
+          // Calcular el total de los extras del producto
+          const totalExtras = p.extras?.reduce((extraSum, extra) => {
+              return extraSum + (extra.precio || 0);
+          }, 0) || 0;
 
-    const fechaHora = new Date().toLocaleString();
+          return {
+              nombre: p.nombre,
+              precio: p.precio,
+              cantidad: p.asignado,
+              total: (p.precio * p.asignado) + totalExtras,
+              extras: p.extras || []  // Añadir los extras
+          };
+      }),
+      ...extrasPagados
+  ];
 
-    const htmlFactura = `
-    <div class="factura-container" style="width: 100%; margin: 0 auto; padding: 10px;">
-      <img src="assets/splash/logo.jpg" alt="Logo" style="width: 85px; height: auto; margin-bottom: 5px;" />
-      <h2 style="margin: 2px;">A FUEGO LENTO</h2>
-      <p style="margin: 2px; font-size: 12px;">
-        RUC: 1234567890001<br>
-        📞 0958910306<br>
-        📍 Av.Alfonso Almeida y Gabriela Mistral - Ibarra<br>
-      </p>
-      <hr style="border-top: 1px dashed black; margin: 4px 0; padding-right: 25px" />
-        ${fechaHora}<br>
-      <hr style="border-top: 1px dashed black; margin: 4px 0; padding-right: 25px" />
-      <p style="font-size: 12px; text-align: left;">
-        Mesa: ${this.pedidoSeleccionado?.mesa_id || '-'}<br>
-        Vendedor: ${this.nombreUsuario || '---'}<br>
-        Pago: ${this.formaPago.toUpperCase()}<br>
-      </p>
-      <hr style="border-top: 1px dashed black; margin: 4px 0; padding-right: 25px" />
-      <table style="width: 100%; font-size: 12px; table-layout: fixed;">
-        <thead>
-          <tr>
-            <th style="width: 15%; text-align: left;">Cant</th>
-            <th style="width: 40%; text-align: left;">Producto</th>
-            <th style="width: 30%; text-align: right; padding-right: 25px">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${todosPagados.map((p: any) => `
-            <tr>
-              <td style="padding: 2px 4px;">${p.cantidad}</td>
-              <td style="padding: 2px 4px; white-space: normal; word-wrap: break-word; text-align: left;">${p.nombre}</td>
-              <td style="padding: 2px 4px; text-align: right; padding-right: 25px">$${p.total.toFixed(2)}</td>
-            </tr>
+  const fechaHora = new Date().toLocaleString();
+
+  const htmlFactura = `
+  <div class="factura-container" style="width: 100%; margin: 0 auto; padding: 10px;">
+    <img src="assets/splash/logo.jpg" alt="Logo" style="width: 85px; height: auto; margin-bottom: 5px;" />
+    <h2 style="margin: 2px;">A FUEGO LENTO</h2>
+    <p style="margin: 2px; font-size: 12px;">
+      RUC: 1500956527001<br>
+      📞 0958910306<br>
+      📍 Av.Alfonso Almeida y Gabriela Mistral - Ibarra<br>
+    </p>
+    <hr style="border-top: 1px dashed black; margin: 4px 0; padding-right: 25px" />
+      ${fechaHora}<br>
+    <hr style="border-top: 1px dashed black; margin: 4px 0; padding-right: 25px" />
+    <p style="font-size: 12px; text-align: left;">
+      Mesa: ${this.pedidoSeleccionado?.mesa_id || '-'}<br>
+      Vendedor: ${this.nombreUsuario || '---'}<br>
+      Pago: ${this.formaPago.toUpperCase()}<br>
+    </p>
+    <hr style="border-top: 1px dashed black; margin: 4px 0; padding-right: 25px" />
+    <table style="width: 100%; font-size: 12px; table-layout: fixed;">
+      <thead>
+        <tr>
+          <th style="width: 15%; text-align: left;">Cant</th>
+          <th style="width: 40%; text-align: left;">Producto</th>
+          <th style="width: 30%; text-align: right; padding-right: 25px">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+  ${todosPagados.map((p: any) => `
+    <tr>
+      <td style="padding: 2px 4px;">${p.cantidad || 0}</td>
+      <td style="padding: 2px 4px; white-space: normal; word-wrap: break-word; text-align: left;">
+        ${p.nombre || 'Producto'}
+        ${(Array.isArray(p.extras) && p.extras.length) ? `
+        <ul style="padding-left: 20px;">
+          ${p.extras.map((extra: any) => `
+            <li>${extra?.nombre || 'Extra'}</li>
           `).join('')}
-        </tbody>
-      </table>
-      <hr style="border-top: 1px dashed black; margin: 4px 0; padding-right: 25px" />
-      <p style="text-align: right; font-size: 12px; padding-right: 25px ">SUBTOTAL: $${this.subtotal.toFixed(2)}</p>
-      <p style="text-align: right; font-size: 12px; padding-right: 25px"><strong>TOTAL: $${this.total.toFixed(2)}</strong></p>
-      ${this.formaPago === 'efectivo' ? `
-        <p style="text-align: right; font-size: 12px; padding-right: 25px">
-          Recibido: $${this.montoRecibido.toFixed(2)}<br>
-          Vuelto: $${this.vuelto.toFixed(2)}
-        </p>
-      ` : ''}
-      ${this.formaPago === 'transferencia' ? `
-        <p style="text-align: right; font-size: 12px; padding-right: 25px">
-          Código transferencia: ${this.codigoTransferencia}
-        </p>
-      ` : ''}
-      <hr style="border-top: 1px dashed black; margin: 4px 0;" />
-      <p style="text-align: center; font-size: 11px; margin-top: 10px;">¡Gracias por su visita!</p>
-      <p style="text-align: center; font-size: 10px;">Elaborado por Afuego Lento</p>
-    </div>
-    `;
+        </ul>` : ''}
+      </td>
+      <td style="padding: 2px 4px; text-align: right; padding-right: 25px">
+        $${(p.total || 0).toFixed(2)}
+      </td>
+    </tr>
+  `).join('')}
+</tbody>
+    </table>
+   <hr style="border-top: 1px dashed black; margin: 4px 0; padding-right: 25px" />
+<p style="text-align: right; font-size: 12px; padding-right: 25px">SUBTOTAL: $${this.subtotal.toFixed(2)}</p>
 
-    printJS({
-        printable: htmlFactura,
-        type: 'raw-html',
-        style: `
-          @media print {
-            body {
-              margin: 0;
-              padding: 0;
-              font-family: monospace;
-            }
-            .factura-container {
-              width: auto;
-              padding: 0;
-              text-align: center;
-              overflow: hidden;
-            }
-            @page {
-              size: auto;
-              margin: 0;
-            }
-            hr {
-              border: none;
-              border-top: 1px dashed #000;
-            }
+${this.formaPago === 'tarjeta' ? `
+<p style="text-align: right; font-size: 12px; padding-right: 25px;">
+  RECARGO TARJETA (8%): $${(this.total - this.subtotal).toFixed(2)}
+</p>
+` : ''}
+
+<p style="text-align: right; font-size: 12px; padding-right: 25px"><strong>TOTAL: $${this.total.toFixed(2)}</strong></p>  ${this.formaPago === 'efectivo' ? `
+      <p style="text-align: right; font-size: 12px; padding-right: 25px">
+        Recibido: $${this.montoRecibido.toFixed(2)}<br>
+        Vuelto: $${this.vuelto.toFixed(2)}
+      </p>
+    ` : ''}
+    ${this.formaPago === 'transferencia' ? `
+      <p style="text-align: right; font-size: 12px; padding-right: 25px">
+        Código transferencia: ${this.codigoTransferencia}
+      </p>
+    ` : ''}
+    <hr style="border-top: 1px dashed black; margin: 4px 0;" />
+    <p style="text-align: center; font-size: 11px; margin-top: 10px;">¡Gracias por su visita!</p>
+    <p style="text-align: center; font-size: 10px;">Elaborado por Afuego Lento</p>
+  </div>
+  `;
+
+  printJS({
+      printable: htmlFactura,
+      type: 'raw-html',
+      style: `
+        @media print {
+          body {
+            margin: 0;
+            padding: 0;
+            font-family: monospace;
           }
-        `
-    });
+          .factura-container {
+            width: auto;
+            padding: 0;
+            text-align: center;
+            overflow: hidden;
+          }
+          @page {
+            size: auto;
+            margin: 0;
+          }
+          hr {
+            border: none;
+            border-top: 1px dashed #000;
+          }
+        }
+      `
+  });
 
-    const numeroFactura = `FAC-${new Date().getTime()}`;
-    const facturaData = {
-        pedido_id: this.pedidoSeleccionado.id,
-        numero_factura: numeroFactura,
-        forma_pago: this.formaPago,
-        monto: this.total,
-        productos: todosPagados,
-        es_extra: this.recetasSeleccionadas.length > 0,
-        codigo_transferencia: this.codigoTransferencia,
-    };
+  const numeroFactura = `FAC-${new Date().getTime()}`;
+  const facturaData = {
+      pedido_id: this.pedidoSeleccionado.id,
+      numero_factura: numeroFactura,
+      forma_pago: this.formaPago,
+      monto: this.total,
+      productos: todosPagados,
+      es_extra: this.recetasSeleccionadas.length > 0,
+      codigo_transferencia: this.codigoTransferencia,
+  };
 
-    try {
-        await this.supabase.crearFactura(facturaData);
+  try {
+      await this.supabase.crearFactura(facturaData);
 
-        // Actualizar productos pagados y limpiar los asignados
-        this.pedidoSeleccionado.productos = this.pedidoSeleccionado.productos.map((p: Producto) => {
-            const cantidadPagada = this.pagoSeparado ? p.asignado : p.cantidad;
-            if (cantidadPagada > 0) {
-                p.cantidad -= cantidadPagada;
-                p.asignado = 0;
-            }
-            return p;
-        }).filter(p => p.cantidad > 0); // eliminar los que ya no tienen cantidades
+      // Actualizar productos pagados y limpiar los asignados
+      this.pedidoSeleccionado.productos = this.pedidoSeleccionado.productos.map((p: Producto) => {
+          const cantidadPagada = this.pagoSeparado ? p.asignado : p.cantidad;
+          if (cantidadPagada > 0) {
+              p.cantidad -= cantidadPagada;
+              p.asignado = 0;
+          }
+          return p;
+      }).filter(p => p.cantidad > 0); // eliminar los que ya no tienen cantidades
 
-        // Verificar si ya no hay productos por pagar
-        const todosPagados = this.pedidoSeleccionado.productos.length === 0;
-        const nuevoEstado = todosPagados ? 'abierta' : 'ocupado';
+      // Verificar si ya no hay productos por pagar
+      const todosPagados = this.pedidoSeleccionado.productos.length === 0;
+      const nuevoEstado = todosPagados ? 'abierta' : 'ocupado';
 
-        await this.supabase.actualizarPedido(this.pedidoSeleccionado.id, numeroFactura, nuevoEstado);
-        this.pedidoSeleccionado.estado = nuevoEstado;
-        await this.cargarMesasConPedidos();
+      await this.supabase.actualizarPedido(this.pedidoSeleccionado.id, numeroFactura, nuevoEstado);
+      this.pedidoSeleccionado.estado = nuevoEstado;
+      await this.cargarMesasConPedidos();
 
-    } catch (error) {
-        console.error('Error al crear factura o actualizar pedido:', error);
-    }
+  } catch (error) {
+      console.error('Error al crear factura o actualizar pedido:', error);
+  }
 
-    this.recetasSeleccionadas = [];
-    this.resetValores();
+  this.recetasSeleccionadas = [];
+  this.resetValores();
 
-    if (this.pedidoSeleccionado.productos.length === 0) {
-        this.pedidoSeleccionado = null;
-    }
+  if (this.pedidoSeleccionado.productos.length === 0) {
+      this.pedidoSeleccionado = null;
+  }
 }
 
   

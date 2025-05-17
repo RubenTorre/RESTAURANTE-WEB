@@ -30,4 +30,78 @@
     padding: 1rem; /* Tailwind p-4 */
     border-radius: 0.25rem; /* Tailwind rounded */
   }
+  .path-fill-1 {
+    fill: #99D9FF;
+}
+
+.path-fill-2 {
+    fill: #CCECFF;
+}
+
+.path-fill-3 {
+    fill: #FFFFFF;
+}
+
+.path-fill-4 {
+    fill: #FDFA7B;
+}
+
+.path-fill-5 {
+    fill: #FEFDCA;
+}
+
+.path-fill-6 {
+    fill: #3F4C53;
+}
+
+.path-fill-7 {
+    fill: #496A7E;
+}
+/* Estilo para el fondo decorativo */
+.background-decorativo {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, #FFA500 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.5; /* Puedes ajustar la opacidad según tu preferencia */
+  }
+  .cart-container {
+    font-family: Arial, sans-serif;
+    width: 100%;
+  }
   
+  .row {
+    display: flex;
+    align-items: flex-start;
+  }
+  
+  .header {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+  }
+  
+  .col-producto {
+    flex: 1;
+    padding-right: 10px;
+  }
+  
+  .col-cant {
+    width: 50px;
+    text-align: right;
+    padding-top: 3px; /* Alinea con la primera línea del producto */
+  }
+  
+  .product-name {
+    font-weight: 500;
+    margin-bottom: 3px;
+  }
+  
+  .modifications, .extras {
+    font-size: 0.9em;
+    color: #555;
+    margin-left: 5px;
+  }
+  
+  .mod-item, .extra-item {
+    line-height: 1.3;
+  }

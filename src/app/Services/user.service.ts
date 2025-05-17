@@ -35,7 +35,6 @@ export class UserService {
   setRolUsuario(rol: string) {
     this._rolUsuarioSubject.next(rol);
     localStorage.setItem('rolUsuario', rol); // Guardamos el rol en localStorage
-    console.log(rol)
   }
 
   // Obtener el rol del usuario guardado

@@ -41,14 +41,16 @@
       <!-- Submenús -->
       <div *ngIf="item.submenus && (item.expanded || (!isMobileView && isHovered))" 
            class="submenu-container">
-        <a *ngFor="let sub of item.submenus"
+           <a *ngFor="let sub of item.submenus"
+           class="submenu-item"
            [routerLink]="sub.route"
-           (click)="closeMenuOnMobile()"
-           routerLinkActive="bg-gray-700"
-           class="submenu-item">
+           (click)="sub.action ? handleSubmenuClick(sub) : closeMenuOnMobile()"
+           [routerLinkActive]="!sub.action ? 'bg-gray-700' : ''"
+           [class.cursor-pointer]="sub.action">
           <i [class]="sub.icon + ' submenu-icon'"></i>
           <span class="submenu-label">{{ sub.label }}</span>
         </a>
+        
       </div>
     </li>
   </ul>

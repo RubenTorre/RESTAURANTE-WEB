@@ -88,10 +88,10 @@ export class SupabaseService {
   
         const user = authData.user;
   
-        // ✅ Obtener el perfil del usuario (incluyendo el rol)
+        // ✅ Obtener el perfil incluyendo 'activo'
         const { data: profile, error: profileError } = await this.supabase
           .from('profiles')
-          .select('nombre, rol')
+          .select('nombre, rol, activo')
           .eq('id', user.id)
           .single();
   
@@ -99,10 +99,18 @@ export class SupabaseService {
           return { error: profileError.message };
         }
   
+        // ❌ Verificar si el perfil está inactivo
+        if (!profile.activo) {
+          // Cerrar sesión si el usuario está inactivo
+          await this.supabase.auth.signOut();
+          return { error: 'Tu cuenta aún no ha sido activada por un administrador.' };
+        }
+  
+        // ✅ Todo bien
         return {
           data: {
             user,
-            profile // Contiene nombre y rol
+            profile,
           }
         };
   
@@ -115,11 +123,12 @@ export class SupabaseService {
       }
     }
   
-    return { error: 'Maximum retry attempts reached' };
+    return { error: 'Se alcanzó el número máximo de intentos.' };
   }
   
+  
   // Función de registro sin verificación de correo
-  async register(email: string, password: string, name: string) {
+  async register(email: string, password: string, name: string, activo: boolean = false) {
     try {
       const { data, error } = await this.supabase.auth.signUp({
         email,
@@ -138,7 +147,6 @@ export class SupabaseService {
   
       const user = data.user;
       if (user) {
-        // ✅ Actualizar el user_metadata (opcional)
         const { error: updateError } = await this.supabase.auth.updateUser({
           data: {
             full_name: name,
@@ -146,14 +154,13 @@ export class SupabaseService {
         });
         if (updateError) return { error: updateError.message };
   
-        // ✅ Insertar en la tabla profiles con rol por defecto "mesero"
         const { error: profileError } = await this.supabase
           .from('profiles')
           .insert([
             {
               id: user.id,
               nombre: name,
-              // rol: 'mesero' ← opcional porque ya tiene default
+              activo,  // 👈 aquí es dinámico
             }
           ]);
   
@@ -415,8 +422,7 @@ export class SupabaseService {
       ...data[0],
       ingredientes: receta.ingredientes
     };
-  }
-  
+  }  
   // Métodos auxiliares para manejo de imágenes
   private async subirImagen(file: File): Promise<{url: string | null, error: any}> {
     const fileName = `${Date.now()}-${file.name}`;
@@ -490,9 +496,7 @@ export class SupabaseService {
     }
 
     return data;
-}
-
-  
+} 
   // Método para crear una pedido
   async crearPedido(pedido: Pedido) {
     
@@ -514,7 +518,6 @@ export class SupabaseService {
   
     return data?.[0]; // Devolver el primer elemento del array
   }
-
   // Método para crear una factura
   async crearFactura(factura: {
     pedido_id: string;
@@ -546,8 +549,6 @@ export class SupabaseService {
   
     return data[0];
   }
-  
-
   // Método para actualizar un pedido
   async actualizarPedido(id: string, numeroFactura: string, estado: string) {
     const { data, error } = await this.supabase
@@ -565,11 +566,7 @@ export class SupabaseService {
   
     return data;
   }
-  
-
  // Función para escuchar los cambios en la tabla `notificaciones`
-
- 
  async fetchLastNotification() {
   // Consulta la última notificación insertada
   const { data, error } = await this.supabase
@@ -590,7 +587,6 @@ export class SupabaseService {
 private notificationChannel: any;
 
 // Escucha notificaciones en tiempo real y envía a Telegram
-// Luego modifica tu función así:
 listenNotifications(callback: (notificacion: Notificacion) => void) {
   if (this.notificationChannel) {
     this.supabase.removeChannel(this.notificationChannel);
@@ -636,12 +632,519 @@ if (nuevaNotificacion['mensaje']) {
     )
     .subscribe();
 }
-
 // Limpieza al destruir el servicio
 ngOnDestroy() {
   if (this.notificationChannel) {
     this.supabase.removeChannel(this.notificationChannel);
   }
+}
+ // Método para obtener los usuarios de la tabla personalizada (que creaste)
+ async obtenerUsuarios() {
+  const { data, error } = await this.supabase
+    .from('profiles')  // Aquí está el nombre de tu tabla personalizada
+    .select('*');  // Selecciona todos los campos de la tabla
+
+  if (error) {
+    console.error('Error al obtener los usuarios:', error);
+    return [];
+  }
+  return data;  // Devuelve los usuarios obtenidos
+}
+async obtenerUsuariosConEmail() {
+  const { data, error } = await this.supabase.rpc('get_users_with_email');
+  if (error) {
+    console.error('Error al obtener usuarios:', error);
+    return [];
+  }
+  return data;
+}
+async actualizarUsuario(id: string, datos: { nombre: string; rol: string }) {
+  const { error } = await this.supabase
+    .from('profiles')
+    .update(datos)
+    .eq('id', id);
+
+  if (error) {
+    console.error('Error al actualizar usuario:', error);
+    throw error;
+  }
+
+  return true;
+}
+async desactivarUsuarioPorId(id: string) {
+  const { error } = await this.supabase
+    .from('profiles')  // Asegúrate de que 'profiles' es el nombre correcto de la tabla
+    .update({ activo: false })  // Cambia el estado a false
+    .eq('id', id);  // Filtra por el id del usuario
+
+  if (error) throw new Error(error.message);  // Si hay error, lanza la excepción
+}
+async actualizarEstadoUsuario(id: string, activo: boolean) {
+  return await this.supabase
+    .from('profiles')
+    .update({ activo })
+    .eq('id', id);
+}
+async getUsuarioActual() {
+  const { data, error } = await this.supabase.auth.getUser();
+  if (error) throw error;
+  return data.user;
+}
+async obtenerPerfilDeUsuario(id: string) {
+  const { data, error } = await this.supabase
+    .from('profiles')
+    .select('nombre')  // Verifica que "nombre" sea el correcto
+    .eq('id', id)
+    .single();
+
+  if (error) {
+    console.error('Error al obtener perfil:', error);
+    return null;
+  }
+
+  return data;
+}
+async cambiarContraseña(nuevaContraseña: string) {
+  const { data, error } = await this.supabase.auth.updateUser({
+    password: nuevaContraseña
+  });
+
+  if (error) {
+    console.error('Error al cambiar la contraseña:', error);
+    return { error: error.message };
+  }
+
+  return { user: data };  // 'data' contiene el usuario actualizado
+}
+// Servicio para cambiar el correo electrónico
+async cambiarCorreo(nuevoCorreo: string) {
+  const { data, error } = await this.supabase.auth.updateUser({
+    email: nuevoCorreo,
+  });
+
+  if (error) {
+    return { message: error.message || 'Hubo un error al cambiar el correo.' };
+  }
+
+  // Este mensaje puede ser el que Supabase devuelve al cambiar el correo
+  return { message: 'Correo electrónico actualizado correctamente. Verifica tu nuevo correo.' };
+}
+// Método para actualizar el nombre del perfil
+async actualizarPerfil(id: string, datos: { nombre: string;}) {
+  const { error } = await this.supabase
+    .from('profiles')
+    .update(datos)
+    .eq('id', id);
+
+  if (error) {
+    console.error('Error al actualizar usuario:', error);
+    throw error;
+  }
+
+  return true;
+}
+async registrarGasto(gasto: any) {
+  try {
+    const { categoria, descripcion, monto, fecha, proveedor, metodo_pago, factura, comentarios } = gasto;
+
+    // Inserta el gasto en la tabla "gastos"
+    const { data, error } = await this.supabase
+      .from('gastos')
+      .insert([
+        {
+          categoria,
+          descripcion,
+          monto,
+          fecha,
+          proveedor,
+          metodo_pago,
+          factura,
+          comentarios
+        }
+      ]);
+
+    if (error) {
+      if (error.message.includes('timeout')) {
+        return { error: 'Error de sistema. Intenta nuevamente más tarde.' };
+      }
+      throw error;
+    }
+
+    // Devuelve el resultado exitoso
+    return { data };
+  } catch (error: any) {
+    console.error("Error al registrar el gasto:", error);
+    return { error: error.message };
+  }
+}
+  // Función para obtener todos los gastos
+  async obtenerGastos() {
+    try {
+      // Consultamos todos los registros de la tabla "gastos"
+      const { data, error } = await this.supabase
+        .from('gastos')
+        .select('*')
+        .order('fecha', { ascending: false });  // Ordenar por fecha (más reciente primero)
+
+      if (error) {
+        throw error;
+      }
+
+      return { data };
+    } catch (error: any) {
+      console.error('Error al obtener los gastos:', error);
+      return { error: error.message };
+    }
+  }
+   // Actualizar un gasto
+ async actualizarGasto(gasto: any) {
+  try {
+    const camposActualizados: any = {};
+
+    // Verificar qué campos han sido modificados
+    if (gasto.categoria) camposActualizados.categoria = gasto.categoria;
+    if (gasto.descripcion) camposActualizados.descripcion = gasto.descripcion;
+    if (gasto.monto) camposActualizados.monto = gasto.monto;
+    if (gasto.fecha) camposActualizados.fecha = gasto.fecha;
+    if (gasto.proveedor) camposActualizados.proveedor = gasto.proveedor;
+    if (gasto.metodo_pago) camposActualizados.metodo_pago = gasto.metodo_pago;
+    if (gasto.factura) camposActualizados.factura = gasto.factura;
+    if (gasto.comentarios) camposActualizados.comentarios = gasto.comentarios;
+
+    // Si no se modificaron campos, retornar un mensaje de error
+    if (Object.keys(camposActualizados).length === 0) {
+      throw new Error("No se han realizado cambios en el gasto.");
+    }
+
+    // Actualizar solo los campos modificados
+    const { data, error } = await this.supabase
+      .from('gastos')
+      .update(camposActualizados)
+      .eq('id', gasto.id); // Asegurarse de que se está actualizando el gasto correcto
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data; // Retorna los datos si todo salió bien
+  } catch (error: unknown) {
+    // Aquí aseguramos que error es una instancia de Error
+    if (error instanceof Error) {
+      console.error('Error al actualizar gasto:', error.message);
+      return { error: error.message }; // Retornar un objeto con el mensaje del error
+    }
+    
+    console.error('Error desconocido:', error);
+    return { error: 'Hubo un problema al actualizar el gasto, por favor intenta nuevamente.' }; // Mensaje genérico si error no es una instancia de Error
+  }
+}
+
+async eliminarGasto(id: number): Promise<boolean> {
+  try {
+
+    const { error } = await this.supabase
+      .from('gastos')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return true; // ✅ Muy importante
+  } catch (error: unknown) {
+    console.error('Error al eliminar gasto:', (error as Error).message);
+    return false;
+  }
+}
+async crearCliente(nombre: string, telefono?: string, direccion?: string) {
+  const { data, error } = await this.supabase
+    .from('clientes')
+    .insert([{ nombre, telefono, direccion }])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;  // retorna el cliente creado como objeto
+}
+
+async obtenerClientes() {
+  const { data, error } = await this.supabase
+    .from('clientes')
+    .select('*')
+    .order('creado_en', { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+async crearClienteConPrecios(
+  nombre: string,
+  telefono: string | undefined,
+  direccion: string | undefined,
+  precios: { almuerzo_id: string; precio: number }[]
+) {
+  // 1. Crear el cliente
+  const { data: clienteData, error: clienteError } = await this.supabase
+    .from('clientes')
+    .insert([{ nombre, telefono, direccion }])
+    .select()
+    .single(); // para obtener un solo registro directamente
+
+  if (clienteError) throw clienteError;
+
+  const cliente_id = clienteData.id;
+
+  // 2. Insertar los precios para ese cliente
+  const preciosInsert = precios.map(({ almuerzo_id, precio }) => ({
+    cliente_id,
+    almuerzo_id,
+    precio,
+  }));
+
+  const { data: preciosData, error: preciosError } = await this.supabase
+    .from('precios_cliente')
+    .insert(preciosInsert);
+
+  if (preciosError) throw preciosError;
+
+  return {
+    cliente: clienteData,
+    precios: preciosData,
+  };
+}
+
+//crearpedido almuerzo
+async crearPedidoAlmuerzos(pedido: {
+  cliente_id?: string | null;
+  fecha: string;
+  estado_pago?: 'pagado' | 'pendiente';
+  total?: number;
+  observaciones?: string | null;
+  almuerzos: { almuerzo_id: string; cantidad: number }[];
+}) {
+  if (!pedido.fecha) throw new Error('La fecha es requerida');
+  if (!pedido.almuerzos || pedido.almuerzos.length === 0)
+    throw new Error('Debe seleccionar al menos un almuerzo');
+
+  // Paso 1: Insertar en 'pedidosalmuerzos'
+  const pedidoCompleto = {
+    cliente_id: pedido.cliente_id || null,
+    fecha: pedido.fecha,
+    estado_pago: pedido.estado_pago || 'pendiente',
+    total: pedido.total || 0,
+    observaciones: pedido.observaciones || null
+  };
+
+  const { data: pedidoInsertado, error: errorPedido } = await this.supabase
+    .from('pedidosalmuerzos') // Esta es tu tabla real
+    .insert([pedidoCompleto])
+    .select()
+    .single(); // 👈 Esto es importante para obtener el ID
+
+  if (errorPedido) {
+    console.error('Error creando pedido:', errorPedido);
+    throw new Error(errorPedido.message || 'Error al crear pedido');
+  }
+
+  // Asegúrate de que el ID esté presente
+  if (!pedidoInsertado?.id) {
+    throw new Error('No se pudo obtener el ID del pedido creado');
+  }
+
+  // Paso 2: Insertar en 'pedidos_almuerzo' usando el ID real
+  const detalles = pedido.almuerzos.map(a => ({
+    pedido_id: pedidoInsertado.id,
+    almuerzo_id: a.almuerzo_id,
+    cantidad: a.cantidad
+  }));
+
+  const { error: errorDetalle } = await this.supabase
+    .from('pedidos_almuerzo')
+    .insert(detalles);
+
+  if (errorDetalle) {
+    console.error('Error en detalles:', errorDetalle);
+    throw new Error('Error al registrar almuerzos en el pedido');
+  }
+
+  return pedidoInsertado;
+}
+
+
+async obtenerTiposDeAlmuerzo() {
+  const { data, error } = await this.supabase
+    .from('almuerzos')
+    .select('id, nombre, descripcion');
+
+  if (error) {
+    console.error('Error al obtener almuerzos:', error);
+    throw new Error('No se pudieron obtener los tipos de almuerzo');
+  }
+
+  return data;
+}
+async obtenerClienteConPrecios(cliente_id: string) {
+  const { data, error } = await this.supabase
+    .from('precios_cliente')
+    .select(`
+      precio,
+      almuerzos (
+        id,
+        nombre
+      ),
+      clientes (
+        id,
+        nombre,
+        telefono,
+        direccion
+      )
+    `)
+    .eq('cliente_id', cliente_id);
+
+  if (error) throw error;
+
+  return data;
+}
+async obtenerClientesConPrecios(): Promise<any[]> {
+  const { data, error } = await this.supabase
+    .from('precios_cliente')
+    .select(`
+      precio,
+      almuerzos (
+        id,
+        nombre
+      ),
+      clientes (
+        id,
+        nombre,
+        telefono,
+        direccion,
+        activo,
+        creado_en
+      )
+    `);
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+async obtenerPedidosConDetalle(): Promise<any[]> {
+  const { data, error } = await this.supabase
+    .from('pedidosalmuerzos')
+    .select(`
+      id,
+      cliente_id,
+      fecha,
+      estado_pago,
+      total,
+      observaciones,
+      clientes (
+        nombre
+      ),
+      pedidos_almuerzo (
+        almuerzo_id,
+        cantidad,
+        almuerzos (
+          nombre
+        )
+      )
+    `);
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+async obtenerPedidosConDetalleFiltrado(desde: string, hasta: string): Promise<any[]> {
+  const { data, error } = await this.supabase
+    .from('pedidosalmuerzos')
+    .select(`
+      id,
+      cliente_id,
+      fecha,
+      estado_pago,
+      total,
+      observaciones,
+      clientes (
+        nombre
+      ),
+      pedidos_almuerzo (
+        almuerzo_id,
+        cantidad,
+        almuerzos (
+          nombre
+        )
+      )
+    `)
+    .gte('fecha', desde)
+    .lte('fecha', hasta)
+    .order('fecha', { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+async cambiarEstadoCliente(clienteId: string, activo: boolean) {
+  const { error } = await this.supabase
+    .from('clientes')
+    .update({ activo })
+    .eq('id', clienteId);
+
+  if (error) throw error;
+}
+
+async actualizarClienteConPrecios(
+  clienteId: string,
+  nombre: string,
+  telefono: string | undefined,
+  direccion: string | undefined,
+  precios: { almuerzo_id: string; precio: number }[]
+) {
+  // 1. Actualizar datos básicos del cliente
+  const { data: clienteData, error: clienteError } = await this.supabase
+    .from('clientes')
+    .update({ nombre, telefono, direccion })
+    .eq('id', clienteId)
+    .select()
+    .single();
+
+  if (clienteError) throw clienteError;
+
+  // 2. Actualizar precios: para simplificar, eliminar todos y volver a insertar
+  const { error: deleteError } = await this.supabase
+    .from('precios_cliente')
+    .delete()
+    .eq('cliente_id', clienteId);
+
+  if (deleteError) throw deleteError;
+
+  const preciosInsert = precios.map(({ almuerzo_id, precio }) => ({
+    cliente_id: clienteId,
+    almuerzo_id,
+    precio,
+  }));
+
+  const { data: preciosData, error: preciosError } = await this.supabase
+    .from('precios_cliente')
+    .insert(preciosInsert);
+
+  if (preciosError) throw preciosError;
+
+  return {
+    cliente: clienteData,
+    precios: preciosData,
+  };
+}
+async actualizarEstadoPagado(idsPedidos: number[]): Promise<void> {
+  const { error } = await this.supabase
+    .from('pedidosalmuerzos')
+    .update({ estado_pago: 'pagado' })
+    .in('id', idsPedidos);
+
+  if (error) throw error;
 }
 
 

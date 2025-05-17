@@ -1,0 +1,322 @@
+<!-- User Table Section -->
+<div class="container mx-auto px-4 py-6">
+    <h2 class="text-2xl font-bold text-black mb-6">Gestión de Usuarios</h2>
+    <!-- Botón para abrir el modal de registro -->
+    <div class="text-right mb-6">
+        <button 
+          (click)="abrirModalRegistro()" 
+          class="px-6 py-3 text-white bg-orange-600 hover:bg-orange-700 rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-orange-300 transition-all duration-200 ease-in-out transform hover:scale-105 cursor-pointer">
+          Registrar Nuevo Usuario
+        </button>
+      </div>
+      
+
+    <!-- Responsive Table -->
+   <!-- Tabla de Usuarios Activos -->
+<div class="overflow-x-auto bg-white rounded-2xl shadow-md p-6 w-full max-w-6xl mx-auto mb-10">
+    <h2 class="text-lg font-semibold mb-4 text-green-700">Usuarios Activos</h2>
+    <table class="min-w-full text-sm text-gray-800">
+      <thead class="bg-gray-900 text-white">
+        <tr>
+          <th class="px-6 py-4 text-center">Nombre</th>
+          <th class="px-6 py-4 text-center">Rol</th>
+          <th class="px-6 py-4 text-center">Fecha creación</th>
+          <th class="px-6 py-4 text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <tr *ngFor="let usuario of usuariosActivos" class="hover:bg-gray-50">
+          <td class="px-6 py-4 text-center">{{ usuario.nombre }}</td>
+          <td class="px-6 py-4 text-center">
+            <span *ngIf="usuario.rol === 'administrador'" class="px-3 py-1 text-xs rounded-full bg-orange-100 text-orange-800">Administrador</span>
+            <span *ngIf="usuario.rol === 'mesero'" class="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Mesero</span>
+            <span *ngIf="usuario.rol === 'cajero'" class="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Cajero</span>
+          </td>
+          <td class="px-6 py-4 text-center">{{ usuario.created_at | date:'short' }}</td>
+          <td class="px-6 py-4">
+            <div class="flex justify-center gap-2">
+              <button *ngIf="usuario.rol !== 'administrador'" (click)="editarUsuario(usuario)" class="text-sm px-3 py-1 rounded-lg bg-orange-50 text-orange-700 hover:bg-orange-100">Editar</button>
+              <button *ngIf="usuario.rol !== 'administrador'" (click)="eliminarUsuario(usuario)" class="text-sm px-3 py-1 rounded-lg bg-red-50 text-red-700 hover:bg-red-100">Eliminar</button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="usuariosActivos.length === 0">
+          <td colspan="4" class="px-6 py-10 text-center text-gray-400">No hay usuarios activos</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Tabla de Usuarios Desactivados -->
+<div class="overflow-x-auto bg-white rounded-2xl shadow-md p-6 w-full max-w-6xl mx-auto">
+    <h2 class="text-lg font-semibold mb-4 text-red-700">Usuarios Desactivados</h2>
+    <table class="min-w-full text-sm text-gray-800">
+      <thead class="bg-gray-200 text-gray-700">
+        <tr>
+          <th class="px-6 py-4 text-center">Nombre</th>
+          <th class="px-6 py-4 text-center">Rol</th>
+          <th class="px-6 py-4 text-center">Fecha creación</th>
+          <th class="px-6 py-4 text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <tr *ngFor="let usuario of usuariosDesactivados" class="hover:bg-gray-50">
+          <td class="px-6 py-4 text-center">{{ usuario.nombre }}</td>
+          <td class="px-6 py-4 text-center">
+            <span *ngIf="usuario.rol === 'administrador'" class="px-3 py-1 text-xs rounded-full bg-orange-100 text-orange-800">Administrador</span>
+            <span *ngIf="usuario.rol === 'mesero'" class="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Mesero</span>
+            <span *ngIf="usuario.rol === 'cajero'" class="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Cajero</span>
+          </td>
+          <td class="px-6 py-4 text-center">{{ usuario.created_at | date:'short' }}</td>
+          <td class="px-6 py-4 text-center">
+            <button (click)="activarUsuario(usuario)" class="text-sm px-3 py-1 rounded-lg bg-green-100 text-green-700 hover:bg-green-200">Activar</button>
+          </td>
+        </tr>
+        <tr *ngIf="usuariosDesactivados.length === 0">
+          <td colspan="4" class="px-6 py-10 text-center text-gray-400">No hay usuarios desactivados</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  
+  
+    <!-- Modal for Editing User -->
+<div *ngIf="usuarioEditando" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out">
+    <!-- Modal Content -->
+    <div class="bg-white rounded-xl p-6 max-w-md w-full mx-auto shadow-2xl transform transition-all duration-300 ease-out animate-fadeIn">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+        <h3 class="text-xl font-bold text-gray-800">Editar Usuario</h3>
+        <button 
+          (click)="cancelarEdicion()" 
+          class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
+          aria-label="Cerrar"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 cursor-pointer" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Form -->
+      <div class="space-y-5">
+        <!-- User Info Section -->
+        <div class="bg-orange-50 rounded-lg p-3 mb-4 flex items-center">
+          <div class="bg-orange-100 rounded-full p-2 mr-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-600" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <p class="text-sm text-orange-800">
+            Editando usuario: <span class="font-medium">{{ usuarioEditando.email }}</span>
+          </p>
+        </div>
+        
+        <!-- Name Field -->
+        <div class="group">
+          <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1.5">Nombre</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <input 
+              id="nombre"
+              [(ngModel)]="usuarioEditando.nombre" 
+              class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm transition-all duration-200" 
+              placeholder="Nombre del usuario"
+            />
+          </div>
+        </div>
+        
+        <!-- Role Field -->
+        <div class="group">
+          <label for="rol" class="block text-sm font-medium text-gray-700 mb-1.5">Rol</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+            </div>
+                            <select 
+                id="rol"
+                [(ngModel)]="usuarioEditando.rol" 
+                class="rol-select"
+                >
+                <option value="administrador">Administrador</option>
+                <option value="mesero">Mesero</option>
+                <option value="cajero">Cajero</option>
+                </select>
+
+          </div>
+          <div class="mt-1.5 flex space-x-2">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800" 
+                  [class.bg-purple-100]="usuarioEditando.rol === 'administrador'"
+                  [class.text-purple-800]="usuarioEditando.rol === 'administrador'"
+                  [class.bg-green-100]="usuarioEditando.rol === 'mesero'"
+                  [class.text-green-800]="usuarioEditando.rol === 'mesero'">
+              {{ usuarioEditando.rol === 'administrador' ? 'Administrador' : 'Mesero' }}
+            </span>
+            <span class="text-xs text-gray-500">
+              {{ usuarioEditando.rol === 'administrador' ? 'Acceso completo al sistema' : 'Acceso limitado a funciones de servicio' }}
+            </span>
+          </div>
+        </div>
+  
+        <!-- Action Buttons -->
+        <div class="flex justify-end space-x-3 pt-5 mt-6 border-t border-gray-100">
+          <button 
+            (click)="cancelarEdicion()" 
+            class="px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors duration-200 cursor-pointer"
+          >
+            Cancelar
+          </button>
+          <button 
+            (click)="guardarCambios()" 
+            class="px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors duration-200 flex items-center cursor-pointer"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+            Guardar cambios
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- Modal for Registering User -->
+<div *ngIf="showRegisterModal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out">
+    <!-- Modal Content -->
+    <div class="bg-white rounded-xl p-6 max-w-md w-full mx-auto shadow-2xl transform transition-all duration-300 ease-out animate-fadeIn">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+        <h3 class="text-xl font-bold text-gray-800">Registrar Nuevo Usuario</h3>
+        <button 
+          (click)="cancelarRegistro()" 
+          class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
+          aria-label="Cerrar"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 cursor-pointer" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Form -->
+      <div class="space-y-5">
+        <!-- Email Field -->
+        <div class="group">
+          <label for="registerEmail" class="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+              </svg>
+            </div>
+            <input 
+              id="registerEmail"
+              [(ngModel)]="registerEmail" 
+              type="email"
+              class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm transition-all duration-200" 
+              placeholder="ejemplo@correo.com"
+            />
+          </div>
+        </div>
+        
+        <!-- Password Field -->
+        <div class="group">
+            <label for="registerPassword" class="block text-sm font-medium text-gray-700 mb-1.5">Contraseña</label>
+            <div class="relative">
+              <!-- Icono a la izquierda -->
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                </svg>
+              </div>
+          
+              <!-- Campo de contraseña -->
+              <input 
+                id="registerPassword"
+                [(ngModel)]="registerPassword" 
+                [type]="mostrarContrasena ? 'text' : 'password'"
+                class="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm transition-all duration-200" 
+                placeholder="••••••••"
+              />
+          
+              <!-- Botón para mostrar/ocultar contraseña -->
+              <button
+                type="button"
+                (click)="mostrarContrasena = !mostrarContrasena"
+                aria-label="Mostrar u ocultar contraseña"
+                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 "
+                tabindex="-1"
+              >
+                <svg *ngIf="!mostrarContrasena" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <svg *ngIf="mostrarContrasena" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.956 9.956 0 012.293-3.95M9.88 9.88a3 3 0 104.24 4.24M3 3l18 18" />
+                </svg>
+              </button>
+            </div>
+         
+          
+        </div>
+  
+        <!-- Username Field -->
+        <div class="group">
+          <label for="registerUsername" class="block text-sm font-medium text-gray-700 mb-1.5">Nombre de Usuario</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <input 
+              id="registerUsername"
+              [(ngModel)]="registerUsername" 
+              class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm transition-all duration-200" 
+              placeholder="Nombre de Usuario"
+            />
+          </div>
+        </div>
+  
+        <!-- Action Buttons -->
+        <div class="flex justify-end space-x-3 pt-5 mt-6 border-t border-gray-100">
+          <button 
+            (click)="cancelarRegistro()" 
+            class="px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors duration-200 cursor-pointer"
+          >
+            Cancelar
+          </button>
+          <button 
+            (click)="register()" 
+            [disabled]="isLoading"
+            class="px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors duration-200 flex items-center justify-center min-w-[100px] cursor-pointer"
+          >
+            <span *ngIf="!isLoading">Registrar</span>
+            <span *ngIf="isLoading" class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Procesando...
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  </div>
+  
