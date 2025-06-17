@@ -14,10 +14,17 @@
         <!-- Encabezado con color de acento -->
         <div class="bg-blue-600 px-4 py-3">
           <div class="flex justify-between items-center">
-            <h3 class="text-xl font-bold text-white">Mesa {{ pedido.mesa_id }}</h3>
+            <h3 class="text-xl font-bold text-white">
+  Mesa {{ pedido.mesa_id }}
+  <span *ngIf="pedido.mesa_id === 30"> - Pedidos Ya</span>
+  <span *ngIf="pedido.mesa_id === 31"> - Pedidos Beez</span>
+</h3>
+
             <span class="text-xs bg-white text-blue-600 px-2 py-1 rounded-full font-semibold">
-              🕒 {{ pedido.fecha | date:'shortTime' }}
-            </span>
+  🕒 {{ getHoraCruda(pedido.fecha) }}
+</span>
+
+            
           </div>
           <p class="text-sm text-blue-100 mt-1">Mesero: {{ pedido.mesero_nombre }}</p>
         </div>
@@ -45,41 +52,74 @@
   <!-- Modal para imprimir -->
   <div *ngIf="pedidoSeleccionado" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
     <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
-      <!-- Encabezado del modal -->
+      
+      <!-- Encabezado -->
       <div class="bg-gray-800 text-white px-6 py-4">
         <div class="flex justify-between items-center">
-          <h3 class="text-xl font-bold">Ticket Cocina - Mesa {{ pedidoSeleccionado.mesa_id }}</h3>
+          <h3 class="text-xl font-bold flex items-center gap-2">
+  Ticket Cocina - Mesa {{ pedidoSeleccionado.mesa_id }}
+  <span 
+    *ngIf="pedidoSeleccionado.mesa_id === 30 || pedidoSeleccionado.mesa_id === 31"
+    class="text-sm font-semibold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full"
+  >
+    {{ pedidoSeleccionado.mesa_id === 30 ? 'Pedidos Ya' : 'Pedidos Beez' }}
+  </span>
+</h3>
+
           <button (click)="cerrarModal()" class="text-gray-300 hover:text-white text-2xl">&times;</button>
         </div>
         <div class="flex justify-between text-sm mt-2">
           <span class="text-gray-300">Mesero: {{ pedidoSeleccionado.mesero_nombre }}</span>
-          <span class="text-gray-400">🕒 {{ pedidoSeleccionado.fecha | date:'shortTime' }}</span>
+          <span class="text-gray-400">  🕒 {{ getHoraCruda(pedidoSeleccionado.fecha) }}
+</span>
+
+          
         </div>
       </div>
   
-      <!-- Lista de productos -->
-      <div class="max-h-[60vh] overflow-y-auto p-6">
-        <ul class="divide-y divide-gray-200">
-          <li *ngFor="let prod of pedidoSeleccionado.productos" class="py-3 flex justify-between">
-            <div class="flex-1">
-              <p class="font-medium text-gray-800">{{ prod.nombre }}</p>
-            </div>
-            <span class="ml-4 bg-gray-100 text-gray-800 text-sm font-semibold px-3 py-1 rounded-full">
-              {{ prod.cantidad }}x
-            </span>
-          </li>
-        </ul>
+      <!-- Productos -->
+<div class="max-h-[60vh] overflow-y-auto p-6 space-y-6">
+  <div *ngFor="let prod of pedidoSeleccionado.productos" class="bg-white shadow-sm rounded-lg p-4 border border-gray-200">
+    <!-- Encabezado del producto -->
+    <div class="flex justify-between items-start mb-3">
+      <div>
+        <p class="text-base font-semibold text-gray-800">{{ prod.nombre }}</p>
       </div>
+      <span class="bg-gray-100 text-gray-800 text-xs font-medium px-3 py-1 rounded-full">
+        {{ prod.cantidad }}x
+      </span>
+    </div>
+
+    <!-- Sección: Lo que se quita -->
+    <div *ngIf="prod.modificaciones?.length" class="mb-3">
+      <ul class="list-disc list-inside text-sm text-gray-700 space-y-0.5">
+        <li *ngFor="let mod of prod.modificaciones">{{ mod }}</li>
+      </ul>
+    </div>
+
+    <!-- Sección: Lo que se agrega -->
+    <div *ngIf="prod.extras?.length">
+      <ul class="list-disc list-inside text-sm text-gray-700 space-y-0.5">
+        <li *ngFor="let extra of prod.extras">
+          {{ extra.nombre }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
   
-      <!-- Pie del modal -->
+      <!-- Botón -->
       <div class="border-t border-gray-200 px-6 py-4">
-        <button (click)="imprimirTicket()" 
+        <button (click)="imprimirTicket()"
                 class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
           </svg>
           Imprimir Ticket
         </button>
       </div>
     </div>
   </div>
+  

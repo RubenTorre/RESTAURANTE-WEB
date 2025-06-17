@@ -1,7 +1,69 @@
 
-<div class="w-full min-h-screen flex flex-col items-stretch justify-start bg-gray-100 p-0">
+<div class="w-full min-h-screen flex flex-col items-stretch justify-start ">
+<!-- Sección: Crear Pedido-->
+<div *ngIf="!mesaSeleccionada" class="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-white/20 p-4 text-center ">
+  <!-- Fondos decorativos -->
+  <div class="absolute top-0 left-0 w-12 h-12 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full -translate-x-6 -translate-y-6"></div>
+  <div class="absolute bottom-0 right-0 w-20 h-20 bg-gradient-to-tl from-amber-400/10 to-orange-400/10 rounded-full translate-x-10 translate-y-10"></div>
+
+  <!-- Título -->
+  <div class="relative z-10 mb-4">
+    <h2 class="text-lg font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-1">
+      ¿Qué tipo de pedido deseas hacer?
+    </h2>
+    <p class="text-gray-500 text-xs">Selecciona la plataforma</p>
+  </div>
+
+  <!-- Tarjetas -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 relative z-10">
+
+    <!-- Tarjeta: Pedido Ya -->
+    <div 
+(click)="seleccionarMesaVirtual(mesaVirtualPedidosYa)" 
+  [class.border-amber-500]="esPedidosYaSeleccionado()"
+  class="group cursor-pointer bg-gradient-to-br from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 border border-amber-200/50 hover:border-amber-300 transition-all duration-300 rounded-lg p-3 shadow hover:shadow-md hover:-translate-y-1 flex flex-col items-center relative overflow-hidden"
+>
+  <div class="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-amber-200/30 to-transparent rounded-full translate-x-6 -translate-y-6"></div>
+
+  <div class="mb-2 p-2">
+    <img 
+      src="https://images.seeklogo.com/logo-png/48/1/pedidos-ya-logo-png_seeklogo-489511.png" 
+      alt="PedidosYa Logo" 
+      class="w-6 h-6 object-contain"
+    />
+  </div>
+
+  <h3 class="text-sm font-semibold text-gray-800 mb-1">Pedido Ya</h3>
+  <!-- Ya que es solo para tu uso, aquí puedes dejar el texto que prefieras o nada -->
+</div>
+
+
+    <!-- Tarjeta: Pedido Beez -->
+    <div 
+      (click)="seleccionarMesaVirtual(mesaVirtualPedidosBezz)" 
+      [class.border-purple-500]="esPedidosBezzSeleccionado()"
+      class="group cursor-pointer bg-gradient-to-br from-purple-50 to-indigo-50 hover:from-purple-100 hover:to-indigo-100 border border-purple-200/50 hover:border-purple-300 transition-all duration-300 rounded-lg p-3 shadow hover:shadow-md hover:-translate-y-1 flex flex-col items-center relative overflow-hidden"
+    >
+      <div class="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-purple-200/30 to-transparent rounded-full translate-x-6 -translate-y-6"></div>
+
+      <div class="mb-2 p-2">
+    <img 
+      src="https://play-lh.googleusercontent.com/JSJ1CFgH0WFzD5JiCRFKUOe8n-XFzJ2lUKwOZHL5e72nuigd-EKCUMvkn_U_XwvNePE" 
+      alt="PedidosYa Logo" 
+      class="w-6 h-6 object-contain"
+    />
+  </div>
+
+      <h3 class="text-sm font-semibold text-gray-800 mb-1">Pedido Beez</h3>
+      <!-- También quité texto y etiqueta -->
+    </div>
+
+  </div>
+</div>
+
+
     <!-- Selección de Mesas -->
-<div *ngIf="!mesaSeleccionada" class="w-full min-h-screen py-12 px-6 bg-gradient-to-br from-white to-gray-100 flex flex-col items-center overflow-y-auto">
+<div *ngIf="!mesaSeleccionada" class="w-full min-h-screen py-12 px-6 bg-gradient-to-br from-white to-gray-100 flex flex-col items-center overflow-y-auto mt-6">
 
     <!-- Encabezado -->
     <div class="text-center mb-8">
@@ -735,43 +797,90 @@
   
   <!-- Modal: Modificaciones de receta -->
 
-  <div *ngIf="mostrarModalModificaciones" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-    <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
+  <div *ngIf="mostrarModalModificaciones" class="fixed inset-0 z-50 flex items-center justify-center p-6 animate-fadeIn">
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" (click)="mostrarModalModificaciones = false"></div>
+  
+    <!-- Modal principal -->
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-xl p-6 z-10 animate-scaleIn">
       
-      <!-- Título -->
-      <h2 class="text-2xl font-semibold text-center text-gray-800 mb-4">
-        Modificaciones para: <span class="text-orange-500">{{ recetaSeleccionada?.nombre }}</span>
-      </h2>
-  
-      <!-- Modificaciones -->
-      <div class="space-y-2 text-base text-gray-700 mb-4">
-        <label><input type="checkbox" [(ngModel)]="sinPapas" /> Sin papas</label><br />
-        <label><input type="checkbox" [(ngModel)]="sinEnsalada" /> Sin ensalada</label><br />
-        <label><input type="checkbox" [(ngModel)]="papasFritas" /> Papas fritas</label><br />
-        <label><input type="checkbox" [(ngModel)]="gratinadas" /> Gratinadas</label>
+      <!-- Encabezado -->
+      <div class="mb-6 border-b border-gray-200 pb-4">
+        <h2 class="text-2xl font-bold text-gray-800">
+          Personaliza tu pedido:
+          <span class="text-orange-500">{{ recetaSeleccionada?.nombre }}</span>
+        </h2>
       </div>
   
-      <!-- Extras -->
-      <!-- Extras -->
-<div class="border-t pt-4 mt-4 space-y-2 text-base text-gray-700">
-    <h3 class="text-lg font-semibold text-gray-800">Extras</h3>
-    <div *ngFor="let extra of porcionesExtras">
-      <label class="flex items-center justify-between">
-        <div>
-          <input type="checkbox" [(ngModel)]="extra.seleccionado" />
-          {{ extra.nombre }}
+      <!-- Sección: Exclusiones -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-3 flex items-center">
+          <span class="w-1.5 h-4 bg-red-500 rounded-full mr-2"></span>
+          Quitar del plato
+        </h3>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="flex items-center gap-2 bg-red-50 hover:bg-red-100 p-3 rounded-lg transition-colors">
+            <input type="checkbox" [(ngModel)]="sinPapas" class="accent-red-500 w-5 h-5" />
+            <span class="text-gray-800 text-sm">Sin papas</span>
+          </label>
+          <label class="flex items-center gap-2 bg-red-50 hover:bg-red-100 p-3 rounded-lg transition-colors">
+            <input type="checkbox" [(ngModel)]="sinEnsalada" class="accent-red-500 w-5 h-5" />
+            <span class="text-gray-800 text-sm">Sin ensalada</span>
+          </label>
         </div>
-        <span class="text-sm text-gray-600">+ ${{ extra.precio }}</span>
-      </label>
-    </div>
-  </div>
+      </div>
   
+      <!-- Sección: Sustituciones/Complementos -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-3 flex items-center">
+          <span class="w-1.5 h-4 bg-yellow-500 rounded-full mr-2"></span>
+          Sustituir / Añadir complementos
+        </h3>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="flex items-center gap-2 bg-yellow-50 hover:bg-yellow-100 p-3 rounded-lg transition-colors">
+            <input type="checkbox" [(ngModel)]="papasFritas" class="accent-yellow-500 w-5 h-5" />
+            <span class="text-gray-800 text-sm">Papas fritas</span>
+          </label>
+          <label class="flex items-center gap-2 bg-yellow-50 hover:bg-yellow-100 p-3 rounded-lg transition-colors">
+            <input type="checkbox" [(ngModel)]="gratinadas" class="accent-yellow-500 w-5 h-5" />
+            <span class="text-gray-800 text-sm">Gratinadas</span>
+          </label>
+        </div>
+      </div>
   
-      <!-- Botones -->
-      <div class="flex justify-end gap-2 mt-6">
-        <button class="px-4 py-2 bg-gray-300 rounded" (click)="mostrarModalModificaciones = false">Cancelar</button>
-        <button class="px-4 py-2 bg-orange-500 text-white rounded" (click)="confirmarAgregarAlCarrito()">Agregar</button>
+      <!-- Sección: Extras -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-3 flex items-center">
+          <span class="w-1.5 h-4 bg-green-500 rounded-full mr-2"></span>
+          Agregar extras
+        </h3>
+        <div class="bg-gray-50 rounded-xl p-4 max-h-48 overflow-y-auto space-y-2">
+          <div *ngFor="let extra of porcionesExtras"
+               class="flex items-center justify-between hover:bg-white p-2 rounded-md transition">
+            <label class="flex items-center gap-2">
+              <input type="checkbox" [(ngModel)]="extra.seleccionado" class="accent-green-600 w-5 h-5" />
+              <span class="text-gray-700 text-sm">{{ extra.nombre }}</span>
+            </label>
+            <span class="text-sm font-medium text-green-600 bg-green-100 px-2 py-0.5 rounded-full">
+              +${{ extra.precio }}
+            </span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Botones de acción -->
+      <div class="flex justify-end gap-4 mt-6">
+        <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-sm text-gray-700 rounded-md transition"
+                (click)="mostrarModalModificaciones = false">
+          Cancelar
+        </button>
+        <button class="px-5 py-2 bg-orange-500 hover:bg-orange-600 text-sm text-white font-medium rounded-md shadow transition"
+                (click)="confirmarAgregarAlCarrito()">
+          Agregar al carrito
+        </button>
       </div>
     </div>
   </div>
+  
+ 
   

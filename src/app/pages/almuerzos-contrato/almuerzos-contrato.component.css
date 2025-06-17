@@ -12,7 +12,4 @@
   .animate-fade-in {
     animation: fade-in 0.2s ease-out;
   }
-  :host ::ng-deep .ng-select-cliente {
-    background-color: white;
-    border: 1px solid #d1d5db;
-  }
+  

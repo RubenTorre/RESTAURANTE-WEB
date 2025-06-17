@@ -14,13 +14,11 @@
 <div 
   #sidebarContainer
   class="sidebar-container"
-  [class.expanded]="isHovered || !forceCollapsed"
+  [class.expanded]="!forceCollapsed"
   [class.mobile-view]="isMobileView"
-  (mouseenter)="!isMobileView && (isHovered = true)"
-  (mouseleave)="!isMobileView && (isHovered = false)"
 >
   <!-- Header (solo visible cuando está expandido) -->
-  <div *ngIf="isHovered || !forceCollapsed" class="header-section">
+  <div *ngIf="!forceCollapsed" class="header-section">
     <img src="assets/splash/logo.jpg" alt="Logo" class="logo">
     <div class="username">{{ nombreUsuario }}</div>
   </div>
@@ -29,28 +27,29 @@
   <ul class="menu-list">
     <li *ngFor="let item of visibleMenuItems">
       <!-- Ítem principal -->
-      <div class="menu-item" (click)="toggleSubmenu(item)">
+      <div class="menu-item" 
+           (click)="!isMobileView && toggleSubmenu(item)">
         <i [class]="item.icon + ' menu-icon'"></i>
         <span class="menu-label">{{ item.label }}</span>
-        <i *ngIf="item.submenus && (isHovered || !forceCollapsed)"
+        <i *ngIf="item.submenus"
            class="bi chevron-icon"
            [class.bi-chevron-down]="!item.expanded"
            [class.bi-chevron-up]="item.expanded"></i>
       </div>
 
-      <!-- Submenús -->
-      <div *ngIf="item.submenus && (item.expanded || (!isMobileView && isHovered))" 
+      <!-- Submenús: Siempre visibles en móviles, por clic en desktop -->
+      <div *ngIf="item.submenus && (isMobileView || item.expanded)" 
            class="submenu-container">
-           <a *ngFor="let sub of item.submenus"
-           class="submenu-item"
-           [routerLink]="sub.route"
-           (click)="sub.action ? handleSubmenuClick(sub) : closeMenuOnMobile()"
-           [routerLinkActive]="!sub.action ? 'bg-gray-700' : ''"
-           [class.cursor-pointer]="sub.action">
-          <i [class]="sub.icon + ' submenu-icon'"></i>
-          <span class="submenu-label">{{ sub.label }}</span>
-        </a>
-        
+       <a *ngFor="let sub of item.submenus"
+        class="submenu-item"
+        [routerLink]="sub.route"
+        (click)="handleSubmenuItemClick(sub, item)"
+        [routerLinkActive]="!sub.action ? 'bg-gray-700' : ''"
+        [class.cursor-pointer]="sub.action">
+        <i [class]="sub.icon + ' submenu-icon'"></i>
+        <span class="submenu-label">{{ sub.label }}</span>
+      </a>
+
       </div>
     </li>
   </ul>

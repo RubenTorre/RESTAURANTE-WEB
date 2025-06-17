@@ -30,15 +30,37 @@ verConfirmacion: boolean = false;
   constructor(private supabaseService: SupabaseService, private userService: UserService) {}
 
   
-  
   async ngOnInit() {
-    try {
-      this.usuario = await this.supabaseService.getUsuarioActual(); // obtiene el auth.user
-      this.perfil = await this.supabaseService.obtenerPerfilDeUsuario(this.usuario.id); // usa ese ID para buscar en profiles
-    } catch (error: any) {
-      console.error('Error en ngOnInit:', error.message);
+  try {
+    // 1️⃣ Espera a que Supabase restaure la sesión (2-300ms)
+    const sessionRestored = await this.supabaseService.waitForSessionRestoration();
+    
+    if (!sessionRestored) {
+      console.log("No hay sesión activa después de esperar");
+      return; // No hay sesión, no hacemos nada más
     }
+
+    // 2️⃣ Obtén el usuario (ahora seguro que la sesión está lista)
+    this.usuario = await this.supabaseService.getUsuarioActual();
+    
+    if (!this.usuario) {
+      console.log("Usuario no encontrado");
+      return;
+    }
+
+    // 3️⃣ Carga el perfil
+    this.perfil = await this.supabaseService.obtenerPerfilDeUsuario(this.usuario.id);
+
+    // Opcional: Actualiza UserService si lo necesitas
+    if (this.perfil) {
+      this.userService.setNombreUsuario(this.perfil.nombre);
+      this.userService.setRolUsuario(this.perfil.rol);
+    }
+
+  } catch (error) {
+    console.error("Error:", error);
   }
+}
 // Método para editar el perfil
 editarPerfil() {
   this.editandoPerfil = true;

@@ -4,19 +4,26 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import printJS from 'print-js';
 
-interface Producto {
+export interface Producto {
   cantidad: number;
   nombre: string;
-  // Agrega otras propiedades si las hay
+  precio?: number; // Si usas precio en el ticket
+  modificaciones?: string[]; // ← Las modificaciones que quitarán algo del plato
+  extras?: {
+    nombre: string;
+    precio: number;
+  }[]; // ← Extras añadidos al producto
 }
 
-interface Pedido {
+export interface Pedido {
   mesa_id: number;
   mesero_nombre: string;
   fecha: string | Date;
   productos: Producto[];
   estado: string;
-  // Agrega otras propiedades si las hay
+  total?: number;
+  forma_pago?: string;
+  numero_factura?: string;
 }
 
 @Component({
@@ -39,7 +46,19 @@ export default class ImprimirFacturasComponent {
   async cargarPedidosDelDia() {
     const pedidos = await this.supabaseService.getFacturasDelDia();
     this.pedidosDelDia = pedidos.filter((p: Pedido) => p.estado === 'ocupada');
+    console.log(this.pedidosDelDia)
   }
+getHoraCruda(fecha?: string | Date): string {
+  if (!fecha) {
+    return '';
+  }
+  if (typeof fecha === 'string') {
+    return fecha.substring(11, 19);
+  } else {
+    return fecha.toISOString().substring(11, 19);
+  }
+}
+
 
   abrirModal(pedido: Pedido) {
     this.pedidoSeleccionado = pedido;
@@ -48,22 +67,56 @@ export default class ImprimirFacturasComponent {
   cerrarModal() {
     this.pedidoSeleccionado = null;
   }
+getNombrePlataforma(mesaId: number): string {
+  if (mesaId === 30) return 'Pedidos Ya';
+  if (mesaId === 31) return 'Pedidos Beez';
+  return '';
+}
 
   imprimirTicket() {
     if (!this.pedidoSeleccionado) return;
-  
+   const hora = this.getHoraCruda(this.pedidoSeleccionado.fecha);
+   const plataforma = this.getNombrePlataforma(this.pedidoSeleccionado.mesa_id);
+const plataformaTexto = plataforma ? ` - ${plataforma}` : ''
     const content = `
       <div id="ticket-termico">
         <h3 class="text-center font-bold mb-1">Ticket Cocina</h3>
-        <p class="text-center mb-1">Mesa ${this.pedidoSeleccionado.mesa_id}</p>
-        <p class="mb-2 text-center">🕒 ${new Date(this.pedidoSeleccionado.fecha).toLocaleTimeString()}</p>
+       <p class="text-center mb-1">Mesa ${this.pedidoSeleccionado.mesa_id}${plataformaTexto}</p>
+        <p class="mb-2 text-center">🕒 ${hora}</p>
         <p class="mb-1">Mesero: ${this.pedidoSeleccionado.mesero_nombre}</p>
         <hr>
-        ${this.pedidoSeleccionado.productos.map((prod: Producto) => `
+  
+        <!-- Encabezado de columnas -->
+        <div class="row header">
+          <span class="col-producto font-bold underline">Producto</span>
+          <span class="col-cant font-bold underline text-right">Cantidad</span>
+        </div>
+  
+        ${this.pedidoSeleccionado.productos.map((prod: any) => `
           <div class="row">
             <span class="col-producto">${prod.nombre}</span>
             <span class="col-cant">${prod.cantidad}x</span>
           </div>
+  
+          ${prod.modificaciones?.length ? `
+            <div class="sub-info">
+              <ul>
+                ${prod.modificaciones.map((mod: string) => `<li>${mod}</li>`).join('')}
+              </ul>
+            </div>
+          ` : ''}
+  
+          ${prod.extras?.length ? `
+            <div class="sub-info">
+              <ul>
+                ${prod.extras.map((extra: any) => `
+                  <li>${extra.nombre}</li>
+                `).join('')}
+              </ul>
+            </div>
+          ` : ''}
+  
+          <div class="product-separator"></div>
         `).join('')}
         <div class="espacio-corte"></div>
       </div>
@@ -83,12 +136,12 @@ export default class ImprimirFacturasComponent {
           padding: 0;
           width: 80mm;
           font-family: monospace;
-          font-size: 14px;
+          font-size: 12px;
+          color: #000;
         }
   
         #ticket-termico {
           padding: 0 6px;
-          margin: 0;
         }
   
         .text-center {
@@ -99,25 +152,26 @@ export default class ImprimirFacturasComponent {
           font-weight: bold;
         }
   
-        .mb-1 {
-          margin-bottom: 4px;
+        .underline {
+          text-decoration: underline;
         }
   
-        .mb-2 {
-          margin-bottom: 8px;
-        }
+        .mb-1 { margin-bottom: 4px; }
+        .mb-2 { margin-bottom: 8px; }
   
         .row {
           display: flex;
           justify-content: space-between;
-          align-items: center;
           margin-bottom: 4px;
-          word-wrap: break-word;
+        }
+  
+        .header {
+          margin-top: 6px;
+          margin-bottom: 6px;
         }
   
         .col-producto {
           flex-grow: 1;
-          text-align: left;
           padding-right: 5px;
           white-space: normal;
           word-wrap: break-word;
@@ -129,6 +183,22 @@ export default class ImprimirFacturasComponent {
           padding-left: 15px;
           padding-right: 25px;
           white-space: nowrap;
+        }
+  
+        .sub-info {
+          margin-left: 8px;
+          font-size: 11px;
+          margin-bottom: 3px;
+        }
+  
+        .sub-info ul {
+          padding-left: 12px;
+          margin: 0;
+        }
+  
+        .product-separator {
+          border-bottom: 1px dashed #000;
+          margin: 6px 0;
         }
   
         .espacio-corte {
@@ -145,5 +215,7 @@ export default class ImprimirFacturasComponent {
   
     this.cerrarModal();
   }
+  
+  
   
 }

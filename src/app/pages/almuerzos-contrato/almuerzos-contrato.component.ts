@@ -440,15 +440,23 @@ async cargarPedidos() {
   this.error = null;
   try {
     const pedidos = await this.supabaseService.obtenerPedidosConDetalle();
-    this.pedidos = pedidos;
-    this.pedidosFiltrados = [...pedidos]; // Inicializa con todos los pedidos
+
+    // Agregar la propiedad 'tieneAlmuerzosValidos' a cada pedido
+    this.pedidos = pedidos.map(pedido => ({
+      ...pedido,
+      tieneAlmuerzosValidos: pedido.pedidos_almuerzo?.some((d: any) => d.almuerzos !== null) || false
+    }));
+
+    this.pedidosFiltrados = [...this.pedidos]; // Inicializa con todos los pedidos
     this.mostrarTodos = true;
+    console.log(this.pedidosFiltrados);
   } catch (e: any) {
     this.error = e.message || 'Error al cargar pedidos';
   } finally {
     this.cargando = false;
   }
 }
+
 
 // Método para obtener clases CSS según estado de pago
 getEstadoClase(estado: string | null): string {
@@ -773,42 +781,35 @@ cancelButtonColor: '#dc2626',
     
     // ---------- MARCA DE AGUA ----------
     doc.setTextColor(240, 240, 240); // Casi invisible gris claro
-doc.setDrawColor(240, 240, 240); // Opcional: evita borde negro
-doc.setFontSize(60);
-doc.setFont('helvetica', 'bold');
-doc.text('A FUEGO LENTO', pageWidth / 2, pageHeight / 2, {
-  align: 'center',
-  angle: 45,
-  renderingMode: 'fill' // <- Solo relleno, sin borde negro
-});
-
+    doc.setDrawColor(240, 240, 240); // Opcional: evita borde negro
+    doc.setFontSize(60);
+    doc.setFont('helvetica', 'bold');
+    doc.text('A FUEGO LENTO', pageWidth / 2, pageHeight / 2, {
+      align: 'center',
+      angle: 45,
+      renderingMode: 'fill' // Solo relleno, sin borde negro
+    });
   
     // ---------- RECTÁNGULO DE FONDO PARA ENCABEZADO ----------
-    // Primero dibujamos el rectángulo para que quede detrás del logo
     doc.setFillColor(248, 248, 248);
     doc.setDrawColor(220, 220, 220);
     doc.setLineWidth(0.5);
     doc.rect(10, 8, pageWidth - 20, 26, 'FD');
   
     // ---------- LOGO ----------
-    // Ahora añadimos el logo DESPUÉS del rectángulo para que aparezca encima
     try {
       const logoData = await this.getBase64ImageFromURL('assets/splash/logo.jpg');
-      // Ajustamos la posición para que sea más visible
       doc.addImage(logoData, 'JPEG', 15, 10, 25, 15);
     } catch (error) {
       console.warn('No se pudo cargar el logo:', error);
     }
   
-    // ---------- DATOS DEL RESTAURANTE (MEJORADOS) ----------
+    // ---------- DATOS DEL RESTAURANTE ----------
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(50, 50, 50);
-  
-    // Nombre grande y centrado - ajustado para no solapar con el logo
     doc.setFontSize(16);
-    doc.text('A FUEGO LENTO', doc.internal.pageSize.getWidth() / 2, 16, { align: 'center' });
+    doc.text('A FUEGO LENTO', pageWidth / 2, 16, { align: 'center' });
   
-    // RUC, teléfono y correo más pequeños
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(80, 80, 80);
@@ -816,9 +817,8 @@ doc.text('A FUEGO LENTO', pageWidth / 2, pageHeight / 2, {
       'RUC: 1500956527001',
       'Tel: 0958910306'
     ];
-  
     datosSecundarios.forEach((linea, i) => {
-      doc.text(linea, doc.internal.pageSize.getWidth() / 2, 22 + i * 4, { align: 'center' });
+      doc.text(linea, pageWidth / 2, 22 + i * 4, { align: 'center' });
     });
   
     // ---------- NÚMERO DE DOCUMENTO ----------
@@ -828,22 +828,19 @@ doc.text('A FUEGO LENTO', pageWidth / 2, pageHeight / 2, {
     doc.text(`Fecha de emisión: ${new Date().toLocaleDateString('es-PE')}`, pageWidth - 15, 16, { align: 'right' });
   
     // ---------- TÍTULO DEL REPORTE ----------
-    // Fondo para el título
     doc.setFillColor(60, 60, 60);
     doc.rect(pageWidth/2 - 35, 38, 70, 8, 'F');
-    
+  
     doc.setFontSize(12);
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
     doc.text('REPORTE DE PAGOS', pageWidth / 2, 44, { align: 'center' });
   
-    // ---------- PANEL DE FILTROS (MEJORADO) ----------
-    // Variables para filtrar texto
+    // ---------- PANEL DE FILTROS ----------
     const clienteText = this.nombreBusqueda ? `CLIENTE: ${this.nombreBusqueda.toUpperCase()}` : '';
     const estadoPagoText = this.estadoFiltro ? `ESTADO DE PAGO: ${this.estadoFiltro.toUpperCase()}` : '';
     const periodoText = (this.fechaInicio && this.fechaFin) ? `PERÍODO: ${this.formatearFecha(this.fechaInicio)} HASTA ${this.formatearFecha(this.fechaFin)}` : '';
   
-    // Configuración visual
     const filtroX = 15;
     const filtroWidth = pageWidth - 30;
     const filtroHeight = 24;
@@ -851,7 +848,6 @@ doc.text('A FUEGO LENTO', pageWidth / 2, pageHeight / 2, {
     const paddingLeft = 10;
     const lineHeight = 7;
   
-    // Fondo y borde más profesional
     doc.setFillColor(245, 245, 245);
     doc.roundedRect(filtroX, 50, filtroWidth, filtroHeight, filtroRadius, filtroRadius, 'F');
   
@@ -859,21 +855,17 @@ doc.text('A FUEGO LENTO', pageWidth / 2, pageHeight / 2, {
     doc.setLineWidth(0.5);
     doc.roundedRect(filtroX, 50, filtroWidth, filtroHeight, filtroRadius, filtroRadius, 'S');
   
-    // Texto
     doc.setFontSize(10);
     doc.setTextColor(60, 60, 60);
     doc.setFont('helvetica', 'bold');
   
-    // Línea 1: Cliente con estilo destacado
     doc.text(clienteText, filtroX + paddingLeft, 58);
-    
-    // Estado de pago con fondo de color según estado
+  
     if (this.estadoFiltro) {
       const estadoX = filtroX + filtroWidth - 70;
       const estadoWidth = 60;
       const estadoHeight = 7;
-      
-      // Fondo rojo suave para PENDIENTE, verde suave para PAGADO
+  
       if (this.estadoFiltro.toUpperCase() === 'PENDIENTE') {
         doc.setFillColor(255, 235, 235);
         doc.setDrawColor(255, 180, 180);
@@ -881,31 +873,38 @@ doc.text('A FUEGO LENTO', pageWidth / 2, pageHeight / 2, {
         doc.setFillColor(235, 255, 235);
         doc.setDrawColor(180, 255, 180);
       }
-      
+  
       doc.roundedRect(estadoX, 54, estadoWidth, estadoHeight, 1, 1, 'FD');
       doc.setTextColor(80, 80, 80);
       doc.setFontSize(9);
       doc.text(estadoPagoText, estadoX + estadoWidth/2, 58, { align: 'center' });
     }
   
-    // Línea 2: Período en línea separada
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(80, 80, 80);
     doc.text(periodoText, filtroX + paddingLeft, 58 + lineHeight);
   
-    // ---------- TABLA DE DATOS (MEJORADA) ----------
-    // Preparar datos con formato mejorado para estados
+    // ---------- TABLA DE DATOS ----------
+    // Aquí aplicamos la lógica para mostrar detalle de almuerzo o la observación si almuerzo es null
     const data = this.pedidosFiltrados.map(pedido => {
+      const tieneAlmuerzosValidos = pedido.pedidos_almuerzo?.some((d: any) => d.almuerzos !== null);
+      const detalleTexto = tieneAlmuerzosValidos
+        ? pedido.pedidos_almuerzo
+            .filter((d: any) => d.almuerzos !== null)
+            .map((d: any) => `${d.almuerzos.nombre} (${d.cantidad})`)
+            .join(', ')
+        : pedido.observaciones || 'Sin detalles';
+  
       const estadoPago = pedido.estado_pago?.toUpperCase();
-      // Devolvemos el array normal, el formato se aplicará en didDrawCell
+  
       return [
         this.formatearFecha(pedido.fecha),
-        pedido.pedidos_almuerzo?.map((d: any) => `${d.almuerzos?.nombre} (${d.cantidad})`).join(', ') || 'Sin detalles',
+        detalleTexto,
         `$/ ${pedido.total?.toFixed(2)}`,
         estadoPago
       ];
     });
-    
+  
     await autoTable(doc, {
       head: [['FECHA', 'DETALLE', 'TOTAL']],
       body: data,
@@ -930,7 +929,7 @@ doc.text('A FUEGO LENTO', pageWidth / 2, pageHeight / 2, {
       columnStyles: {
         0: { cellWidth: 'auto', halign: 'center' },
         1: { cellWidth: 'auto', halign: 'left' },
-        2: { cellWidth: 28, halign: 'right', fontStyle: 'bold' }     
+        2: { cellWidth: 28, halign: 'right', fontStyle: 'bold' }
       },
       styles: {
         cellPadding: 4,
@@ -941,7 +940,6 @@ doc.text('A FUEGO LENTO', pageWidth / 2, pageHeight / 2, {
       margin: { left: 15, right: 15 },
       tableLineColor: [210, 210, 210],
       tableLineWidth: 0.4,
-      // Función para personalizar celdas (especialmente para el estado de pago)
       didDrawCell: (data) => {
         if (data.column.index === 3 && data.row.section === 'body') {
           const estado = data.cell.text[0];
@@ -949,7 +947,7 @@ doc.text('A FUEGO LENTO', pageWidth / 2, pageHeight / 2, {
           const y = data.cell.y + 2;
           const width = data.cell.width - 10;
           const height = data.cell.height - 4;
-      
+  
           if (estado === 'PENDIENTE') {
             doc.setFillColor(255, 235, 235);
             doc.setDrawColor(255, 180, 180);
@@ -957,96 +955,43 @@ doc.text('A FUEGO LENTO', pageWidth / 2, pageHeight / 2, {
             doc.setFillColor(235, 255, 235);
             doc.setDrawColor(180, 255, 180);
           }
-      
+  
           doc.roundedRect(x, y, width, height, 1, 1, 'FD');
           doc.setTextColor(80, 80, 80);
           doc.setFontSize(8);
           doc.setFont('helvetica', 'bold');
           doc.text(estado, x + width / 2, y + height / 2 + 1, { align: 'center', baseline: 'middle' });
-      
+  
           return true; // indica que manejamos esta celda
         }
-        return false; // o simplemente return undefined para los otros casos
-      
+        return false;
       }
     });
-    
+  
     const finalY = (doc as any).lastAutoTable?.finalY || 100;
   
-    // ---------- TOTAL GENERAL (MEJORADO) ----------
-    // Rectángulo para el resumen
-    doc.setFillColor(250, 250, 250);
-    doc.setDrawColor(220, 220, 220);
-    doc.setLineWidth(0.5);
-    doc.roundedRect(pageWidth - 85, finalY + 5, 70, 25, 2, 2, 'FD');
-    
-    // Línea separadora para el total
-    doc.setDrawColor(200, 200, 200);
-    doc.setLineWidth(0.3);
-    doc.line(pageWidth - 80, finalY + 20, pageWidth - 20, finalY + 20);
-    
-    // Subtotal
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(80, 80, 80);
-    doc.text('Subtotal:', pageWidth - 75, finalY + 12);
-    doc.text(`$/ ${this.calcularTotalMostrado().toFixed(2)}`, pageWidth - 20, finalY + 12, { align: 'right' });
-    
-    // IGV (si aplica)
-    doc.text('IVA (0%):', pageWidth - 75, finalY + 17);
-    doc.text('$/ 0.00', pageWidth - 20, finalY + 17, { align: 'right' });
-    
-    // Total final
-    doc.setFontSize(11);
+    // ---------- TOTAL GENERAL ----------
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(50, 50, 50);
-    doc.text('TOTAL:', pageWidth - 75, finalY + 25);
-    doc.text(`$/ ${this.calcularTotalMostrado().toFixed(2)}`, pageWidth - 20, finalY + 25, { align: 'right' });
   
-    // ---------- INFORMACIÓN DE PAGO ----------
-    doc.setFillColor(245, 245, 245);
-    doc.setDrawColor(220, 220, 220);
-    doc.roundedRect(15, finalY + 5, pageWidth - 105, 25, 2, 2, 'FD');
-    
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(70, 70, 70);
-    doc.text('INFORMACIÓN DE PAGO', 20, finalY + 12);
-    
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Métodos de pago aceptados:', 20, finalY + 17);
-    doc.text('Efectivo, Transferencia Bancaria,', 20, finalY + 21);
-    
-    doc.text('Cuenta bancaria: Ruben Torres', 20, finalY + 25);
-    doc.text('B.Pichincha: 2209495234 - B.Internacional: 1234567890', 20, finalY + 29);
-    
+    const totalGeneral = this.pedidosFiltrados.reduce((acc, pedido) => acc + (pedido.total || 0), 0);
+    doc.text(`TOTAL GENERAL: $/ ${totalGeneral.toFixed(2)}`, pageWidth - 15, finalY + 12, { align: 'right' });
   
-    // ---------- PIE DE PÁGINA (MEJORADO) ----------
-    // Línea separadora
-    doc.setDrawColor(200, 200, 200);
-    doc.setLineWidth(0.5);
-    doc.line(15, pageHeight - 20, pageWidth - 15, pageHeight - 20);
-    
-    // Texto del pie de página
+    // ---------- FIRMA ----------
+    doc.setDrawColor(180, 180, 180);
+    doc.setLineWidth(0.3);
+    const firmaX = 20;
+    const firmaY = finalY + 30;
+    const firmaWidth = 60;
+  
+    doc.line(firmaX, firmaY, firmaX + firmaWidth, firmaY);
     doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
     doc.setTextColor(120, 120, 120);
-    
-    const fechaGeneracion = new Date().toLocaleString('es-PE', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-    
-    doc.text(`Generado el ${fechaGeneracion}`, 15, pageHeight - 15);
-    doc.text('Este documento es un reporte oficial de A FUEGO LENTO', pageWidth / 2, pageHeight - 15, { align: 'center' });
-    
+    doc.text('Firma y Sello', firmaX + firmaWidth / 2, firmaY + 5, { align: 'center' });
   
     // ---------- GUARDAR PDF ----------
-    doc.save(`Reporte_PAGOS_${this.nombreBusqueda || 'General'}_${new Date().toISOString().slice(0, 10)}.pdf`);
+    doc.save(`Reporte_pagos_${new Date().toISOString().slice(0,10)}.pdf`);
   }
   
   

@@ -35,7 +35,7 @@ interface Receta {
 interface Mesa {
   id: number;
   nombre: string;
-  estado: 'ocupada' | 'abierta'| 'reservada';
+  estado: 'ocupada' | 'abierta'| 'reservada'|'virtual';
 }
 interface Factura {
   numero_factura: string;
@@ -71,7 +71,7 @@ export default class CartaComponent {
   ticketNumero: string = '';
   // Para simular el carrito visualmente (sin funcionalidad)
   carrito: any[] = [];
-
+mostrarMenu: boolean = false;
   ultimaNotificacion: any; // Añade esta propiedad
   proteinas: string[] = ['Pollo', 'Cerdo', 'Lomo', 'Carne', 'Pescado','Camaron'];
   preparaciones: string[] = ['Frito', 'Ahumado', 'Seco', 'En salsa','Apanado','A la Plancha'];
@@ -108,11 +108,23 @@ extraEnsalada: boolean = false;
 extraChorizo: boolean = false;
  // Extras con precio
  porcionesExtras = [
-  { nombre: 'Porción de papas', precio: 15, seleccionado: false },
-  { nombre: 'Porción de arroz', precio: 10, seleccionado: false },
-  { nombre: 'Porción de ensalada', precio: 12, seleccionado: false },
-  { nombre: 'Chorizo', precio: 18, seleccionado: false }
+  { nombre: 'Porción de papas', precio: 1.50, seleccionado: false },
+  { nombre: 'Porción de arroz', precio: 1.50, seleccionado: false },
+  { nombre: 'Porción de ensalada', precio: 1.5, seleccionado: false },
+  { nombre: 'Chorizo', precio: 1.5, seleccionado: false }
 ];
+mesaVirtualPedidosYa: Mesa = {
+  id: 30,
+  nombre: 'Pedidos Ya',
+  estado: 'virtual' as any
+};
+
+mesaVirtualPedidosBezz: Mesa = {
+  id: 31,
+  nombre: 'Pedidos Bezz',
+  estado: 'virtual' as any
+};
+
 
   constructor(private supabaseService: SupabaseService,private userService: UserService,
   ) {}
@@ -133,11 +145,7 @@ extraChorizo: boolean = false;
   ngOnDestroy() {
     // Limpieza opcional (si SupabaseService no maneja la desuscripción automática)
     // this.supabaseService.detenerNotificaciones();
-  }
-
-
-
-  
+  }  
   async inicializarMesas() {
     this.mesas = Array.from({ length: 26 }, (_, i) => ({
       id: i + 1,
@@ -155,14 +163,29 @@ extraChorizo: boolean = false;
   }
   
   seleccionarMesa(mesa: Mesa) {
-    this.mesaSeleccionada = mesa;
-    
+  this.mesaSeleccionada = mesa;
+  console.log('Mesa seleccionada:', mesa.nombre);
+}
+
+seleccionarSiAbierta(mesa: Mesa) {
+  if (mesa.estado === 'abierta') {
+    this.seleccionarMesa(mesa);
   }
-  seleccionarSiAbierta(mesa: Mesa) {
-    if (mesa.estado === 'abierta') {
-      this.seleccionarMesa(mesa);
-    }
-  }
+}
+
+// Método para seleccionar mesa virtual al elegir pedido virtual
+seleccionarMesaVirtual(mesa: Mesa) {
+  this.seleccionarMesa(mesa);
+}
+
+esPedidosYaSeleccionado(): boolean {
+  return this.mesaSeleccionada?.id === 30;
+}
+
+esPedidosBezzSeleccionado(): boolean {
+  return this.mesaSeleccionada?.id === 31;
+}
+
   
   volverAMesas() {
     this.mesaSeleccionada = null;
@@ -184,8 +207,6 @@ extraChorizo: boolean = false;
   calcularSubtotal(): number {
     return this.carrito.reduce((total, item) => total + (item.precio_venta * item.cantidad), 0);
   }
-
- 
   async cargarRecetas() {
     try {
       this.cargando = true;
@@ -255,8 +276,10 @@ extraChorizo: boolean = false;
  
 // Total general (subtotal + extras)
 calcularTotalCarrito(): number {
-  return this.calcularSubtotal() + this.calcularTotalExtras();
+  const total = this.calcularSubtotal() + this.calcularTotalExtras();
+  return parseFloat(total.toFixed(2));
 }
+
   eliminarProducto(index: number): void {
     // Decrementamos la cantidad del producto
     this.carrito[index].cantidad -= 1;
@@ -312,7 +335,7 @@ calcularTotalCarrito(): number {
     })),
     // CAMBIO CLAVE: Usar calcularTotalCarrito() para el total
     total: this.calcularTotalCarrito(), // <-- Aquí se incluyen extras
-    fecha: new Date().toISOString(),
+    fecha: getLocalDateTimeString(),
     mesa_id: this.mesaSeleccionada.id,
     mesero_nombre: this.nombreUsuario,
     forma_pago: '', 
@@ -670,5 +693,11 @@ calcularExtrasItem(item: any): number {
     0
   ) * item.cantidad;
 }
- 
+
+}
+function getLocalDateTimeString() {
+  const ahora = new Date();
+  const pad = (n: number) => n.toString().padStart(2, '0');
+
+  return `${ahora.getFullYear()}-${pad(ahora.getMonth() + 1)}-${pad(ahora.getDate())}T${pad(ahora.getHours())}:${pad(ahora.getMinutes())}:${pad(ahora.getSeconds())}`;
 }

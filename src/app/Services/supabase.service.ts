@@ -54,7 +54,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 export class SupabaseService {
   
   private supabase: SupabaseClient;
-
+private usuarioActual: any = null;
   constructor() {
     this.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: {
@@ -64,6 +64,16 @@ export class SupabaseService {
         storageKey: 'sb-auth-token-' + Math.random().toString(36).substring(2, 11),
       }
     });
+    
+  // Inicializa el usuario desde la sesión actual
+  this.supabase.auth.getSession().then(({ data }) => {
+    this.usuarioActual = data?.session?.user ?? null;
+  });
+
+  // Escucha futuros cambios de sesión
+  this.supabase.auth.onAuthStateChange((_event, session) => {
+    this.usuarioActual = session?.user ?? null;
+  });
   }
 
   // Función de login con reintentos
@@ -175,40 +185,65 @@ export class SupabaseService {
     }
   }
   
-  // Obtener el usuario actual con manejo de sesión
-  async getUser() {
-    try {
-      const { data: { session }, error: sessionError } = await this.supabase.auth.getSession();
-      if (sessionError) throw sessionError;
-      if (!session) return { error: 'No active session' };
-  
-      const { data: userData, error: userError } = await this.supabase.auth.getUser();
-      if (userError) throw userError;
-  
-      const user = userData.user;
-  
-      // ✅ Traer perfil (nombre y rol)
-      const { data: profile, error: profileError } = await this.supabase
-        .from('profiles')
-        .select('nombre, rol')
-        .eq('id', user.id)
-        .single();
-  
-      if (profileError) {
-        return { error: profileError.message };
-      }
-  
-      return {
-        data: {
-          user,
-          profile // { nombre, rol }
-        }
-      };
-  
-    } catch (error: any) {
-      return { error: error.message };
-    }
+ async getUsuarioActualConPerfil() {
+  try {
+    // Obtener usuario actual con getUser()
+    const { data: { user }, error: userError } = await this.supabase.auth.getUser();
+
+    if (userError) throw userError;
+    if (!user) return { error: 'No hay usuario logueado' };
+
+    // Obtener perfil del usuario
+    const { data: profile, error: profileError } = await this.supabase
+      .from('profiles')
+      .select('nombre, rol')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError) return { error: profileError.message };
+
+    return { data: { user, profile } };
+
+  } catch (error: any) {
+    return { error: error.message };
   }
+}
+
+
+ async getUser() {
+  try {
+    // Obtiene la sesión actual (si existe)
+    const { data: { session }, error: sessionError } = await this.supabase.auth.getSession();
+    if (sessionError) throw sessionError;
+
+    // Si no hay sesión, devuelve error
+    if (!session) return { error: 'No active session' };
+
+    const user = session.user;
+
+    // Obtener perfil con nombre y rol
+    const { data: profile, error: profileError } = await this.supabase
+      .from('profiles')
+      .select('nombre, rol')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError) {
+      return { error: profileError.message };
+    }
+
+    return {
+      data: {
+        user,
+        profile // { nombre, rol }
+      }
+    };
+
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
   
   // Cerrar sesión con limpieza de almacenamiento
   async logout() {
@@ -527,6 +562,7 @@ export class SupabaseService {
     productos?: any[];
     es_extra?: boolean;
     codigo_transferencia?: string; // <-- Agregado aquí
+     fecha: string;
   }) {
     const { data, error } = await this.supabase
       .from('facturas')
@@ -536,7 +572,7 @@ export class SupabaseService {
         forma_pago: factura.forma_pago,
         monto: factura.monto,
         productos: factura.productos ?? null,
-        fecha: new Date().toISOString(),
+        fecha: factura.fecha,
         es_extra: factura.es_extra ?? false,
         codigo_transferencia: factura.codigo_transferencia ?? null // <-- Se guarda solo si existe
       }])
@@ -690,10 +726,52 @@ async getUsuarioActual() {
   if (error) throw error;
   return data.user;
 }
+// En SupabaseService
+async waitForSessionRestoration(): Promise<boolean> {
+  // Si ya hay usuario en memoria, no esperamos
+  if (this.usuarioActual) return true;
+
+  // Esperamos a que Supabase emita el evento INITIAL_SESSION
+  return new Promise((resolve) => {
+    const sub = this.supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'INITIAL_SESSION') {
+        this.usuarioActual = session?.user ?? null;
+        sub.data.subscription.unsubscribe(); // Limpiamos la suscripción
+        resolve(!!session); // Resuelve `true` si hay sesión, `false` si no
+      }
+    });
+  });
+}
+getUsuarioActualDesdeMemoria() {
+  if (!this.usuarioActual) throw new Error('No hay sesión activa');
+  return this.usuarioActual;
+}
+// Espera hasta que Supabase haya restaurado la sesión del usuario
+async esperarSesionRestaurada(): Promise<void> {
+  return new Promise((resolve) => {
+    const sub = this.supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        this.usuarioActual = session.user;
+        sub.data.subscription.unsubscribe(); // nos desuscribimos después de obtener la sesión
+        resolve();
+      }
+    });
+
+    // Por si ya estaba restaurada
+    this.supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        this.usuarioActual = data.session.user;
+        sub.data.subscription.unsubscribe();
+        resolve();
+      }
+    });
+  });
+}
+
 async obtenerPerfilDeUsuario(id: string) {
   const { data, error } = await this.supabase
     .from('profiles')
-    .select('nombre')  // Verifica que "nombre" sea el correcto
+    .select('nombre, rol, activo')
     .eq('id', id)
     .single();
 
@@ -701,9 +779,9 @@ async obtenerPerfilDeUsuario(id: string) {
     console.error('Error al obtener perfil:', error);
     return null;
   }
-
   return data;
 }
+
 async cambiarContraseña(nuevaContraseña: string) {
   const { data, error } = await this.supabase.auth.updateUser({
     password: nuevaContraseña
@@ -1146,6 +1224,351 @@ async actualizarEstadoPagado(idsPedidos: number[]): Promise<void> {
 
   if (error) throw error;
 }
+// Función para obtener todas las facturas
+async obtenerFacturasHoy() {
+  try {
+    // 1. Obtener la última sesión abierta
+    const { data: sesiones, error: errorSesion } = await this.supabase
+      .from('caja_sesiones')
+      .select('*')
+      .eq('estado', 'abierta')
+      .order('hora_apertura', { ascending: false })
+      .limit(1);
+
+    if (errorSesion) throw errorSesion;
+
+    if (!sesiones || sesiones.length === 0) {
+      return { error: 'No hay sesión de caja abierta' };
+    }
+
+    const horaApertura = sesiones[0].hora_apertura;
+
+    // 2. Obtener facturas desde la hora de apertura (incluyendo las con fecha null si quieres)
+    const { data: facturas, error: errorFacturas } = await this.supabase
+      .from('facturas')
+      .select('*')
+      .or(`fecha.gte.${horaApertura},fecha.is.null`) // incluye facturas sin fecha también
+      .order('fecha', { ascending: false });
+
+    if (errorFacturas) throw errorFacturas;
+
+    return { data: facturas };
+  } catch (error: any) {
+    console.error('Error al obtener facturas por sesión:', error);
+    return { error: error.message };
+  }
+}
+
+
+
+async obtenerGastosHoy() {
+  try {
+    // 1. Verificar si hay caja abierta
+    const { data: sesiones, error: errorSesion } = await this.supabase
+      .from('caja_sesiones')
+      .select('fecha_operativa')
+      .eq('estado', 'abierta')
+      .order('hora_apertura', { ascending: false })
+      .limit(1);
+
+    if (errorSesion) throw errorSesion;
+    if (!sesiones || sesiones.length === 0) {
+      return { data: null, error: 'No hay caja abierta' };
+    }
+
+    const fechaOperativa = sesiones[0].fecha_operativa;
+
+    // 2. Obtener todos los gastos desde esa fecha (inclusive)
+    const { data: gastos, error: errorGastos } = await this.supabase
+      .from('gastos')
+      .select('*')
+      .gte('fecha', fechaOperativa) // ">=" fecha_operativa
+      .order('fecha', { ascending: false });
+
+    if (errorGastos) throw errorGastos;
+
+    return { data: gastos, error: null };
+
+  } catch (error) {
+    // Manejo seguro de errores en TypeScript
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+    console.error('Error en obtenerGastosHoy:', errorMessage);
+    return { data: null, error: errorMessage };
+  }
+}
+
+
+async registrarAperturaCaja(apertura: {
+  usuario_nombre: string,
+  fecha_operativa: string,
+  hora_apertura: string,
+  numero_cierre?: number,
+  observaciones?: string
+}) {
+  try {
+    const { usuario_nombre, fecha_operativa, hora_apertura, numero_cierre, observaciones } = apertura;
+
+    // Verificar si hay alguna sesión abierta, sin importar la fecha
+    const { data: sesionesAbiertas, error: errorSesiones } = await this.supabase
+      .from('caja_sesiones')
+      .select('*')
+      .eq('usuario_nombre', usuario_nombre)
+      .eq('estado', 'abierta');
+
+    if (errorSesiones) throw errorSesiones;
+
+    if (sesionesAbiertas && sesionesAbiertas.length > 0) {
+      return { error: 'Ya existe una sesión de caja abierta. Debes cerrarla antes de abrir una nueva.' };
+    }
+
+    // Insertar nueva apertura
+    const { data, error } = await this.supabase
+      .from('caja_sesiones')
+      .insert([
+        {
+          usuario_nombre,
+          fecha_operativa,
+          hora_apertura,
+          numero_cierre,
+          estado: 'abierta',
+          observaciones: observaciones || null
+        }
+      ]);
+
+    if (error) {
+      if (error.message.includes('timeout')) {
+        return { error: 'Error de sistema. Intenta nuevamente más tarde.' };
+      }
+      throw error;
+    }
+
+    return { data };
+  } catch (error: any) {
+    console.error("Error al registrar apertura de caja:", error);
+    return { error: error.message };
+  }
+}
+
+ // Método público para verificar sesiones abiertas
+  async obtenerSesionesAbiertas(usuario_nombre: string, fecha_operativa: string) {
+    const { data, error } = await this.supabase
+      .from('caja_sesiones')
+      .select('*')
+      .eq('usuario_nombre', usuario_nombre)
+      .eq('fecha_operativa', fecha_operativa)
+      .eq('estado', 'abierta');
+
+    if (error) throw error;
+    return data;
+  }
+async obtenerMaxNumeroCierreGlobal() {
+  const { data, error } = await this.supabase
+    .from('caja_sesiones')
+    .select('numero_cierre')
+    .order('numero_cierre', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error al obtener max numero_cierre global:', error);
+    throw error;
+  }
+
+  return data?.numero_cierre ?? null;
+}
+async obtenerMaxNumeroCierrecaja() {
+  const { data, error } = await this.supabase
+    .from('cierres_caja')
+    .select('numero_cierre')
+    .order('numero_cierre', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error al obtener max numero_cierre global:', error);
+    throw error;
+  }
+
+  return data?.numero_cierre ?? null;
+}
+
+async registrarCierreCaja(cierre: {
+  fecha_cierre: string, 
+  total_ventas_efectivo?: number,
+  total_ventas_transferencia?: number,
+  total_ventas_tarjeta?: number,
+  total_ventas_pedidos_ya?: number,
+  total_ventas_pedidos_beez?: number,
+  total_ventas_credito?: number,
+  total_ventas?: number,
+  total_gastos?: number,
+  total_gastos_efectivo?: number,
+  total_gastos_transferencia?: number,
+  total_esperado?: number,
+  monto_contado?: number,
+  diferencia?: number,
+  total_a_depositar?: number,
+  observaciones?: string,
+  creado_por: string
+}) {
+  try {
+    const { data, error } = await this.supabase
+      .from('cierres_caja')
+      .insert([cierre]);
+
+    if (error) {
+      console.error('Error al registrar cierre:', error);
+      return { error: error.message };
+    }
+
+    return { data };
+  } catch (error: any) {
+    console.error('Excepción al registrar cierre de caja:', error);
+    return { error: error.message };
+  }
+}
+async obtenerCajaAbierta(usuario_nombre: string) {
+  const { data, error } = await this.supabase
+    .from('caja_sesiones')
+    .select('*')
+    .eq('usuario_nombre', usuario_nombre)
+    .eq('estado', 'abierta')
+    .order('id', { ascending: false }) // más reciente
+    .limit(1);
+
+  if (error) {
+    console.error('Error al obtener caja abierta:', error);
+    return null;
+  }
+
+  return data?.[0] || null;
+}
+async obtenerCajaAbiertas(): Promise<any> {
+  const { data, error } = await this.supabase
+    .from('caja_sesiones')
+    .select('*')
+    .eq('estado', 'abierta')
+    .order('id', { ascending: false }) // obtener la más reciente
+    .limit(1);
+
+  if (error) {
+    console.error('Error al obtener caja abierta:', error);
+    return null;
+  }
+
+  return data?.[0] || null;
+}
+
+
+async CierreCaja(cierre: {
+  usuario_nombre: string,
+  fecha_operativa: string,
+  hora_cierre: string
+}) {
+  try {
+    const { usuario_nombre, fecha_operativa, hora_cierre } = cierre;
+
+    // Buscar la sesión abierta para ese usuario y fecha
+    const { data: sesionesAbiertas, error: errorSesiones } = await this.supabase
+      .from('caja_sesiones')
+      .select('id')
+      .eq('usuario_nombre', usuario_nombre)
+      .eq('fecha_operativa', fecha_operativa)
+      .eq('estado', 'abierta');
+
+    if (errorSesiones) throw errorSesiones;
+
+    if (!sesionesAbiertas || sesionesAbiertas.length === 0) {
+      return { error: 'No existe sesión abierta para cerrar.' };
+    }
+
+    const idSesion = sesionesAbiertas[0].id;
+
+    // Actualizar: solo cambiar estado y hora_cierre
+    const { data, error } = await this.supabase
+      .from('caja_sesiones')
+      .update({
+        estado: 'cerrada',
+        hora_cierre
+      })
+      .eq('id', idSesion);
+
+    if (error) {
+      if (error.message.includes('timeout')) {
+        return { error: 'Error de sistema. Intenta nuevamente más tarde.' };
+      }
+      throw error;
+    }
+
+    return { data };
+  } catch (error: any) {
+    console.error("Error al cerrar la caja:", error);
+    return { error: error.message };
+  }
+}
+
+async obtenerUltimosCierresCombinado(limite = 3) {
+  // Obtener las sesiones cerradas
+  const { data: sesiones, error: errorSesiones } = await this.supabase
+    .from('caja_sesiones')
+    .select('*')
+    .eq('estado', 'cerrada')
+    .order('hora_cierre', { ascending: false })
+    .limit(limite);
+
+  if (errorSesiones) {
+    console.error('Error al obtener sesiones:', errorSesiones);
+    return [];
+  }
+
+  // Obtener los cierres de caja
+  const { data: cierres, error: errorCierres } = await this.supabase
+    .from('cierres_caja')
+    .select('*');
+
+  if (errorCierres) {
+    console.error('Error al obtener cierres:', errorCierres);
+    return [];
+  }
+
+  // Emparejar por numero_cierre
+  const resultado = sesiones.map(sesion => {
+    const cierreRelacionado = cierres.find(cierre =>
+      cierre.numero_cierre === sesion.numero_cierre
+    );
+
+    return {
+      fecha: sesion.hora_cierre,
+      numero: sesion.numero_cierre,
+      total_ventas: parseFloat(cierreRelacionado?.total_ventas || '0.00'),
+      monto_contado: parseFloat(cierreRelacionado?.monto_contado || '0.00'),
+      diferencia: parseFloat(cierreRelacionado?.diferencia || '0.00'),
+      observaciones: cierreRelacionado?.observaciones || '',
+    };
+  });
+
+  return resultado;
+}
+
+async obtenerCierresDeCaja(): Promise<any[]> {
+  const { data, error } = await this.supabase
+    .from('cierres_caja')
+    .select('*')
+    .order('fecha_cierre', { ascending: false }) // orden descendente, el más reciente primero
+    .limit(1); // traer solo un registro
+
+  if (error) {
+    console.error('Error al obtener el último cierre de caja:', error);
+    throw error;
+  }
+
+  return data || [];
+}
+
+
+
+
+
 
 
 

@@ -81,7 +81,8 @@ export class SideBarComponent implements OnInit {
         Usuarios: [],
         Menú: [],
         Facturación: [],
-        Cuenta: []
+        Cuenta: [],
+        
       },
       mesero: {
         Menú: ['Carta'], // Solo puede ver "Carta" del Menú
@@ -135,7 +136,7 @@ export class SideBarComponent implements OnInit {
         { label: 'Resumen', route: '/dashboard', icon: 'bi bi-house-door' },
         { label: 'Reportes', route: '/dashboard/reportes', icon: 'bi bi-file-earmark' },
       ],
-      expanded: true
+      expanded: false
     },
     {
       icon: 'bi bi-people',
@@ -144,7 +145,7 @@ export class SideBarComponent implements OnInit {
       submenus: [
         { label: 'Lista', route: '/Usuarios', icon: 'bi bi-list-ul' },
       ],
-      expanded: true
+      expanded: false
     },
     {
       icon: 'bi bi-card-list',
@@ -155,7 +156,7 @@ export class SideBarComponent implements OnInit {
         { label: 'Productos', route: '/menu/productos', icon: 'bi bi-cup-straw' },
         { label: 'Recetas', route: '/menu/recetas', icon: 'bi bi-egg' },
       ],
-      expanded: true
+      expanded: false
     },
     {
       icon: 'bi bi-receipt',
@@ -166,8 +167,9 @@ export class SideBarComponent implements OnInit {
         { label: 'Pedidos', route: '/facturas/imprimir',icon: 'bi bi-receipt-cutoff' },
         { label: 'Egresos', route: '/egresos',icon: 'bi bi-receipt-cutoff' },
         { label: 'Contratos', route: '/Contratos',icon: 'bi bi-receipt-cutoff' },
+        { label: 'Cierre Caja', route: '/Cierre/Caja',icon: 'bi bi-receipt-cutoff' },
       ],
-      expanded: true
+      expanded: false
     },
     {
       icon: 'bi bi-person-circle',
@@ -176,16 +178,39 @@ export class SideBarComponent implements OnInit {
         { label: 'Mi perfil', route: '/perfil', icon: 'bi bi-person' },
         { label: 'Cerrar sesión', icon: 'bi bi-box-arrow-right', action: 'logout' }
       ],
-      expanded: true
+      expanded: false
     }
+    
     
    
     
   ];
   
   toggleSubmenu(item: any) {
-    item.expanded = !item.expanded;
+  // Si ya está expandido, lo colapsamos
+  if (item.expanded) {
+    item.expanded = false;
+  } else {
+    // Colapsar todos los demás
+    this.visibleMenuItems.forEach(i => i.expanded = false);
+    // Expandir el que se hizo clic
+    item.expanded = true;
   }
+}
+handleSubmenuItemClick(sub: any, parentItem: any) {
+  if (sub.action) {
+    this.handleSubmenuClick(sub);
+  } else {
+    // Si está en vista desktop, ocultar el submenú (colapsar)
+    if (!this.isMobileView) {
+      parentItem.expanded = false;
+    } else {
+      // En móvil, cerrar todo el menú lateral
+      this.closeMenuOnMobile();
+    }
+  }
+}
+
   async handleSubmenuClick(sub: any) {
     if (sub.action === 'logout') {
       await this.cerrarSesion();

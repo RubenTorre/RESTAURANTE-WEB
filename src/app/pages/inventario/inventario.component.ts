@@ -53,7 +53,13 @@ productoEditando: any = {};
   mostrarModalRegistroProducto: boolean = false;
   mostrarModalEditarCategoria: boolean = false;
 categoriaEditando: any = {}; 
-  
+  pesoTotal: number = 0;          // libras o kilogramos
+gramosPorUnidad: number = 0;  
+costoTotal: number = 0;
+costo_total: number = 0;
+
+  sobranteGramos: number = 0;  // <-- Ahora es modificable
+
 
   constructor(private supabaseService: SupabaseService) {}
 
@@ -128,9 +134,10 @@ categoriaEditando: any = {};
   }
   
   
-  totalPages(): number {
-    return Math.ceil(this.categorias.length / this.itemsPerPage);
-  }
+ totalPages(): number {
+  return Math.ceil(this.filteredProducts.length / this.itemsPerPage);
+}
+
   
   cambiarPagina(delta: number) {
     const nueva = this.currentPage + delta;
@@ -144,7 +151,7 @@ categoriaEditando: any = {};
       const products = await this.supabaseService.obtenerProductos();
       // Asignamos los productos a la propiedad products
       this.products = products || [];
-  
+  console.log(products)
       // Hacemos una copia de los productos para aplicar filtros o búsquedas
       this.filteredProducts = [...this.products];
   
@@ -317,10 +324,6 @@ async guardarEdicionCategoria() {
     });
   }
 }
-
-
-
-
    // Método para abrir el modal
    abrirModalRegistroProducto() {
     this.mostrarModalRegistroProducto = true;
@@ -329,6 +332,7 @@ async guardarEdicionCategoria() {
   // Método para cerrar el modal
   cerrarModalRegistroProducto() {
     this.mostrarModalRegistroProducto = false;
+    this.limpiarFormulario();
   }
   // Método para registrar un producto
  async registrarProducto() {
@@ -388,6 +392,41 @@ async guardarEdicionCategoria() {
     this.stock_minimo = 5;
     this.costo_unitario = 0;
     this.activo = true;
+    this.costo_total=0;
   }
   
+calcularCostoUnitario() {
+  // Reiniciamos valores comunes
+  this.costo_unitario = 0;
+  this.sobranteGramos = 0;
+
+  if (this.unidad === 'kg' || this.unidad === 'lb') {
+    // Reiniciar stock solo si es por peso
+    this.stock_actual = 0;
+
+    // Conversión a gramos
+    const gramosPorKg = 1000;
+    const gramosPorLb = 453.592;
+    const pesoEnGramos = this.unidad === 'kg' 
+      ? this.pesoTotal * gramosPorKg
+      : this.pesoTotal * gramosPorLb;
+
+    // Calcular cortes
+    if (this.gramosPorUnidad > 0) {
+      this.stock_actual = Math.floor(pesoEnGramos / this.gramosPorUnidad);
+      this.sobranteGramos = pesoEnGramos % this.gramosPorUnidad;
+    }
+
+    // Calcular costo unitario
+    if (this.stock_actual > 0 && this.costo_total > 0) {
+          this.costo_unitario = Number((this.costo_total / this.stock_actual).toFixed(2));
+    }
+  } else if (this.unidad === 'cantidad') {
+    // Solo calcula si ya hay un stock ingresado manualmente
+    if (this.stock_actual > 0 && this.costo_total > 0) {
+ this.costo_unitario = Number((this.costo_total / this.stock_actual).toFixed(2));      
+    }
+  }
+}
+
 }

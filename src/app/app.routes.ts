@@ -58,6 +58,11 @@ export const routes: Routes = [
                 loadComponent:() => import('./pages/almuerzos-contrato/almuerzos-contrato.component')
 
             },
+            {
+                path:'Cierre/Caja',
+                loadComponent:() => import('./pages/cierre-caja/cierre-caja.component')
+
+            },
         ]
     }
 ];

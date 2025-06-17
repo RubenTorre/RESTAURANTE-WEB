@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo de Caja</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+  <div class="container mx-auto px-4 py-8">
+    <!-- Encabezado -->
+    <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+            <i class="fas fa-cash-register text-blue-600"></i>
+            Caja
+          </h1>
+          <p class="text-gray-500 flex items-center gap-2 mt-1">
+  <i class="far fa-calendar-alt"></i>
+  {{ getFechaLegible() }}
+</p>
+
+        </div>
+        <div class="flex gap-2">
+          <button (click)="imprimirReporte()"  class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-2 rounded-lg transition-colors flex items-center gap-2 cursor-pointer">
+            <i class="fas fa-print"></i>
+            Imprimir
+          </button>
+          <button (click)="abrirCaja()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 cursor-pointer">
+            <i class="fas fa-sync-alt"></i>
+           Abrir Caja
+          </button>
+        </div>
+      </div>
+    </div>
+         
+    <!-- Tarjetas de resumen -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+
+        <!-- Efectivo -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border-t-4 border-green-500 hover:shadow-lg transition-shadow">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-semibold text-gray-800">Ventas en Efectivo</h3>
+              <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full">Efectivo</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="bg-green-100 p-3 rounded-full mr-4">
+                  <i class="fas fa-money-bill-wave text-green-600 text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-gray-500 text-sm">Total recaudado</p>
+                  <p class="text-3xl font-bold text-gray-800">{{ getTotalByPago('efectivo') | currency }}</p>
+                </div>
+              </div>
+              <div class="text-green-500">
+                <i class="fas fa-chart-line text-2xl"></i>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-50 px-6 py-3">
+            <div class="text-sm text-gray-500">
+              <span class="font-medium">{{ getCountByPago('efectivo') }}</span> transacciones hoy
+            </div>
+          </div>
+        </div>
+      
+        <!-- Transferencia -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border-t-4 border-yellow-500 hover:shadow-lg transition-shadow">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-semibold text-gray-800">Ventas por Transferencia</h3>
+              <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-1 rounded-full">Transferencia</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="bg-yellow-100 p-3 rounded-full mr-4">
+                  <i class="fas fa-university text-yellow-600 text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-gray-500 text-sm">Total recaudado</p>
+                  <p class="text-3xl font-bold text-gray-800">{{ getTotalByPago('transferencia') | currency }}</p>
+                </div>
+              </div>
+              <div class="text-yellow-500">
+                <i class="fas fa-chart-line text-2xl"></i>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-50 px-6 py-3">
+            <div class="text-sm text-gray-500">
+              <span class="font-medium">{{ getCountByPago('transferencia') }}</span> transacciones hoy
+            </div>
+          </div>
+        </div>
+      
+        <!-- Tarjeta -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border-t-4 border-blue-500 hover:shadow-lg transition-shadow">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-semibold text-gray-800">Ventas con Tarjeta</h3>
+              <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">Tarjeta</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="bg-blue-100 p-3 rounded-full mr-4">
+                  <i class="fas fa-credit-card text-blue-600 text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-gray-500 text-sm">Total recaudado</p>
+                  <p class="text-3xl font-bold text-gray-800">{{ getTotalByPago('tarjeta') | currency }}</p>
+                </div>
+              </div>
+              <div class="text-blue-500">
+                <i class="fas fa-chart-bar text-2xl"></i>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-50 px-6 py-3">
+            <div class="text-sm text-gray-500">
+              <span class="font-medium">{{ getCountByPago('tarjeta') }}</span> transacciones hoy
+            </div>
+          </div>
+        </div>
+      
+        <!-- Pedidos Ya -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border-t-4 border-pink-300 hover:shadow-lg transition-shadow">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-semibold text-gray-800">Ventas Pedidos Ya</h3>
+              <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-1 rounded-full">Pedidos Ya</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="bg-red-100 p-3 rounded-full mr-4">
+                  <i class="fas fa-motorcycle text-red-600 text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-gray-500 text-sm">Total recaudado</p>
+                  <p class="text-3xl font-bold text-gray-800">{{ getTotalByPago('pedidosya') | currency }}</p>
+                </div>
+              </div>
+              <div class="text-red-500">
+                <i class="fas fa-chart-bar text-2xl"></i>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-50 px-6 py-3">
+            <div class="text-sm text-gray-500">
+              <span class="font-medium">{{ getCountByPago('pedidosya') }}</span> transacciones hoy
+            </div>
+          </div>
+        </div>
+      
+        <!-- Pedidos Beez -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border-t-4 border-purple-500 hover:shadow-lg transition-shadow">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-semibold text-gray-800">Ventas Pedidos Beez</h3>
+              <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-1 rounded-full">Pedidos Beez</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="bg-purple-100 p-3 rounded-full mr-4">
+                  <i class="fas fa-biking text-purple-600 text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-gray-500 text-sm">Total recaudado</p>
+                  <p class="text-3xl font-bold text-gray-800">{{ getTotalByPago('beez') | currency }}</p>
+                </div>
+              </div>
+              <div class="text-purple-500">
+                <i class="fas fa-chart-bar text-2xl"></i>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-50 px-6 py-3">
+            <div class="text-sm text-gray-500">
+              <span class="font-medium">{{ getCountByPago('beez') }}</span> transacciones hoy
+            </div>
+          </div>
+        </div>
+      
+        <!-- Crédito -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border-t-4 border-pink-500 hover:shadow-lg transition-shadow">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-semibold text-gray-800">Ventas a Crédito</h3>
+              <span class="bg-pink-100 text-pink-800 text-xs font-medium px-2.5 py-1 rounded-full">Crédito</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="bg-pink-100 p-3 rounded-full mr-4">
+                  <i class="fas fa-credit-card text-pink-600 text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-gray-500 text-sm">Total recaudado</p>
+                  <p class="text-3xl font-bold text-gray-800">{{ getTotalByPago('credito') | currency }}</p>
+                </div>
+              </div>
+              <div class="text-pink-500">
+                <i class="fas fa-chart-line text-2xl"></i>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-50 px-6 py-3">
+            <div class="text-sm text-gray-500">
+              <span class="font-medium">{{ getCountByPago('credito') }}</span> transacciones hoy
+            </div>
+          </div>
+        </div>
+     
+      
+ <!-- Gastos -->
+ <div class="bg-white rounded-xl shadow-md overflow-hidden border-t-4 border-red-500 hover:shadow-lg transition-shadow col-span-1 md:col-span-3">
+  <div class="p-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="text-xl font-semibold text-gray-900">Gastos del Día</h3>
+      <span class="bg-red-100 text-red-800 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wide">Gastos</span>
+    </div>
+
+    <!-- Contenedor horizontal para los tres bloques -->
+    <div class="flex justify-between space-x-6 mb-8">
+      <!-- Total general -->
+      <div class="flex items-center space-x-5 flex-1 bg-red-50 p-4 rounded-lg">
+        <div class="bg-red-100 p-4 rounded-full flex items-center justify-center w-14 h-14">
+          <i class="fas fa-receipt text-red-600 text-2xl"></i>
+        </div>
+        <div>
+          <p class="text-gray-500 text-sm font-medium uppercase tracking-wide mb-1">Total en gastos</p>
+          <p class="text-3xl font-extrabold text-gray-900 leading-none">{{ totalGastos | currency }}</p>
+        </div>
+      </div>
+
+      <!-- Gastos en efectivo -->
+      <div class="flex items-center space-x-5 flex-1 bg-green-50 p-4 rounded-lg">
+        <div class="bg-green-100 p-3 rounded-full flex items-center justify-center w-12 h-12">
+          <i class="fas fa-money-bill-wave text-green-600 text-xl"></i>
+        </div>
+        <div>
+          <p class="text-gray-700 text-sm font-medium mb-1">Gastos en Efectivo</p>
+          <p class="text-xl font-semibold text-gray-900 leading-tight">{{ totalGastosEfectivo | currency }}</p>
+        </div>
+      </div>
+
+      <!-- Gastos por transferencia -->
+      <div class="flex items-center space-x-5 flex-1 bg-yellow-50 p-4 rounded-lg">
+        <div class="bg-yellow-100 p-3 rounded-full flex items-center justify-center w-12 h-12">
+          <i class="fas fa-university text-yellow-600 text-xl"></i>
+        </div>
+        <div>
+          <p class="text-gray-700 text-sm font-medium mb-1">Gastos por Transferencia</p>
+          <p class="text-xl font-semibold text-gray-900 leading-tight">{{ totalGastosTransferencia | currency }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+    <p class="text-sm text-gray-600">
+      <span class="font-semibold text-gray-900">{{ gastosDelDia.length }}</span> gastos registrados hoy
+    </p>
+  </div>
+</div>
+
+
+        <!-- Total general -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border-t-4 border-gray-500 hover:shadow-lg transition-shadow col-span-1 md:col-span-3">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-semibold text-gray-800">Total Ventas</h3>
+              <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full">Total</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="bg-gray-100 p-3 rounded-full mr-4">
+                  <i class="fas fa-chart-pie text-gray-600 text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-gray-500 text-sm">Total del día</p>
+                  <p class="text-3xl font-bold text-gray-800">{{ totalVentas | currency }}</p>
+                </div>
+              </div>
+              <div class="text-gray-500">
+                <i class="fas fa-arrow-up text-2xl"></i>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-50 px-6 py-3">
+            <div class="text-sm text-gray-500">
+              <span class="font-medium">{{ countTotal }}</span> transacciones hoy
+            </div>
+          </div>
+        </div>
+      
+      </div>
+      
+    <!-- Registro de ventas -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden mb-6">
+        <!-- Encabezado -->
+        <div class="p-6 border-b">
+          <div class="flex justify-between items-center">
+            <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <i class="fas fa-list-alt text-indigo-600"></i>
+              Registro de Ventas Diarias
+            </h2>
+            <div class="flex items-center gap-2">
+              <div class="relative">
+                <input
+                  type="text"
+                  placeholder="Buscar venta..."
+                  [(ngModel)]="searchTerm"
+                  class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      
+        <!-- Tabla -->
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Factura</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hora</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Productos</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pago</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr *ngFor="let factura of paginatedFacturas" class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {{ factura.numero_factura }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ factura.fecha | date:'shortTime' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <div *ngFor="let producto of factura.productos">
+                    {{ producto.cantidad }}x {{ producto.nombre }}
+                    <ul *ngIf="producto.extras && producto.extras.length > 0" class="text-xs text-gray-400 ml-4 list-disc">
+                        <li *ngFor="let extra of producto.extras">
+                          + {{ extra.nombre }}
+                        </li>
+                      </ul>
+                      
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <span
+                    [ngClass]="{
+                      'bg-green-100 text-green-800': factura.forma_pago === 'Efectivo',
+                      'bg-blue-100 text-blue-800': factura.forma_pago !== 'Efectivo'
+                    }"
+                    class="px-2 py-1 rounded-full text-xs"
+                  >
+                    {{ factura.forma_pago }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">
+                  {{ factura.monto | currency }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      
+        <!-- Paginación -->
+        <div class="bg-gray-50 px-6 py-3 flex items-center justify-between border-t">
+          <div class="text-sm text-gray-500">
+            Mostrando
+            <span class="font-medium">{{ paginatedFacturas.length }}</span>
+            de
+            <span class="font-medium">{{ filteredFacturas.length }}</span> registros
+          </div>
+      
+          <div class="flex items-center space-x-2">
+            <button
+              class="px-3 py-1 rounded border text-sm text-gray-600 hover:bg-gray-100"
+              [disabled]="currentPage === 1"
+              (click)="goToPage(currentPage - 1)"
+            >
+              Anterior
+            </button>
+      
+            <ng-container *ngFor="let page of [].constructor(totalPages); let i = index">
+              <button
+                class="px-3 py-1 rounded text-sm"
+                [ngClass]="{
+                  'bg-indigo-600 text-white hover:bg-indigo-700': currentPage === i + 1,
+                  'border text-gray-600 hover:bg-gray-100': currentPage !== i + 1
+                }"
+                (click)="goToPage(i + 1)"
+              >
+                {{ i + 1 }}
+              </button>
+            </ng-container>
+      
+            <button
+              class="px-3 py-1 rounded border text-sm text-gray-600 hover:bg-gray-100"
+              [disabled]="currentPage === totalPages"
+              (click)="goToPage(currentPage + 1)"
+            >
+              Siguiente
+            </button>
+          </div>
+        </div>
+      </div>
+      
+
+   <!-- CIERRE DE CAJA -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+  <!-- FORMULARIO DE CIERRE -->
+  <div class="md:col-span-2 bg-white rounded-xl shadow-lg overflow-hidden">
+    <div class="p-6 border-b border-slate-200">
+      <h2 class="text-xl font-bold text-slate-800 flex items-center gap-3">
+        <i class="fas fa-cash-register text-indigo-600 text-2xl"></i>
+        Cierre de Caja
+      </h2>
+      <p class="text-slate-500 text-sm mt-1">Complete la información para realizar el cierre.</p>
+    </div>
+    <div class="p-6 space-y-6">
+      <!-- Alerta Fondo de Caja -->
+      <div class="bg-amber-50 p-4 rounded-lg border border-amber-300 flex items-start gap-3">
+        <i class="fas fa-piggy-bank text-amber-500 text-xl mt-0.5"></i>
+        <div>
+          <h3 class="font-semibold text-amber-800">Fondo de Caja Chica</h3>
+          <p class="text-amber-700 text-sm mt-1">
+            Recuerde que siempre debe mantener <strong>$30.00</strong> como fondo fijo en caja.
+          </p>
+        </div>
+      </div>
+
+      <!-- Monto contado -->
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1.5">Monto contado en caja</label>
+        <div class="relative rounded-md shadow-sm">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">$</div>
+          <input
+            type="number"
+            [(ngModel)]="montoContado"
+            class="block w-full pl-8 pr-12 py-2.5 rounded-md border-slate-300 text-slate-900 placeholder:text-slate-400 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            placeholder="0.00" />
+          <div class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500">USD</div>
+        </div>
+      </div>
+
+      <!-- Observaciones -->
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1.5">Observaciones</label>
+        <textarea
+          rows="4"
+          [(ngModel)]="observaciones"
+          class="block w-full rounded-md border-slate-300 shadow-sm placeholder:text-slate-400 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          placeholder="Ingrese cualquier observación relevante..."></textarea>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex flex-col sm:flex-row sm:justify-end gap-3 pt-2">
+        <button type="button" class="w-full sm:w-auto px-4 py-2.5 rounded-md bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm">
+          Cancelar
+        </button>
+       <button type="button" (click)="ejecutarCierreYMostrarModal()" class="w-full sm:w-auto px-4 py-2.5 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 text-sm">
+  <i class="fas fa-save mr-2"></i> Realizar Cierre
+</button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- INFORMACIÓN DEL CIERRE -->
+  <div class="bg-white rounded-xl shadow-md overflow-hidden">
+    <div class="p-6 border-b">
+      <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+        <i class="fas fa-info-circle text-indigo-600"></i>
+        Información del Cierre
+      </h2>
+    </div>
+    <div class="p-6 space-y-6">
+      <!-- Estado del Cierre -->
+<div class="bg-blue-50 p-4 rounded-lg">
+  <h3 class="font-medium text-blue-800 mb-2 flex items-center gap-2">
+    <i class="fas fa-clock text-blue-600"></i> Estado del Cierre
+  </h3>
+
+  <!-- Pendiente -->
+  <div *ngIf="estadoCierre === 'pendiente'" class="flex items-center">
+    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+      <i class="fas fa-circle text-yellow-500 mr-1 text-xs"></i> Pendiente
+    </span>
+    <p class="text-sm text-blue-700 mt-2 ml-2">El cierre de caja está pendiente de completar.</p>
+  </div>
+
+  <!-- Abierta -->
+  <div *ngIf="estadoCierre === 'abierta'" class="flex items-center">
+    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+      <i class="fas fa-circle text-green-500 mr-1 text-xs"></i> Abierta
+    </span>
+    <p class="text-sm text-green-700 mt-2 ml-2">La caja está actualmente abierta.</p>
+  </div>
+
+  <!-- Cerrada -->
+  <div *ngIf="estadoCierre === 'cerrada'" class="flex items-center">
+    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+      <i class="fas fa-circle text-red-500 mr-1 text-xs"></i> Cerrada
+    </span>
+    <p class="text-sm text-red-700 mt-2 ml-2">La caja ya fue cerrada.</p>
+  </div>
+</div>
+    <!-- Cajero -->
+<div>
+  <h3 class="font-medium text-gray-800 mb-3">Información del Cajero</h3>
+  <div class="flex items-center space-x-3">
+    <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+      <i class="fas fa-user text-indigo-600"></i>
+    </div>
+    <div>
+      <p class="text-sm font-medium text-gray-900">{{ nombreUsuario }}</p>
+      <p class="text-xs text-gray-500">Cajero Principal</p>
+    </div>
+  </div>
+</div>
+
+<!-- Últimos cierres -->
+<div>
+  <h3 class="font-medium text-gray-800 mb-3">Últimos Cierres</h3>
+  <div class="space-y-3">
+    <div *ngFor="let cierre of ultimosCierres" class="flex justify-between items-center p-2 hover:bg-gray-50 rounded-lg">
+      <div>
+        <p class="text-sm font-medium text-gray-900">
+          {{ cierre.fecha | date: 'dd MMMM, yyyy' }}
+        </p>
+        <p class="text-xs text-gray-500">
+          Cierre #{{ cierre.numero }}
+        </p>
+      </div>
+      <span class="text-sm font-medium text-gray-900">
+        ${{ cierre.total_ventas }}
+      </span>
+    </div>
+  </div>
+
+</div>
+
+
+      <!-- Acciones rápidas -->
+      <div>
+        <h3 class="font-medium text-gray-800 mb-3">Acciones Rápidas</h3>
+       <button (click)="imprimirReporte()" class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg flex items-center cursor-pointer">
+  <i class="fas fa-print text-gray-400 mr-2"></i> Imprimir reporte del día
+</button>
+<button (click)="exportarReporteExcel()" class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 rounded-lg flex items-center cursor-pointer">
+  <i class="fas fa-file-export text-gray-400 mr-2"></i> Exportar a Excel
+</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal de Resumen del Cierre -->
+<div *ngIf="mostrar" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm transition-all duration-300">
+  <div class="bg-white w-full max-w-5xl mx-4 md:mx-auto rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] animate-in slide-in-from-bottom-4 duration-300">
+    
+    <!-- Header con gradiente -->
+    <div class="bg-gradient-to-r from-indigo-600 to-purple-700 text-white p-6">
+      <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-bold flex items-center gap-3">
+          <div class="bg-white/20 p-2 rounded-lg">
+            <i class="fas fa-receipt text-white"></i>
+          </div>
+          Resumen del Cierre
+        </h2>
+
+      </div>
+    </div>
+
+    <div class="p-6 overflow-y-auto max-h-[calc(90vh-5rem)]">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+       <!-- Columna Izquierda: Resumen del Cierre - Versión mejorada sin quitar nada -->
+<div class="bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300">
+  <div class="mb-4">
+    <h3 class="text-lg font-semibold text-slate-800 flex items-center gap-2">
+      <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center shadow-sm border border-indigo-200">
+        <i class="fas fa-calculator text-indigo-600 text-sm"></i>
+      </div>
+      Resumen Financiero
+    </h3>
+  </div>
+  
+  <div class="space-y-3 text-sm">
+    <!-- Ventas en Efectivo - Mejorado -->
+    <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-slate-100 hover:border-green-100 hover:shadow-sm transition-all duration-200">
+      <span class="text-slate-600 flex items-center gap-3">
+        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center shadow-sm border border-green-200">
+          <i class="fas fa-money-bill-wave text-green-600 text-xs"></i>
+        </div>
+        Ventas en Efectivo:
+      </span>
+      <span class="font-semibold text-slate-800 bg-green-50 px-3 py-1 rounded-md shadow-sm border border-green-100">
+        {{ getTotalByPago('efectivo') | currency }}
+      </span>
+    </div>
+    
+    <!-- Ventas por Transferencia - Mejorado -->
+    <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-slate-100 hover:border-blue-100 hover:shadow-sm transition-all duration-200">
+      <span class="text-slate-600 flex items-center gap-3">
+        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center shadow-sm border border-blue-200">
+          <i class="fas fa-exchange-alt text-blue-600 text-xs"></i>
+        </div>
+        Ventas por Transferencia:
+      </span>
+      <span class="font-semibold text-slate-800 bg-blue-50 px-3 py-1 rounded-md shadow-sm border border-blue-100">
+        {{ getTotalByPago('transferencia') | currency }}
+      </span>
+    </div>
+    
+    <!-- Gastos del Día - Mejorado -->
+    <!-- Gastos en Efectivo -->
+<div class="flex justify-between items-center p-3 bg-white rounded-lg border border-slate-100 hover:border-rose-200 hover:shadow-sm transition-all duration-200">
+  <span class="text-slate-600 flex items-center gap-3">
+    <div class="w-8 h-8 bg-rose-100 rounded-lg flex items-center justify-center shadow-sm border border-rose-200">
+      <i class="fas fa-money-bill text-rose-600 text-xs"></i>
+    </div>
+    Gastos en Efectivo:
+  </span>
+  <span class="font-semibold text-red-600 bg-rose-50 px-3 py-1 rounded-md shadow-sm border border-rose-100">
+    - {{ totalGastosEfectivo || 0 | currency }}
+  </span>
+</div>
+
+<!-- Gastos por Transferencia -->
+<div class="flex justify-between items-center p-3 bg-white rounded-lg border border-slate-100 hover:border-rose-200 hover:shadow-sm transition-all duration-200">
+  <span class="text-slate-600 flex items-center gap-3">
+    <div class="w-8 h-8 bg-rose-100 rounded-lg flex items-center justify-center shadow-sm border border-rose-200">
+      <i class="fas fa-exchange-alt text-rose-600 text-xs"></i>
+    </div>
+    Gastos por Transferencia:
+  </span>
+  <span class="font-semibold text-red-600 bg-rose-50 px-3 py-1 rounded-md shadow-sm border border-rose-100">
+    - {{ totalGastosTransferencia || 0 | currency }}
+  </span>
+</div>
+
+    
+    <!-- Fondo de Caja Chica - Mejorado -->
+    <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-slate-100 hover:border-amber-100 hover:shadow-sm transition-all duration-200">
+      <span class="text-slate-600 flex items-center gap-3">
+        <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center shadow-sm border border-amber-200">
+          <i class="fas fa-wallet text-amber-600 text-xs"></i>
+        </div>
+        Fondo de Caja Chica:
+      </span>
+      <span class="font-semibold text-slate-800 bg-amber-50 px-3 py-1 rounded-md shadow-sm border border-amber-100">
+        $30.00
+      </span>
+    </div>
+    
+    <!-- Total Esperado en Caja - Mejorado -->
+    <div class="flex justify-between items-center p-4 font-semibold bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-xl my-4 shadow-inner hover:shadow-sm transition-all duration-300">
+      <span class="text-indigo-700 flex items-center gap-3">
+        <div class="w-8 h-8 bg-indigo-200 rounded-lg flex items-center justify-center shadow-sm border border-indigo-300">
+          <i class="fas fa-cash-register text-indigo-700 text-xs"></i>
+        </div>
+        Total Esperado en Caja:
+      </span>
+      <span class="text-indigo-900 text-lg bg-white px-4 py-2 rounded-md shadow-sm border border-indigo-100">
+        {{ calcularTotalEsperado() | currency }}
+      </span>
+    </div>
+    
+    <!-- Monto Contado - Mejorado -->
+    <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-slate-100 hover:border-emerald-100 hover:shadow-sm transition-all duration-200">
+      <span class="text-slate-600 flex items-center gap-3">
+        <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center shadow-sm border border-emerald-200">
+          <i class="fas fa-coins text-emerald-600 text-xs"></i>
+        </div>
+        Monto Contado:
+      </span>
+      <span class="font-semibold text-slate-800 bg-emerald-50 px-3 py-1 rounded-md shadow-sm border border-emerald-100">
+        {{ montoContadoMostrado || 0 | currency }}
+      </span>
+    </div>
+    
+    <!-- Diferencia - Mejorado -->
+    <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-slate-100 hover:shadow-sm transition-all duration-200"
+         [class.border-green-200]="calcularDiferencia() >= 0"
+         [class.border-red-200]="calcularDiferencia() < 0">
+      <span class="text-slate-700 flex items-center gap-3 font-medium">
+        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center shadow-sm border border-purple-200">
+          <i class="fas fa-balance-scale text-purple-600 text-xs"></i>
+        </div>
+        Diferencia:
+      </span>
+     <span class="font-bold text-base px-3 py-1 rounded-md shadow-sm"
+      [class.text-green-700]="calcularDiferencia() >= 0"
+      [class.bg-green-100]="calcularDiferencia() >= 0"
+      [class.border-green-200]="calcularDiferencia() >= 0"
+      [class.text-red-700]="calcularDiferencia() < 0"
+      [class.bg-red-100]="calcularDiferencia() < 0"
+      [class.border-red-200]="calcularDiferencia() < 0">
+  {{ calcularDiferencia() | currency }}
+  <small class="ml-2 italic text-sm text-slate-500">
+    {{ calcularDiferencia() >= 0 ? 'Exceso' : 'Faltante' }}
+  </small>
+</span>
+
+    </div>
+
+    <!-- Fondo para Siguiente Día - Mejorado -->
+    <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-slate-100 hover:border-teal-100 hover:shadow-sm transition-all duration-200">
+      <span class="text-slate-600 flex items-center gap-3">
+        <div class="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center shadow-sm border border-teal-200">
+          <i class="fas fa-piggy-bank text-teal-600 text-xs"></i>
+        </div>
+        Fondo para Siguiente Día:
+      </span>
+      <span class="font-semibold text-slate-800 bg-teal-50 px-3 py-1 rounded-md shadow-sm border border-teal-100">
+        $30.00
+      </span>
+    </div>
+    
+    <!-- Total a Depositar - Mejorado -->
+    <div class="flex justify-between items-center bg-gradient-to-r from-green-100 to-emerald-100 p-4 mt-6 rounded-xl shadow-md border-2 border-green-200 hover:shadow-lg transition-all duration-300">
+      <span class="text-green-800 font-bold flex items-center gap-3">
+        <div class="w-10 h-10 bg-green-200 rounded-lg flex items-center justify-center shadow-sm border border-green-300">
+          <i class="fas fa-university text-green-700 text-sm"></i>
+        </div>
+        Total a Depositar:
+      </span>
+      <span class="font-bold text-xl text-green-700 bg-white px-4 py-2 rounded-md shadow-md border border-green-200">
+        {{ calcularTotalADepositar() | currency }}
+      </span>
+    </div>
+  </div>
+</div>
+        <!-- Columna Derecha: Gráficos -->
+        <div  class="flex-1 h-full flex flex-col space-y-6">
+          
+          <!-- Resumen de Productos Vendidos y Stock (Diseño Mejorado) -->
+<div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
+  <h3 class="font-bold text-slate-800 mb-6 flex items-center gap-3 text-lg border-b pb-3 border-slate-100">
+    <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+      <i class="fas fa-boxes text-indigo-600"></i>
+    </div>
+    Productos Vendidos Hoy
+  </h3>
+
+  <!-- Tabla con scroll vertical si hay muchos productos -->
+<h2 class="text-lg font-semibold mb-2">Productos Vendidos</h2>
+<div class="overflow-x-auto mb-6">
+  <div class="max-h-[300px] overflow-y-auto">
+    <table class="min-w-full text-sm text-slate-700">
+      <thead class="bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
+        <tr>
+          <th class="px-4 py-2 text-left font-semibold">Producto</th>
+          <th class="px-4 py-2 text-center font-semibold">Vendidos</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of getProductosVendidos()" class="hover:bg-slate-50">
+          <td class="px-4 py-2">{{ item.nombre }}</td>
+          <td class="px-4 py-2 text-center font-semibold text-indigo-600">
+            {{ item.vendidos > 0 ? item.vendidos : '--' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h2 class="text-lg font-semibold mb-2">Productos en Stock</h2>
+<div class="overflow-x-auto">
+  <div class="max-h-[300px] overflow-y-auto">
+    <table class="min-w-full text-sm text-slate-700">
+      <thead class="bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
+        <tr>
+          <th class="px-4 py-2 text-left font-semibold">Ingrediente</th>
+          <th class="px-4 py-2 text-center font-semibold">Stock Actual</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let prod of getProductosInventario()" class="hover:bg-slate-50">
+          <td class="px-4 py-2">{{ prod.nombre }}</td>
+          <td
+            class="px-4 py-2 text-center font-semibold"
+            [class.text-red-600]="prod.stock_actual > 0 && prod.stock_actual <= 5"
+            [class.text-green-600]="prod.stock_actual > 5"
+          >
+            {{ prod.stock_actual > 0 ? prod.stock_actual : '--' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+</div>
+
+          
+          <!-- Botón de acción adicional -->
+          <div class="mt-4">
+            <button
+              (click)="cerrarCaja()"
+              class="w-full bg-gradient-to-r from-indigo-600 to-purple-700 text-white py-4 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-800 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+            >
+              <i class="fas fa-check-circle text-lg"></i>
+              Confirmar Cierre de Caja
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </div>
+</body>
+
+</html>
+

@@ -171,10 +171,6 @@
     </div>
   </div>
 </div>
-
-
-  
-  
   <!-- Contenedor principal con fondo y espaciado -->
 
 <div class="min-h-screen bg-gray-50 p-6">
@@ -744,19 +740,28 @@
   
           <td class="px-6 py-4">
             <div class="flex flex-wrap gap-2">
-              <ng-container *ngFor="let detalle of pedido.pedidos_almuerzo">
-                <div class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium shadow-sm"
-                     [ngClass]="
-                        detalle.almuerzos?.nombre.toLowerCase().includes('completo') ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                        detalle.almuerzos?.nombre.toLowerCase().includes('empaquetado') ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                        'bg-blue-50 text-blue-700 border border-blue-200'
-                     ">
-                  <span>{{ detalle.almuerzos?.nombre }}</span>
-                  <span class="ml-1.5 bg-white text-gray-800 font-bold rounded-full w-5 h-5 flex items-center justify-center text-xs shadow-inner">{{ detalle.cantidad }}</span>
-                </div>
+              <ng-container *ngIf="pedido.tieneAlmuerzosValidos; else mostrarObservaciones">
+                <ng-container *ngFor="let detalle of pedido.pedidos_almuerzo">
+                  <div *ngIf="detalle.almuerzos !== null" class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium shadow-sm"
+                       [ngClass]="
+                          detalle.almuerzos.nombre.toLowerCase().includes('completo') ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                          detalle.almuerzos.nombre.toLowerCase().includes('empaquetado') ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                          'bg-blue-50 text-blue-700 border border-blue-200'
+                       ">
+                    <span>{{ detalle.almuerzos.nombre }}</span>
+                    <span class="ml-1.5 bg-white text-gray-800 font-bold rounded-full w-5 h-5 flex items-center justify-center text-xs shadow-inner">{{ detalle.cantidad }}</span>
+                  </div>
+                </ng-container>
               </ng-container>
+          
+              <ng-template #mostrarObservaciones>
+                <div class="text-sm italic text-gray-600">
+                  {{ pedido.observaciones || 'Sin observaciones' }}
+                </div>
+              </ng-template>
             </div>
           </td>
+          
   
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="text-sm text-gray-900 font-medium flex items-center">
