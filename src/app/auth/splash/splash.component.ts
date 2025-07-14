@@ -13,6 +13,6 @@ export class SplashComponent {
   ngOnInit(): void {
     setTimeout(() => {
       this.router.navigate(['/login']);
-    }, 3000);  // Redirige después de 3 segundos
+    }, 4000);  // Redirige después de 3 segundos
   }
 }
