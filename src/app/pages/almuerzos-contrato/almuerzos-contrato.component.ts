@@ -80,6 +80,7 @@ Math = Math;
   }
   
 modalPedidoAbierto = false;
+clienteSeleccionadoParaPdf: string | null = null;
 
 // Agrega estas propiedades al componente
 preciosTemporales: { almuerzo_id: string; precio: number; nombreAlmuerzo?: string }[] = [];
@@ -512,44 +513,51 @@ getEstadoClase(estado: string | null): string {
     this.estadoFiltro = '';
     this.cargarPedidos();
   }
-
-  // Método para filtrar pedidos actualizado
-  async filtrarPedidos() {
-    this.cargando = true;
-    try {
-      if (this.fechaInicio && this.fechaFin) {
-        const pedidosFiltradosPorFecha = await this.supabaseService.obtenerPedidosConDetalleFiltrado(this.fechaInicio, this.fechaFin);
-        this.pedidosFiltrados = pedidosFiltradosPorFecha;
-        this.mostrarTodos = false;
-      } else {
-        this.pedidosFiltrados = [...this.pedidos];
-        this.mostrarTodos = true;
-      }
-  
-      // Filtro por nombre
-      if (this.nombreBusqueda) {
-        this.pedidosFiltrados = this.pedidosFiltrados.filter(pedido => 
-          pedido.clientes?.nombre?.toLowerCase().includes(this.nombreBusqueda.toLowerCase())
-        );
-        this.mostrarTodos = false;
-      }
-  
-      // Filtro por estado de pago
-      if (this.estadoFiltro) {
-        this.pedidosFiltrados = this.pedidosFiltrados.filter(pedido =>
-          pedido.estado_pago?.toLowerCase() === this.estadoFiltro
-        );
-      }
-  
-      // 🔽 Ordenar por fecha ASC (de menor a mayor)
-      this.pedidosFiltrados.sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
-  
-    } catch (error) {
-      console.error('Error al filtrar pedidos:', error);
-    } finally {
-      this.cargando = false;
+pedidoSeleccionado: any = null;
+ async filtrarPedidos() {
+  this.cargando = true;
+  try {
+    if (this.fechaInicio && this.fechaFin) {
+      const pedidosFiltradosPorFecha = await this.supabaseService.obtenerPedidosConDetalleFiltrado(this.fechaInicio, this.fechaFin);
+      this.pedidosFiltrados = pedidosFiltradosPorFecha;
+      this.mostrarTodos = false;
+    } else {
+      this.pedidosFiltrados = [...this.pedidos];
+      this.mostrarTodos = true;
     }
+
+    // Filtro por nombre
+    if (this.nombreBusqueda) {
+      this.pedidosFiltrados = this.pedidosFiltrados.filter(pedido => 
+        pedido.clientes?.nombre?.toLowerCase().includes(this.nombreBusqueda.toLowerCase())
+      );
+      this.mostrarTodos = false;
+      
+    }
+
+    // Filtro por estado de pago
+    if (this.estadoFiltro) {
+      this.pedidosFiltrados = this.pedidosFiltrados.filter(pedido =>
+        pedido.estado_pago?.toLowerCase() === this.estadoFiltro
+      );
+    }
+
+    // 🔽 Ordenar por fecha ASC (de menor a mayor)
+    this.pedidosFiltrados.sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
+
+    // Si hay solo un pedido filtrado, lo asignamos como seleccionado
+    if (this.pedidosFiltrados.length === 1) {
+      this.pedidoSeleccionado = this.pedidosFiltrados[0];
+    } else {
+      this.pedidoSeleccionado = null;
+    }
+
+  } catch (error) {
+    console.error('Error al filtrar pedidos:', error);
+  } finally {
+    this.cargando = false;
   }
+}
   
   
   get pedidosPaginados(): any[] {
@@ -798,8 +806,8 @@ cancelButtonColor: '#dc2626',
   
     // ---------- LOGO ----------
     try {
-      const logoData = await this.getBase64ImageFromURL('assets/splash/logo.jpg');
-      doc.addImage(logoData, 'JPEG', 15, 10, 25, 15);
+      const logoData = await this.getBase64ImageFromURL('assets/splash/logoreporte.png');
+      doc.addImage(logoData, 'PNG', 15, 10, 25, 15);
     } catch (error) {
       console.warn('No se pudo cargar el logo:', error);
     }
@@ -836,11 +844,27 @@ cancelButtonColor: '#dc2626',
     doc.setFont('helvetica', 'bold');
     doc.text('REPORTE DE PAGOS', pageWidth / 2, 44, { align: 'center' });
   
-    // ---------- PANEL DE FILTROS ----------
-    const clienteText = this.nombreBusqueda ? `CLIENTE: ${this.nombreBusqueda.toUpperCase()}` : '';
-    const estadoPagoText = this.estadoFiltro ? `ESTADO DE PAGO: ${this.estadoFiltro.toUpperCase()}` : '';
-    const periodoText = (this.fechaInicio && this.fechaFin) ? `PERÍODO: ${this.formatearFecha(this.fechaInicio)} HASTA ${this.formatearFecha(this.fechaFin)}` : '';
-  
+   // ---------- PANEL DE FILTROS ----------
+let clienteText = '';
+
+if (this.nombreBusqueda) {
+  // Buscar un pedido cuyo cliente contenga el texto de búsqueda
+  const pedidoConNombreCompleto = this.pedidosFiltrados.find(pedido =>
+    pedido.clientes?.nombre?.toLowerCase().includes(this.nombreBusqueda.toLowerCase())
+  );
+
+  clienteText = pedidoConNombreCompleto
+    ? `CLIENTE: ${pedidoConNombreCompleto.clientes.nombre.toUpperCase().trim()}${pedidoConNombreCompleto.clientes.apellido ? ' ' + pedidoConNombreCompleto.clientes.apellido.toUpperCase().trim() : ''}`
+    : `CLIENTE: ${this.nombreBusqueda.toUpperCase()}`;
+} else if (this.pedidoSeleccionado) {
+  clienteText = `CLIENTE: ${this.pedidoSeleccionado.clientes.nombre.toUpperCase()}${this.pedidoSeleccionado.clientes.apellido ? ' ' + this.pedidoSeleccionado.clientes.apellido.toUpperCase() : ''}`;
+} else {
+  clienteText = '';
+}
+
+const estadoPagoText = this.estadoFiltro ? `ESTADO DE PAGO: ${this.estadoFiltro.toUpperCase()}` : '';
+const periodoText = (this.fechaInicio && this.fechaFin) ? `PERÍODO: ${this.formatearFecha(this.fechaInicio)} HASTA ${this.formatearFecha(this.fechaFin)}` : '';
+
     const filtroX = 15;
     const filtroWidth = pageWidth - 30;
     const filtroHeight = 24;
@@ -978,20 +1002,59 @@ cancelButtonColor: '#dc2626',
     const totalGeneral = this.pedidosFiltrados.reduce((acc, pedido) => acc + (pedido.total || 0), 0);
     doc.text(`TOTAL GENERAL: $/ ${totalGeneral.toFixed(2)}`, pageWidth - 15, finalY + 12, { align: 'right' });
   
-    // ---------- FIRMA ----------
-    doc.setDrawColor(180, 180, 180);
-    doc.setLineWidth(0.3);
-    const firmaX = 20;
-    const firmaY = finalY + 30;
-    const firmaWidth = 60;
-  
-    doc.line(firmaX, firmaY, firmaX + firmaWidth, firmaY);
-    doc.setFontSize(8);
-    doc.setTextColor(120, 120, 120);
-    doc.text('Firma y Sello', firmaX + firmaWidth / 2, firmaY + 5, { align: 'center' });
-  
-    // ---------- GUARDAR PDF ----------
-    doc.save(`Reporte_pagos_${new Date().toISOString().slice(0,10)}.pdf`);
+   // ---------- FIRMA ----------
+doc.setDrawColor(180, 180, 180);
+doc.setLineWidth(0.3);
+const firmaX = 20;
+const firmaY = finalY + 30;
+const firmaWidth = 60;
+
+doc.line(firmaX, firmaY, firmaX + firmaWidth, firmaY);
+doc.setFontSize(8);
+doc.setTextColor(120, 120, 120);
+doc.text('Firma y Sello', firmaX + firmaWidth / 2, firmaY + 5, { align: 'center' });
+
+// ---------- SELLO TRANSPARENTE ENCIMA ----------
+try {
+  const logoData = await this.getBase64ImageFromURL('assets/splash/sello.png');
+
+  // Ajusta tamaño del sello
+  const selloAncho = 70; // más ancho
+  const selloAlto = 35;  // más alto
+
+  // Posición ajustada para estar más cerca de la línea
+  const selloX = firmaX + firmaWidth / 2 - selloAncho / 2;
+  const selloY = firmaY - selloAlto + 7; // más cerca de la línea (puedes jugar con +5 o +6)
+
+  doc.addImage(logoData, 'PNG', selloX, selloY, selloAncho, selloAlto);
+} catch (error) {
+  console.warn('No se pudo cargar el sello:', error);
+}
+
+
+    let clienteNombreArchivo = '';
+
+if (this.nombreBusqueda) {
+  const pedidoConNombreCompleto = this.pedidosFiltrados.find(pedido =>
+    pedido.clientes?.nombre?.toLowerCase().includes(this.nombreBusqueda.toLowerCase())
+  );
+
+  clienteNombreArchivo = pedidoConNombreCompleto
+    ? `${pedidoConNombreCompleto.clientes.nombre.toUpperCase().trim()}${pedidoConNombreCompleto.clientes.apellido ? '_' + pedidoConNombreCompleto.clientes.apellido.toUpperCase().trim() : ''}`
+    : this.nombreBusqueda.toUpperCase().replace(/\s+/g, '_');
+} else if (this.pedidoSeleccionado) {
+  clienteNombreArchivo = `${this.pedidoSeleccionado.clientes.nombre.toUpperCase()}${this.pedidoSeleccionado.clientes.apellido ? '_' + this.pedidoSeleccionado.clientes.apellido.toUpperCase() : ''}`;
+} else {
+  clienteNombreArchivo = 'TODOS';
+}
+
+const fechaInicioStr = this.fechaInicio ? this.formatearFecha(this.fechaInicio).replace(/\//g, '-') : 'INICIO';
+const fechaFinStr = this.fechaFin ? this.formatearFecha(this.fechaFin).replace(/\//g, '-') : 'FIN';
+
+const nombreArchivo = `Reporte_${clienteNombreArchivo}_desde_${fechaInicioStr}_hasta_${fechaFinStr}.pdf`;
+
+doc.save(nombreArchivo);
+
   }
   
   
@@ -1015,14 +1078,14 @@ cancelButtonColor: '#dc2626',
         canvas.height = img.height;
         canvas.width = img.width;
         ctx?.drawImage(img, 0, 0);
-        resolve(canvas.toDataURL('image/jpeg'));
+        resolve(canvas.toDataURL('image/png'));
       };
       img.onerror = error => reject(error);
       img.src = url;
     });
   }
   
-
+ 
   
 }
 function getFechaLocal(): string {

@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-side-bar',
-  imports: [CommonModule, RouterLink,RouterModule],
+  imports: [CommonModule, RouterLink, RouterModule],
   templateUrl: './side-bar.component.html',
   styleUrls: ['./side-bar.component.css']
 })
@@ -32,7 +32,7 @@ export class SideBarComponent implements OnInit {
 
   ngOnInit() {
     this.userService.nombreUsuario$.subscribe(nombre => {
-      this.nombreUsuario = nombre;      
+      this.nombreUsuario = nombre;
     });
     this.userService.rolUsuario$.subscribe(rol => {
       this.rolUsuario = rol;
@@ -45,7 +45,7 @@ export class SideBarComponent implements OnInit {
     if (this.isMobileView && !this.forceCollapsed) {
       const clickedInside = this.sidebarContainer.nativeElement.contains(event.target);
       const isHamburgerButton = (event.target as HTMLElement).closest('.mobile-menu-btn');
-      
+
       if (!clickedInside && !isHamburgerButton) {
         this.closeMenuOnMobile();
       }
@@ -82,10 +82,20 @@ export class SideBarComponent implements OnInit {
         Menú: [],
         Facturación: [],
         Cuenta: [],
-        
+        Reservaciones: [],
+
+      },
+      gerente: {
+        Dashboard: [],
+        Usuarios: [],
+        Menú: [],
+        Facturación: [],
+        Cuenta: [],
+        Reservaciones: [],
+
       },
       mesero: {
-        Menú: ['Carta'], // Solo puede ver "Carta" del Menú
+        Menú: ['Tomar Pedido'], // Solo puede ver "Carta" del Menú
         Cuenta: []
       },
       cocinero: {
@@ -96,33 +106,34 @@ export class SideBarComponent implements OnInit {
       cajero: {
         Dashboard: ['Resumen'],
         Facturación: [],
-        Cuenta: []
+        Cuenta: [],
+        Reservaciones: [],
       }
     };
-  
+
     const permisosRol = permisos[rol] || {};
-  
+
     this.visibleMenuItems = this.menuItems
       .map(item => {
         if (permisosRol.hasOwnProperty(item.label)) {
           const subpermisos = permisosRol[item.label];
-  
+
           // Filtrar submenús si están definidos
           if (item.submenus && item.submenus.length > 0) {
             const submenusFiltrados = subpermisos.length > 0
               ? item.submenus.filter(sub => subpermisos.includes(sub.label))
               : item.submenus;
-  
+
             if (submenusFiltrados.length > 0) {
               return { ...item, submenus: submenusFiltrados };
             } else {
               return null; // No mostrar el ítem si no tiene submenús visibles
             }
           }
-  
+
           return item; // Ítems sin submenús
         }
-  
+
         return null;
       })
       .filter(Boolean); // Quitar los null
@@ -131,10 +142,10 @@ export class SideBarComponent implements OnInit {
     {
       icon: 'bi bi-speedometer2',
       label: 'Dashboard',
-     
+
       submenus: [
         { label: 'Resumen', route: '/dashboard', icon: 'bi bi-house-door' },
-        { label: 'Reportes', route: '/dashboard/reportes', icon: 'bi bi-file-earmark' },
+        { label: 'Reportes', route: '/reportes', icon: 'bi bi-file-earmark' },
       ],
       expanded: false
     },
@@ -152,7 +163,8 @@ export class SideBarComponent implements OnInit {
       label: 'Menú',
       route: '/menu',
       submenus: [
-        { label: 'Carta', route: '/menu/carta', icon: 'bi bi-book' },
+        { label: 'Tomar Pedido', route: '/menu/carta', icon: 'bi bi-book' },
+        { label: 'Reservaciones', route: '/menu/reservaciones', icon: 'bi bi-calendar-check' },
         { label: 'Productos', route: '/menu/productos', icon: 'bi bi-cup-straw' },
         { label: 'Recetas', route: '/menu/recetas', icon: 'bi bi-egg' },
       ],
@@ -161,13 +173,13 @@ export class SideBarComponent implements OnInit {
     {
       icon: 'bi bi-receipt',
       label: 'Facturación',
-     
+
       submenus: [
         { label: 'Cobros', route: '/facturas/cobros', icon: 'bi bi-cash-stack' },
-        { label: 'Pedidos', route: '/facturas/imprimir',icon: 'bi bi-receipt-cutoff' },
-        { label: 'Egresos', route: '/egresos',icon: 'bi bi-receipt-cutoff' },
-        { label: 'Contratos', route: '/Contratos',icon: 'bi bi-receipt-cutoff' },
-        { label: 'Cierre Caja', route: '/Cierre/Caja',icon: 'bi bi-receipt-cutoff' },
+        { label: 'Pedidos', route: '/facturas/imprimir', icon: 'bi bi-receipt-cutoff' },
+        { label: 'Egresos', route: '/egresos', icon: 'bi bi-receipt-cutoff' },
+        { label: 'Contratos', route: '/Contratos', icon: 'bi bi-receipt-cutoff' },
+        { label: 'Cierre Caja', route: '/Cierre/Caja', icon: 'bi bi-receipt-cutoff' },
       ],
       expanded: false
     },
@@ -180,43 +192,43 @@ export class SideBarComponent implements OnInit {
       ],
       expanded: false
     }
-    
-    
-   
-    
+
+
+
+
   ];
-  
+
   toggleSubmenu(item: any) {
-  // Si ya está expandido, lo colapsamos
-  if (item.expanded) {
-    item.expanded = false;
-  } else {
-    // Colapsar todos los demás
-    this.visibleMenuItems.forEach(i => i.expanded = false);
-    // Expandir el que se hizo clic
-    item.expanded = true;
-  }
-}
-handleSubmenuItemClick(sub: any, parentItem: any) {
-  if (sub.action) {
-    this.handleSubmenuClick(sub);
-  } else {
-    // Si está en vista desktop, ocultar el submenú (colapsar)
-    if (!this.isMobileView) {
-      parentItem.expanded = false;
+    // Si ya está expandido, lo colapsamos
+    if (item.expanded) {
+      item.expanded = false;
     } else {
-      // En móvil, cerrar todo el menú lateral
-      this.closeMenuOnMobile();
+      // Colapsar todos los demás
+      this.visibleMenuItems.forEach(i => i.expanded = false);
+      // Expandir el que se hizo clic
+      item.expanded = true;
     }
   }
-}
+  handleSubmenuItemClick(sub: any, parentItem: any) {
+    if (sub.action) {
+      this.handleSubmenuClick(sub);
+    } else {
+      // Si está en vista desktop, ocultar el submenú (colapsar)
+      if (!this.isMobileView) {
+        parentItem.expanded = false;
+      } else {
+        // En móvil, cerrar todo el menú lateral
+        this.closeMenuOnMobile();
+      }
+    }
+  }
 
   async handleSubmenuClick(sub: any) {
     if (sub.action === 'logout') {
       await this.cerrarSesion();
     }
   }
-  
+
   async cerrarSesion() {
     const resultado = await Swal.fire({
       title: '¿Estás seguro?',
@@ -228,7 +240,7 @@ handleSubmenuItemClick(sub: any, parentItem: any) {
       confirmButtonText: 'Sí, cerrar sesión',
       cancelButtonText: 'Cancelar'
     });
-  
+
     if (resultado.isConfirmed) {
       try {
         await this.SupabaseService.logout();
@@ -241,5 +253,5 @@ handleSubmenuItemClick(sub: any, parentItem: any) {
       }
     }
   }
-  
+
 }

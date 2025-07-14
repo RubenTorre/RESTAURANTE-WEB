@@ -79,6 +79,7 @@ montoContadoMostrado: number = 0
   estadoCierre: 'pendiente' | 'cerrada' | 'abierta' = 'pendiente';  // Estado por defecto
 ultimosCierres: any[] = [];
 listaCierres: any[]=[];
+facturasCerrada: Factura[] = [];
 
   constructor(private supabaseService: SupabaseService, private userService: UserService) {}
 
@@ -88,11 +89,12 @@ ngOnInit() {
   this.cargarGastos();
   this.loadProducts();
   this.cargarCierres();
+  this.cargarFacturasUltimaCaja();
 
   this.userService.nombreUsuario$.subscribe(async nombre => {
     this.nombreUsuario = nombre;
 
-    const caja = await this.supabaseService.obtenerCajaAbierta(this.nombreUsuario);
+    const caja = await this.supabaseService.obtenerCajaAbierta();
 
     if (!caja) {
       this.estadoCierre = 'cerrada';
@@ -112,6 +114,26 @@ ngOnInit() {
   });
 }
 
+async cargarFacturasUltimaCaja() {
+  try {
+    const { data, error } = await this.supabaseService.obtenerFacturasUltimaCajaCerrada();
+
+    if (error) {
+      console.error('❌ Error cargando facturas:', error);
+      return;
+    }
+
+    this.facturasCerrada = data ?? [];
+
+    console.log('✅ Facturas en la última caja cerrada:', this.facturasCerrada);
+
+    const resumen = this.getProductosVendidosCajaCerrada();
+    console.log('📦 Productos vendidos:', resumen);
+
+  } catch (e) {
+    console.error('❌ Error inesperado:', e);
+  }
+}
 
   async cargarFacturas() {
     
@@ -215,8 +237,6 @@ calcularDiferencia(): number {
   return Number(diferencia.toFixed(2));
 }
 
-
-
 calcularTotalADepositar(): number {
   const fondoCajaChica = 30;
   const montoContado = this.montoContadoMostrado || 0;
@@ -242,7 +262,6 @@ calcularPorcentajeEfectivo(): number {
       const products = await this.supabaseService.obtenerProductos();
       // Asignamos los productos a la propiedad products
       this.products = products || [];
-  console.log('prdictos',products)
     } catch (error) {
       console.error('Error loading products:', error);
     }
@@ -262,6 +281,21 @@ getProductosVendidos() {
     .map(([nombre, vendidos]) => ({ nombre, vendidos }))
     .sort((a, b) => a.nombre.localeCompare(b.nombre));
 }
+getProductosVendidosCajaCerrada() {
+  const contadorVentas: Record<string, number> = {};
+
+  this.facturasCerrada.forEach(factura => {
+    factura.productos.forEach(prod => {
+      const nombre = this.agruparNombreProducto(prod.nombre);
+      contadorVentas[nombre] = (contadorVentas[nombre] || 0) + prod.cantidad;
+    });
+  });
+
+  return Object.entries(contadorVentas)
+    .map(([nombre, vendidos]) => ({ nombre, vendidos }))
+    .sort((a, b) => a.nombre.localeCompare(b.nombre));
+}
+
 
 getProductosInventario() {
   return this.products
@@ -366,7 +400,7 @@ async realizarCierre(): Promise<void> {
 }
 
 async cerrarCaja() {
-  const cajaAbierta = await this.supabaseService.obtenerCajaAbierta(this.nombreUsuario);
+  const cajaAbierta = await this.supabaseService.obtenerCajaAbierta();
   
   if (!cajaAbierta) {
     await Swal.fire({
@@ -401,7 +435,7 @@ async cerrarCaja() {
     this.cerrarModal();  // Cierra el modal cuando el usuario presiona OK
     this.cargarCierres();
      // 🔽 NUEVO: cargar estado y cierres
-const caja = await this.supabaseService.obtenerCajaAbierta(this.nombreUsuario);
+const caja = await this.supabaseService.obtenerCajaAbierta();
 
 if (!caja) {
   this.estadoCierre = 'cerrada';
@@ -455,11 +489,21 @@ async abrirCaja() {
   const hora_apertura = getLocalDateTimeString();
 
   try {
-    // ✅ Obtener el máximo número de cierre de forma global
+    // 🔒 Primero verificás si ya hay una caja abierta (de cualquier usuario)
+    const cajaAbierta = await this.supabaseService.obtenerCajaAbierta();
+    if (cajaAbierta) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Caja ya abierta',
+        text: `Ya existe una caja abierta por ${cajaAbierta.usuario_nombre}.`,
+      });
+      return;
+    }
+
+    // ✅ Si no hay caja abierta, procedés a abrir
     const maxNumero = await this.supabaseService.obtenerMaxNumeroCierreGlobal();
     const nuevoNumeroCierre = maxNumero !== null ? maxNumero + 1 : 1;
 
-    // 👉 Insertar nueva sesión de caja
     const resultado = await this.supabaseService.registrarAperturaCaja({
       usuario_nombre,
       fecha_operativa,
@@ -468,21 +512,12 @@ async abrirCaja() {
       observaciones: getObservacionPorTurno(),
     });
 
-    // Validaciones
     if (resultado.error) {
-      if (resultado.error.includes('sesión de caja abierta')) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Caja ya abierta',
-          text: resultado.error,
-        });
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudo abrir la caja. Intenta de nuevo.',
-        });
-      }
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo abrir la caja. Intenta de nuevo.',
+      });
     } else {
       Swal.fire({
         icon: 'success',
@@ -491,21 +526,14 @@ async abrirCaja() {
         timer: 2000,
         showConfirmButton: false
       });
-      // 🔽 NUEVO: cargar estado y cierres
-const caja = await this.supabaseService.obtenerCajaAbierta(this.nombreUsuario);
 
-if (!caja) {
-  this.estadoCierre = 'cerrada';
-} else if (caja.estado === 'abierta') {
-  this.estadoCierre = 'abierta';
-} else {
-  this.estadoCierre = 'pendiente';
-}
+      // Actualización de estado y cierres
+      const caja = await this.supabaseService.obtenerCajaAbierta();
+      this.estadoCierre = caja?.estado || 'cerrada';
+      const cierres = await this.supabaseService.obtenerUltimosCierresCombinado();
+      this.ultimosCierres = cierres;
+    }
 
-const cierres = await this.supabaseService.obtenerUltimosCierresCombinado();
- this.ultimosCierres = cierres;
-}
-   
   } catch (error) {
     console.error('Error:', error);
     Swal.fire({
@@ -515,6 +543,7 @@ const cierres = await this.supabaseService.obtenerUltimosCierresCombinado();
     });
   }
 }
+
 
   getFechaLegible(): string {
     const ahora = new Date();
@@ -763,7 +792,99 @@ doc.setFont('helvetica', 'italic');
 doc.setFontSize(10);
 doc.text(textoObs, margenIzq + 10, posObsY + 20);
 
-  
+  // --- PRODUCTOS VENDIDOS ---
+const productosVendidos = this.getProductosVendidosCajaCerrada();
+let posVendidosY = (doc as any).lastAutoTable.finalY + 15;
+
+// Verificar espacio para productos vendidos
+if (posVendidosY + 30 > 280) {
+  doc.addPage();
+  posVendidosY = 40;
+}
+
+doc.setTextColor(22, 72, 99);
+doc.setFont('helvetica', 'bold');
+doc.setFontSize(12);
+doc.text('PRODUCTOS VENDIDOS', margenIzq, posVendidosY);
+
+autoTable(doc, {
+  startY: posVendidosY + 6,
+  margin: { left: margenIzq, right: margenIzq },
+  head: [['Producto', 'Cantidad']],
+  body: productosVendidos.map(p => [p.nombre, p.vendidos.toString()]),
+  styles: {
+    fontSize: 9,
+    textColor: [73, 80, 87],
+    cellPadding: 4,
+  },
+  headStyles: {
+    fillColor: [22, 72, 99],
+    textColor: 255,
+    fontStyle: 'bold',
+  },
+  alternateRowStyles: {
+    fillColor: [248, 249, 250],
+  },
+  columnStyles: {
+    0: { halign: 'left', valign: 'middle' },
+    1: { halign: 'right', valign: 'middle' },
+  },
+  didParseCell(data) {
+    if (data.section === 'head') {
+      if (data.column.index === 0) data.cell.styles.halign = 'left';
+      if (data.column.index === 1) data.cell.styles.halign = 'right';
+    }
+  },
+});
+
+// --- STOCK / INVENTARIO ---
+const productosStock = this.getProductosInventario();
+let posStockY = (doc as any).lastAutoTable.finalY + 15;
+
+// Verificar espacio
+if (posStockY + 40 > 280) {
+  doc.addPage();
+  posStockY = 40;
+}
+
+doc.setTextColor(22, 72, 99);
+doc.setFont('helvetica', 'bold');
+doc.setFontSize(12);
+doc.text('INVENTARIO ACTUAL', margenIzq, posStockY);
+
+autoTable(doc, {
+  startY: posStockY + 6,
+  margin: { left: margenIzq, right: margenIzq },
+  head: [['Producto', 'Stock Actual']],
+  body: productosStock.map(p => [
+    p.nombre,
+    p.stock_actual.toString(),
+  ]),
+  styles: {
+    fontSize: 9,
+    textColor: [73, 80, 87],
+    cellPadding: 4,
+  },
+  headStyles: {
+    fillColor: [22, 72, 99],
+    textColor: 255,
+    fontStyle: 'bold',
+  },
+  alternateRowStyles: {
+    fillColor: [248, 249, 250],
+  },
+  columnStyles: {
+    0: { halign: 'left', valign: 'middle' },
+    1: { halign: 'right', valign: 'middle' },
+  },
+  didParseCell(data) {
+    if (data.section === 'head') {
+      if (data.column.index === 0) data.cell.styles.halign = 'left';
+      if (data.column.index === 1) data.cell.styles.halign = 'right';
+    }
+  },
+});
+
 
     // Pie de página
   // Pie de página en todas las páginas

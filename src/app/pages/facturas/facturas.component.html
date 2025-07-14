@@ -1,83 +1,89 @@
 <!-- Lista de mesas ocupadas - Versión mejorada -->
 <div class="p-4 bg-gray-50 min-h-screen">
-    <div class="max-w-7xl mx-auto">
-      <!-- Encabezado de sección -->
-      <div class="mb-6 flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          </svg>
-          Facturas por Cobrar
-        </h1>
-        <div class="text-sm text-gray-500 bg-blue-50 px-3 py-1 rounded-full">
-          <span class="font-medium text-blue-600">{{mesasOcupadas.length}}</span> mesas ocupadas
-        </div>
-      </div>
-  
-      <!-- Grid de mesas -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        <button
-          *ngFor="let factura of mesasOcupadas"
-          (click)="abrirModal(factura)"
-          class="bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 group"
-        >
-          <div class="p-5">
-            <div class="flex justify-between items-start mb-3">
-              <div>
-                <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mb-1">
-                  {{factura.estado | uppercase}}
-                </span>
-                <h3 class="text-xl font-bold text-gray-800 group-hover:text-blue-600">Mesa {{ factura.mesa_id }}
-                    <span *ngIf="factura.mesa_id === 30 || factura.mesa_id === 31"
-        class="text-sm font-semibold text-white bg-blue-600 px-2 py-0.5 rounded-full">
-    {{ factura.mesa_id === 30 ? 'Pedidos Ya' : 'Pedidos Beez' }}
-  </span>
-                </h3>
-              </div>
-              <div class="text-2xl font-bold text-blue-600">${{ factura.total | number }}</div>
-            </div>
-            
-            <div class="flex items-center text-sm text-gray-600 mt-4">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              {{ factura.mesero_nombre }}
-            </div>
-            
-            
-          </div>
-        </button>
+  <div class="max-w-7xl mx-auto">
+    <!-- Encabezado de sección -->
+    <div class="mb-6 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+        Facturas por Cobrar
+      </h1>
+      <div class="text-sm text-gray-500 bg-blue-50 px-3 py-1 rounded-full">
+        <span class="font-medium text-blue-600">{{mesasOcupadas.length}}</span> mesas ocupadas
       </div>
     </div>
+
+    <!-- Grid de mesas -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <button *ngFor="let factura of mesasOcupadas" (click)="abrirModal(factura)"
+        class="bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 group">
+        <div class="p-5">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mb-1">
+                {{factura.estado | uppercase}}
+              </span>
+              <h3 class="text-xl font-bold text-gray-800 group-hover:text-blue-600">Mesa {{ factura.mesa_id }}
+                <span *ngIf="factura.mesa_id === 30 || factura.mesa_id === 31"
+                  class="text-sm font-semibold text-white bg-blue-600 px-2 py-0.5 rounded-full">
+                  {{ factura.mesa_id === 30 ? 'Pedidos Ya' : 'Pedidos Beez' }}
+                </span>
+              </h3>
+            </div>
+            <div class="text-2xl font-bold text-blue-600">${{ factura.total | number }}</div>
+          </div>
+
+          <div class="flex items-center text-sm text-gray-600 mt-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            {{ factura.mesero_nombre }}
+          </div>
+
+
+        </div>
+      </button>
+    </div>
   </div>
-  
+</div>
+
 <!-- Modal mejorado -->
 <div *ngIf="pedidoSeleccionado"
-     class="fixed inset-0 flex justify-center items-start z-50 bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
-  
+  class="fixed inset-0 flex justify-center items-start z-50 bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
+
   <!-- Aumenté el ancho máximo del modal a max-w-5xl -->
-  <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl text-gray-700 overflow-hidden my-8 max-h-[90vh] flex flex-col">
-  
+  <div
+    class="bg-white rounded-xl shadow-2xl w-full max-w-5xl text-gray-700 overflow-hidden my-8 max-h-[90vh] flex flex-col">
+
     <!-- Encabezado con gradiente e información clave -->
     <div class="bg-gradient-to-r from-blue-600 to-blue-700 p-5 text-white">
       <div class="flex justify-between items-center">
         <div>
           <h2 class="text-2xl font-bold flex items-center gap-3">
             <span class="bg-white/20 p-2 rounded-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
             </span>
             Factura - Mesa {{ pedidoSeleccionado.mesa_id }}
-              <span *ngIf="pedidoSeleccionado.mesa_id === 30 || pedidoSeleccionado.mesa_id === 31"
-        class="text-sm font-semibold text-white bg-red-600 px-2 py-0.5 rounded-full">
-    {{ pedidoSeleccionado.mesa_id === 30 ? 'Pedidos Ya' : 'Pedidos Beez' }}
-  </span>
+            <span *ngIf="pedidoSeleccionado.mesa_id === 30 || pedidoSeleccionado.mesa_id === 31"
+              class="text-sm font-semibold text-white bg-red-600 px-2 py-0.5 rounded-full">
+              {{ pedidoSeleccionado.mesa_id === 30 ? 'Pedidos Ya' : 'Pedidos Beez' }}
+            </span>
           </h2>
           <div class="flex items-center gap-4 mt-2 text-sm text-blue-100">
             <span class="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
               {{ pedidoSeleccionado.mesero_nombre }}
             </span>
@@ -90,10 +96,10 @@
         </button>
       </div>
     </div>
-  
+
     <!-- Contenido principal -->
     <div class="flex-1 overflow-auto flex flex-col lg:flex-row">
-  
+
       <!-- Sección izquierda - Productos (sin cambios) -->
       <div class="flex-1 p-5 border-r border-gray-100">
         <!-- Opción de pago separado -->
@@ -103,14 +109,17 @@
             <p class="text-xs text-gray-500">Distribuir productos entre comensales</p>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" id="pagoSeparado" [(ngModel)]="pagoSeparado" (change)="calcularTotales()" class="sr-only peer">
-            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            <input type="checkbox" id="pagoSeparado" [(ngModel)]="pagoSeparado" (change)="calcularTotales()"
+              class="sr-only peer">
+            <div
+              class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+            </div>
           </label>
         </div>
 
         <div class="mb-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
           <h3 class="text-xl font-semibold text-gray-700 mb-2">
-              Productos
+            Productos
           </h3>
           <div class="overflow-x-auto text-xs">
             <table class="w-full divide-y divide-gray-200">
@@ -135,22 +144,17 @@
                       </div>
                     </ng-container>
                   </td>
-                  
+
                   <td class="px-1 py-1 whitespace-nowrap text-right">${{ p.precio | number }}</td>
-                  
+
                   <td class="px-1 py-1 whitespace-nowrap text-center">{{ p.cantidad }}</td>
-                  
+
                   <td class="px-1 py-1 whitespace-nowrap text-center">
                     <ng-container *ngIf="pagoSeparado; else totalPaga">
-                      <input
-                        type="number"
-                        min="0"
-                        [max]="p.cantidad"
-                        [(ngModel)]="p.asignado"
+                      <input type="number" min="0" [max]="p.cantidad" [(ngModel)]="p.asignado"
                         (input)="calcularTotales()"
                         class="w-12 border border-gray-300 px-1 py-0.5 rounded text-center focus:ring-1 focus:ring-blue-300"
-                        title="Cantidad a pagar"
-                      />
+                        title="Cantidad a pagar" />
                     </ng-container>
                     <ng-template #totalPaga>
                       <span>{{ p.cantidad }}</span>
@@ -161,38 +165,33 @@
             </table>
           </div>
         </div>
-        
+
         <!-- extras -->
         <div class="mb-6">
           <h3 class="flex items-center text-gray-700 font-semibold text-base mb-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
             </svg>
             Agregar Extras (bebidas, porciones)
           </h3>
-        
+
           <!-- Buscador -->
           <div class="relative mb-3">
-            <input 
-              type="text"
-              [(ngModel)]="terminoBusquedaReceta"
-              (input)="filtrarRecetas()"
-              (focus)="terminoBusquedaReceta && filtrarRecetas()"
-              placeholder="Buscar extras (ej: cola, cerveza)"
-              class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-            />
-            <button *ngIf="terminoBusquedaReceta"
-                    (click)="limpiarBusqueda()"
-                    class="absolute right-2 top-2 text-gray-400 hover:text-gray-600 text-lg font-bold leading-none">
+            <input type="text" [(ngModel)]="terminoBusquedaReceta" (input)="filtrarRecetas()"
+              (focus)="terminoBusquedaReceta && filtrarRecetas()" placeholder="Buscar extras (ej: cola, cerveza)"
+              class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+            <button *ngIf="terminoBusquedaReceta" (click)="limpiarBusqueda()"
+              class="absolute right-2 top-2 text-gray-400 hover:text-gray-600 text-lg font-bold leading-none">
               ×
             </button>
-        
+
             <!-- Lista de sugerencias -->
             <div *ngIf="mostrarLista"
-                 class="absolute z-10 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-56 overflow-auto text-sm">
-              <div *ngFor="let receta of recetasFiltradas"
-                   (click)="seleccionarReceta(receta)"
-                   class="px-4 py-2 hover:bg-blue-50 cursor-pointer">
+              class="absolute z-10 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-56 overflow-auto text-sm">
+              <div *ngFor="let receta of recetasFiltradas" (click)="seleccionarReceta(receta)"
+                class="px-4 py-2 hover:bg-blue-50 cursor-pointer">
                 {{ receta.nombre }}
               </div>
               <div *ngIf="recetasFiltradas.length === 0" class="px-4 py-2 text-gray-500">
@@ -200,16 +199,16 @@
               </div>
             </div>
           </div>
-        
+
           <!-- Lista de extras seleccionados -->
           <div *ngIf="recetasSeleccionadas.length > 0">
             <h4 class="text-sm font-medium text-gray-600 mb-2">Extras seleccionados:</h4>
             <ul class="space-y-1">
               <li *ngFor="let receta of recetasSeleccionadas"
-                  class="flex items-center justify-between px-3 py-2 border border-gray-200 rounded-md text-sm bg-gray-50">
+                class="flex items-center justify-between px-3 py-2 border border-gray-200 rounded-md text-sm bg-gray-50">
                 <span class="text-gray-800 truncate">{{ receta.nombre }}</span>
                 <button (click)="eliminarRecetaSeleccionada(receta)"
-                        class="text-red-500 hover:text-red-600 text-xs font-medium px-2 py-1 rounded-md border border-red-300 hover:bg-red-50">
+                  class="text-red-500 hover:text-red-600 text-xs font-medium px-2 py-1 rounded-md border border-red-300 hover:bg-red-50">
                   Quitar
                 </button>
               </li>
@@ -217,103 +216,146 @@
           </div>
         </div>
       </div>
-  
+
       <!-- Sección derecha - Pago -->
       <div class="lg:w-[32rem] p-5 bg-gray-50 flex flex-col">
         <h3 class="font-semibold text-gray-700 mb-4 flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 text-blue-600" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
           </svg>
           Método de Pago
         </h3>
 
         <!-- Opciones de pago en GRID -->
-       <div class="grid grid-cols-3 gap-2 mb-4">
-  <!-- Efectivo -->
-  <label class="flex items-center p-2 border rounded-lg cursor-pointer hover:border-blue-400 transition-colors"
-         [class.border-blue-500]="formaPago === 'efectivo'"
-         [class.bg-blue-50]="formaPago === 'efectivo'">
-    <input type="radio" name="forma" value="efectivo" [(ngModel)]="formaPago" (change)="calcularTotales()" 
-           class="h-3 w-3 text-blue-600 focus:ring-blue-500 mr-2" />
-    <div class="flex-1">
-      <div class="text-sm font-medium">Efectivo</div>
-      <div class="text-[10px] text-gray-500">Billetes/monedas</div>
-    </div>
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-    </svg>
-  </label>
+        <div class="grid grid-cols-3 gap-2 mb-4">
+          <!-- Efectivo -->
+          <label class="flex items-center p-2 border rounded-lg cursor-pointer hover:border-blue-400 transition-colors"
+            [class.border-blue-500]="formaPago === 'efectivo'" [class.bg-blue-50]="formaPago === 'efectivo'">
+            <input type="radio" name="forma" value="efectivo" [(ngModel)]="formaPago" (change)="calcularTotales()"
+              class="h-3 w-3 text-blue-600 focus:ring-blue-500 mr-2" />
+            <div class="flex-1">
+              <div class="text-sm font-medium">Efectivo</div>
+              <div class="text-[10px] text-gray-500">Billetes/monedas</div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </label>
 
-  <!-- Tarjeta -->
-  <label class="flex items-center p-2 border rounded-lg cursor-pointer hover:border-blue-400 transition-colors"
-         [class.border-blue-500]="formaPago === 'tarjeta'"
-         [class.bg-blue-50]="formaPago === 'tarjeta'">
-    <input type="radio" name="forma" value="tarjeta" [(ngModel)]="formaPago" (change)="calcularTotales()" 
-           class="h-3 w-3 text-blue-600 focus:ring-blue-500 mr-2" />
-    <div class="flex-1">
-      <div class="text-sm font-medium">Tarjeta</div>
-      <div class="text-[10px] text-gray-500">+8% recargo</div>
-    </div>
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-    </svg>
-  </label>
+          <!-- Tarjeta -->
+          <label class="flex items-center p-2 border rounded-lg cursor-pointer hover:border-blue-400 transition-colors"
+            [class.border-blue-500]="formaPago === 'tarjeta'" [class.bg-blue-50]="formaPago === 'tarjeta'">
+            <input type="radio" name="forma" value="tarjeta" [(ngModel)]="formaPago" (change)="calcularTotales()"
+              class="h-3 w-3 text-blue-600 focus:ring-blue-500 mr-2" />
+            <div class="flex-1">
+              <div class="text-sm font-medium">Tarjeta</div>
+              <div class="text-[10px] text-gray-500">+8% recargo</div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+          </label>
 
-  <!-- Transferencia -->
-  <label class="flex items-center p-2 border rounded-lg cursor-pointer hover:border-blue-400 transition-colors"
-         [class.border-blue-500]="formaPago === 'transferencia'"
-         [class.bg-blue-50]="formaPago === 'transferencia'">
-    <input type="radio" name="forma" value="transferencia" [(ngModel)]="formaPago" (change)="calcularTotales()" 
-           class="h-3 w-3 text-blue-600 focus:ring-blue-500 mr-2" />
-    <div class="flex-1">
-      <div class="text-sm font-medium">Transferencia</div>
-      <div class="text-[10px] text-gray-500">Electrónico</div>
-    </div>
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-    </svg>
-  </label>
+          <!-- Transferencia -->
+          <label class="flex items-center p-2 border rounded-lg cursor-pointer hover:border-blue-400 transition-colors"
+            [class.border-blue-500]="formaPago === 'transferencia'" [class.bg-blue-50]="formaPago === 'transferencia'">
+            <input type="radio" name="forma" value="transferencia" [(ngModel)]="formaPago" (change)="calcularTotales()"
+              class="h-3 w-3 text-blue-600 focus:ring-blue-500 mr-2" />
+            <div class="flex-1">
+              <div class="text-sm font-medium">Transferencia</div>
+              <div class="text-[10px] text-gray-500">Electrónico</div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+          </label>
 
-  <!-- Crédito -->
-  <label class="flex items-center p-2 border rounded-lg cursor-pointer hover:border-blue-400 transition-colors"
-         [class.border-blue-500]="formaPago === 'Credito'"
-         [class.bg-blue-50]="formaPago === 'Credito'">
-    <input type="radio" name="forma" value="Credito" [(ngModel)]="formaPago" (change)="calcularTotales()" 
-           class="h-3 w-3 text-blue-600 focus:ring-blue-500 mr-2" />
-    <div class="flex-1">
-      <div class="text-sm font-medium">Crédito</div>
-      <div class="text-[10px] text-gray-500">Diferido</div>
-    </div>
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-    </svg>
-  </label>
+          <!-- Crédito -->
+          <label class="flex items-center p-2 border rounded-lg cursor-pointer hover:border-blue-400 transition-colors"
+            [class.border-blue-500]="formaPago === 'Credito'" [class.bg-blue-50]="formaPago === 'Credito'">
+            <input type="radio" name="forma" value="Credito" [(ngModel)]="formaPago" (change)="calcularTotales()"
+              class="h-3 w-3 text-blue-600 focus:ring-blue-500 mr-2" />
+            <div class="flex-1">
+              <div class="text-sm font-medium">Crédito</div>
+              <div class="text-[10px] text-gray-500">Diferido</div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+          </label>
 
-  <!-- PedidosYa -->
-  <label class="flex items-center p-2 border rounded-lg cursor-pointer hover:border-blue-400 transition-colors"
-         [class.border-blue-500]="formaPago === 'pedidosya'"
-         [class.bg-blue-50]="formaPago === 'pedidosya'">
-    <input type="radio" name="forma" value="pedidosya" [(ngModel)]="formaPago" (change)="calcularTotales()" 
-           class="h-3 w-3 text-blue-600 focus:ring-blue-500 mr-2" />
-    <div class="flex-1">
-      <div class="text-sm font-medium">PedidosYa</div>
-      <div class="text-[10px] text-gray-500">Online</div>
-    </div>
-     <svg fill="#cccccc" height="25px" width="25px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 460.427 460.427" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="XMLID_800_"> <g> <g> <circle cx="225.108" cy="41.302" r="38.373"></circle> <path d="M397.111,330.868c-7.377,0-14.458,1.281-21.047,3.611l-3.12-9.271c6.069-1.88,12.506-2.914,19.175-2.957 c8.102-0.052,15.106-6.153,15.609-14.239c0.549-8.84-6.458-16.18-15.179-16.18c-10.213,0-20.059,1.595-29.309,4.541l-20.71-61.54 h9.315c3.709,7.964,10.934,13.96,19.685,15.978c3.329,0.768,6.52-1.762,6.52-5.191v-45.936c0-3.406-3.164-5.96-6.484-5.199 c-8.767,2.01-16.007,8.012-19.721,15.987h-4.463c-2.762,3.551-6.192,6.541-10.09,8.794c-9.936,5.744-18.371,4.656-24.252,4.314 c1.41,4.189,9.775,29.046,11.571,34.383c-1.71,1.595,3.555-6.344-68.423,106.855h-0.684c-2.564,8.595-6.261,15.549-14.333,21.473 c-1.468,1.077-3.017,2.038-4.623,2.888h19.837c8.186,0,15.805-4.183,20.2-11.09l57.851-90.93l6.585,19.567 c-27.031,17.072-45.069,47.145-45.247,81.37c-0.043,8.292,6.381,15.424,14.668,15.71c8.646,0.299,15.749-6.621,15.749-15.2 c0-20.938,9.758-39.629,24.953-51.8l3.515,10.444c-13.426,12.156-21.633,29.974-20.806,49.648 c1.368,32.53,27.712,59.008,60.235,60.529c36.281,1.697,66.339-27.33,66.339-63.245 C460.427,359.272,432.024,330.868,397.111,330.868z M397.111,416.942c-12.549,0-22.758-10.209-22.758-22.758 s10.209-22.758,22.758-22.758s22.758,10.209,22.758,22.758C419.869,406.733,409.66,416.942,397.111,416.942z"></path> <path d="M269.437,259.727c3.117-10.448-2.336-21.534-12.515-25.441l-23.595-9.057l1.407-6.988 c-7.085-2.401-12.47-8.33-14.186-15.588l-13.618-57.806l28.632,49.039c2.935,5.028,8.193,8.252,14.005,8.59l69.342,4.03 c9.601,0.554,17.808-6.774,18.365-16.348c0.557-9.585-6.762-17.807-16.348-18.365l-60.037-3.489l-23.933-40.989l13.567,12.518 l1.624-8.065c2.827-14.035-6.26-27.703-20.294-30.53l-45.317-9.127c-14.035-2.826-27.703,6.26-30.53,20.294l-14.561,72.305 v-69.587c0-4.846-3.929-8.775-8.775-8.775H32.603c-4.846,0-8.775,3.929-8.775,8.775v127.689h-6.084 c-9.8,0-17.744,7.944-17.744,17.744c0,9.8,7.944,17.744,17.744,17.744h73.004v27.041c-29.827,11.281-52.235,37.663-57.884,69.823 c-1.275,7.26,4.317,13.919,11.7,13.919h15.524c-0.135,1.684-0.223,3.381-0.223,5.099c0,34.912,28.403,63.316,63.316,63.316 c34.912,0,63.316-28.403,63.316-63.316c0-1.686-0.086-3.351-0.216-5.004h15.02c-15.51-8.246-23.512-26.573-18.347-43.889 l19.983-66.989h17.417l-21.406,71.76c-3.294,11.041,2.987,22.662,14.028,25.956c11.042,3.294,22.663-2.988,25.956-14.028 L269.437,259.727z M123.18,416.942c-12.549,0-22.758-10.209-22.758-22.758c0-1.753,0.206-3.458,0.583-5.099h44.35 c0.377,1.64,0.583,3.345,0.583,5.099C145.938,406.733,135.728,416.942,123.18,416.942z M141.446,242.814v-17.198 c2.926,6.698,7.462,12.621,13.223,17.198H141.446z"></path> </g> </g> </g> </g></svg>  
-  </label>
+          <!-- PedidosYa -->
+          <label class="flex items-center p-2 border rounded-lg cursor-pointer hover:border-blue-400 transition-colors"
+            [class.border-blue-500]="formaPago === 'pedidosya'" [class.bg-blue-50]="formaPago === 'pedidosya'">
+            <input type="radio" name="forma" value="pedidosya" [(ngModel)]="formaPago" (change)="calcularTotales()"
+              class="h-3 w-3 text-blue-600 focus:ring-blue-500 mr-2" />
+            <div class="flex-1">
+              <div class="text-sm font-medium">PedidosYa</div>
+              <div class="text-[10px] text-gray-500">Online</div>
+            </div>
+            <svg fill="#cccccc" height="25px" width="25px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 460.427 460.427" xml:space="preserve">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <g id="XMLID_800_">
+                  <g>
+                    <g>
+                      <circle cx="225.108" cy="41.302" r="38.373"></circle>
+                      <path
+                        d="M397.111,330.868c-7.377,0-14.458,1.281-21.047,3.611l-3.12-9.271c6.069-1.88,12.506-2.914,19.175-2.957 c8.102-0.052,15.106-6.153,15.609-14.239c0.549-8.84-6.458-16.18-15.179-16.18c-10.213,0-20.059,1.595-29.309,4.541l-20.71-61.54 h9.315c3.709,7.964,10.934,13.96,19.685,15.978c3.329,0.768,6.52-1.762,6.52-5.191v-45.936c0-3.406-3.164-5.96-6.484-5.199 c-8.767,2.01-16.007,8.012-19.721,15.987h-4.463c-2.762,3.551-6.192,6.541-10.09,8.794c-9.936,5.744-18.371,4.656-24.252,4.314 c1.41,4.189,9.775,29.046,11.571,34.383c-1.71,1.595,3.555-6.344-68.423,106.855h-0.684c-2.564,8.595-6.261,15.549-14.333,21.473 c-1.468,1.077-3.017,2.038-4.623,2.888h19.837c8.186,0,15.805-4.183,20.2-11.09l57.851-90.93l6.585,19.567 c-27.031,17.072-45.069,47.145-45.247,81.37c-0.043,8.292,6.381,15.424,14.668,15.71c8.646,0.299,15.749-6.621,15.749-15.2 c0-20.938,9.758-39.629,24.953-51.8l3.515,10.444c-13.426,12.156-21.633,29.974-20.806,49.648 c1.368,32.53,27.712,59.008,60.235,60.529c36.281,1.697,66.339-27.33,66.339-63.245 C460.427,359.272,432.024,330.868,397.111,330.868z M397.111,416.942c-12.549,0-22.758-10.209-22.758-22.758 s10.209-22.758,22.758-22.758s22.758,10.209,22.758,22.758C419.869,406.733,409.66,416.942,397.111,416.942z">
+                      </path>
+                      <path
+                        d="M269.437,259.727c3.117-10.448-2.336-21.534-12.515-25.441l-23.595-9.057l1.407-6.988 c-7.085-2.401-12.47-8.33-14.186-15.588l-13.618-57.806l28.632,49.039c2.935,5.028,8.193,8.252,14.005,8.59l69.342,4.03 c9.601,0.554,17.808-6.774,18.365-16.348c0.557-9.585-6.762-17.807-16.348-18.365l-60.037-3.489l-23.933-40.989l13.567,12.518 l1.624-8.065c2.827-14.035-6.26-27.703-20.294-30.53l-45.317-9.127c-14.035-2.826-27.703,6.26-30.53,20.294l-14.561,72.305 v-69.587c0-4.846-3.929-8.775-8.775-8.775H32.603c-4.846,0-8.775,3.929-8.775,8.775v127.689h-6.084 c-9.8,0-17.744,7.944-17.744,17.744c0,9.8,7.944,17.744,17.744,17.744h73.004v27.041c-29.827,11.281-52.235,37.663-57.884,69.823 c-1.275,7.26,4.317,13.919,11.7,13.919h15.524c-0.135,1.684-0.223,3.381-0.223,5.099c0,34.912,28.403,63.316,63.316,63.316 c34.912,0,63.316-28.403,63.316-63.316c0-1.686-0.086-3.351-0.216-5.004h15.02c-15.51-8.246-23.512-26.573-18.347-43.889 l19.983-66.989h17.417l-21.406,71.76c-3.294,11.041,2.987,22.662,14.028,25.956c11.042,3.294,22.663-2.988,25.956-14.028 L269.437,259.727z M123.18,416.942c-12.549,0-22.758-10.209-22.758-22.758c0-1.753,0.206-3.458,0.583-5.099h44.35 c0.377,1.64,0.583,3.345,0.583,5.099C145.938,406.733,135.728,416.942,123.18,416.942z M141.446,242.814v-17.198 c2.926,6.698,7.462,12.621,13.223,17.198H141.446z">
+                      </path>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </svg>
+          </label>
 
-  <!-- Beezz -->
-  <label class="flex items-center p-2 border rounded-lg cursor-pointer hover:border-blue-400 transition-colors"
-         [class.border-blue-500]="formaPago === 'beez'"
-         [class.bg-blue-50]="formaPago === 'beez'">
-    <input type="radio" name="forma" value="beez" [(ngModel)]="formaPago" (change)="calcularTotales()" 
-           class="h-3 w-3 text-blue-600 focus:ring-blue-500 mr-2" />
-    <div class="flex-1">
-      <div class="text-sm font-medium">Beez</div>
-      <div class="text-[10px] text-gray-500">Online</div>
-    </div>
- <svg fill="#cccccc" height="25px" width="25px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 460.427 460.427" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="XMLID_800_"> <g> <g> <circle cx="225.108" cy="41.302" r="38.373"></circle> <path d="M397.111,330.868c-7.377,0-14.458,1.281-21.047,3.611l-3.12-9.271c6.069-1.88,12.506-2.914,19.175-2.957 c8.102-0.052,15.106-6.153,15.609-14.239c0.549-8.84-6.458-16.18-15.179-16.18c-10.213,0-20.059,1.595-29.309,4.541l-20.71-61.54 h9.315c3.709,7.964,10.934,13.96,19.685,15.978c3.329,0.768,6.52-1.762,6.52-5.191v-45.936c0-3.406-3.164-5.96-6.484-5.199 c-8.767,2.01-16.007,8.012-19.721,15.987h-4.463c-2.762,3.551-6.192,6.541-10.09,8.794c-9.936,5.744-18.371,4.656-24.252,4.314 c1.41,4.189,9.775,29.046,11.571,34.383c-1.71,1.595,3.555-6.344-68.423,106.855h-0.684c-2.564,8.595-6.261,15.549-14.333,21.473 c-1.468,1.077-3.017,2.038-4.623,2.888h19.837c8.186,0,15.805-4.183,20.2-11.09l57.851-90.93l6.585,19.567 c-27.031,17.072-45.069,47.145-45.247,81.37c-0.043,8.292,6.381,15.424,14.668,15.71c8.646,0.299,15.749-6.621,15.749-15.2 c0-20.938,9.758-39.629,24.953-51.8l3.515,10.444c-13.426,12.156-21.633,29.974-20.806,49.648 c1.368,32.53,27.712,59.008,60.235,60.529c36.281,1.697,66.339-27.33,66.339-63.245 C460.427,359.272,432.024,330.868,397.111,330.868z M397.111,416.942c-12.549,0-22.758-10.209-22.758-22.758 s10.209-22.758,22.758-22.758s22.758,10.209,22.758,22.758C419.869,406.733,409.66,416.942,397.111,416.942z"></path> <path d="M269.437,259.727c3.117-10.448-2.336-21.534-12.515-25.441l-23.595-9.057l1.407-6.988 c-7.085-2.401-12.47-8.33-14.186-15.588l-13.618-57.806l28.632,49.039c2.935,5.028,8.193,8.252,14.005,8.59l69.342,4.03 c9.601,0.554,17.808-6.774,18.365-16.348c0.557-9.585-6.762-17.807-16.348-18.365l-60.037-3.489l-23.933-40.989l13.567,12.518 l1.624-8.065c2.827-14.035-6.26-27.703-20.294-30.53l-45.317-9.127c-14.035-2.826-27.703,6.26-30.53,20.294l-14.561,72.305 v-69.587c0-4.846-3.929-8.775-8.775-8.775H32.603c-4.846,0-8.775,3.929-8.775,8.775v127.689h-6.084 c-9.8,0-17.744,7.944-17.744,17.744c0,9.8,7.944,17.744,17.744,17.744h73.004v27.041c-29.827,11.281-52.235,37.663-57.884,69.823 c-1.275,7.26,4.317,13.919,11.7,13.919h15.524c-0.135,1.684-0.223,3.381-0.223,5.099c0,34.912,28.403,63.316,63.316,63.316 c34.912,0,63.316-28.403,63.316-63.316c0-1.686-0.086-3.351-0.216-5.004h15.02c-15.51-8.246-23.512-26.573-18.347-43.889 l19.983-66.989h17.417l-21.406,71.76c-3.294,11.041,2.987,22.662,14.028,25.956c11.042,3.294,22.663-2.988,25.956-14.028 L269.437,259.727z M123.18,416.942c-12.549,0-22.758-10.209-22.758-22.758c0-1.753,0.206-3.458,0.583-5.099h44.35 c0.377,1.64,0.583,3.345,0.583,5.099C145.938,406.733,135.728,416.942,123.18,416.942z M141.446,242.814v-17.198 c2.926,6.698,7.462,12.621,13.223,17.198H141.446z"></path> </g> </g> </g> </g></svg>  </label>
-</div>
+          <!-- Beezz -->
+          <label class="flex items-center p-2 border rounded-lg cursor-pointer hover:border-blue-400 transition-colors"
+            [class.border-blue-500]="formaPago === 'beez'" [class.bg-blue-50]="formaPago === 'beez'">
+            <input type="radio" name="forma" value="beez" [(ngModel)]="formaPago" (change)="calcularTotales()"
+              class="h-3 w-3 text-blue-600 focus:ring-blue-500 mr-2" />
+            <div class="flex-1">
+              <div class="text-sm font-medium">Beez</div>
+              <div class="text-[10px] text-gray-500">Online</div>
+            </div>
+            <svg fill="#cccccc" height="25px" width="25px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 460.427 460.427" xml:space="preserve">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <g id="XMLID_800_">
+                  <g>
+                    <g>
+                      <circle cx="225.108" cy="41.302" r="38.373"></circle>
+                      <path
+                        d="M397.111,330.868c-7.377,0-14.458,1.281-21.047,3.611l-3.12-9.271c6.069-1.88,12.506-2.914,19.175-2.957 c8.102-0.052,15.106-6.153,15.609-14.239c0.549-8.84-6.458-16.18-15.179-16.18c-10.213,0-20.059,1.595-29.309,4.541l-20.71-61.54 h9.315c3.709,7.964,10.934,13.96,19.685,15.978c3.329,0.768,6.52-1.762,6.52-5.191v-45.936c0-3.406-3.164-5.96-6.484-5.199 c-8.767,2.01-16.007,8.012-19.721,15.987h-4.463c-2.762,3.551-6.192,6.541-10.09,8.794c-9.936,5.744-18.371,4.656-24.252,4.314 c1.41,4.189,9.775,29.046,11.571,34.383c-1.71,1.595,3.555-6.344-68.423,106.855h-0.684c-2.564,8.595-6.261,15.549-14.333,21.473 c-1.468,1.077-3.017,2.038-4.623,2.888h19.837c8.186,0,15.805-4.183,20.2-11.09l57.851-90.93l6.585,19.567 c-27.031,17.072-45.069,47.145-45.247,81.37c-0.043,8.292,6.381,15.424,14.668,15.71c8.646,0.299,15.749-6.621,15.749-15.2 c0-20.938,9.758-39.629,24.953-51.8l3.515,10.444c-13.426,12.156-21.633,29.974-20.806,49.648 c1.368,32.53,27.712,59.008,60.235,60.529c36.281,1.697,66.339-27.33,66.339-63.245 C460.427,359.272,432.024,330.868,397.111,330.868z M397.111,416.942c-12.549,0-22.758-10.209-22.758-22.758 s10.209-22.758,22.758-22.758s22.758,10.209,22.758,22.758C419.869,406.733,409.66,416.942,397.111,416.942z">
+                      </path>
+                      <path
+                        d="M269.437,259.727c3.117-10.448-2.336-21.534-12.515-25.441l-23.595-9.057l1.407-6.988 c-7.085-2.401-12.47-8.33-14.186-15.588l-13.618-57.806l28.632,49.039c2.935,5.028,8.193,8.252,14.005,8.59l69.342,4.03 c9.601,0.554,17.808-6.774,18.365-16.348c0.557-9.585-6.762-17.807-16.348-18.365l-60.037-3.489l-23.933-40.989l13.567,12.518 l1.624-8.065c2.827-14.035-6.26-27.703-20.294-30.53l-45.317-9.127c-14.035-2.826-27.703,6.26-30.53,20.294l-14.561,72.305 v-69.587c0-4.846-3.929-8.775-8.775-8.775H32.603c-4.846,0-8.775,3.929-8.775,8.775v127.689h-6.084 c-9.8,0-17.744,7.944-17.744,17.744c0,9.8,7.944,17.744,17.744,17.744h73.004v27.041c-29.827,11.281-52.235,37.663-57.884,69.823 c-1.275,7.26,4.317,13.919,11.7,13.919h15.524c-0.135,1.684-0.223,3.381-0.223,5.099c0,34.912,28.403,63.316,63.316,63.316 c34.912,0,63.316-28.403,63.316-63.316c0-1.686-0.086-3.351-0.216-5.004h15.02c-15.51-8.246-23.512-26.573-18.347-43.889 l19.983-66.989h17.417l-21.406,71.76c-3.294,11.041,2.987,22.662,14.028,25.956c11.042,3.294,22.663-2.988,25.956-14.028 L269.437,259.727z M123.18,416.942c-12.549,0-22.758-10.209-22.758-22.758c0-1.753,0.206-3.458,0.583-5.099h44.35 c0.377,1.64,0.583,3.345,0.583,5.099C145.938,406.733,135.728,416.942,123.18,416.942z M141.446,242.814v-17.198 c2.926,6.698,7.462,12.621,13.223,17.198H141.446z">
+                      </path>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </svg>
+          </label>
+        </div>
 
         <!-- Campos específicos por método de pago -->
         <div class="mb-6">
@@ -326,14 +368,9 @@
               <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 text-sm pointer-events-none">
                 $
               </span>
-              <input
-                id="montoRecibido"
-                type="number"
-                [(ngModel)]="montoRecibido"
-                (input)="calcularTotales()"
+              <input id="montoRecibido" type="number" [(ngModel)]="montoRecibido" (input)="calcularTotales()"
                 class="block w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="0.00"
-              />
+                placeholder="0.00" />
             </div>
           </div>
 
@@ -343,16 +380,12 @@
               Código del comprobante
             </label>
             <div class="relative">
-              <input
-                id="codigoTransferencia"
-                type="text"
-                [(ngModel)]="codigoTransferencia"
+              <input id="codigoTransferencia" type="text" [(ngModel)]="codigoTransferencia"
                 class="block w-full pl-10 pr-4 py-2 border border-blue-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                placeholder="Ej. 1234567890ABC"
-              />
+                placeholder="Ej. 1234567890ABC" />
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg class="h-5 w-5 text-blue-500" fill="none" stroke="currentColor" stroke-width="2"
-                     viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 11c0 .552-.448 1-1 1s-1-.448-1-1 .448-1 1-1 1 .448 1 1z" />
                   <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" />
                 </svg>
@@ -366,23 +399,18 @@
             <div class="space-y-1">
               <label class="block text-sm font-medium text-gray-700">Cliente</label>
               <div class="relative">
-                <input 
-                  type="text"
+                <input type="text"
                   class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  placeholder="Buscar cliente..."
-                  [(ngModel)]="clienteBusqueda"
-                  (input)="filtrarClientes()"
-                  (blur)="cerrarListaSiNoSeleccionado()" 
-                />
-                
-                <ul *ngIf="mostrarListaClientes && clientesFiltrados.length > 0"  
-                    class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto">
-                  <li 
-                    *ngFor="let cliente of clientesFiltrados"
-                    (click)="seleccionarCliente(cliente)"
+                  placeholder="Buscar cliente..." [(ngModel)]="clienteBusqueda" (input)="filtrarClientes()"
+                  (blur)="cerrarListaSiNoSeleccionado()" />
+
+                <ul *ngIf="mostrarListaClientes && clientesFiltrados.length > 0"
+                  class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto">
+                  <li *ngFor="let cliente of clientesFiltrados" (click)="seleccionarCliente(cliente)"
                     (mousedown)="$event.preventDefault()"
                     class="px-4 py-3 hover:bg-orange-50 cursor-pointer border-b border-gray-100 last:border-0 flex items-center">
-                    <span class="bg-orange-100 text-orange-800 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm font-medium">
+                    <span
+                      class="bg-orange-100 text-orange-800 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm font-medium">
                       {{ cliente.nombre?.charAt(0) || 'C' }}
                     </span>
                     <span class="font-medium">{{ cliente.nombre }}</span>
@@ -391,33 +419,33 @@
               </div>
             </div>
           </div>
-          
+
         </div>
-        
+
         <!-- Resumen de pago -->
         <div class="bg-white p-4 rounded-lg border border-gray-200 mb-6">
           <h4 class="font-medium text-gray-700 mb-3">Resumen de pago</h4>
-          
+
           <div class="space-y-2">
             <div class="flex justify-between text-sm">
               <span class="text-gray-600">Subtotal:</span>
               <span>${{ subtotal | number }}</span>
             </div>
-            
+
             <div *ngIf="formaPago === 'tarjeta'" class="flex justify-between text-sm">
               <span class="text-gray-600">Recargo (8%):</span>
               <span class="text-red-500">+${{ (total - subtotal) | number }}</span>
             </div>
-            
+
             <div class="border-t border-gray-200 my-2"></div>
-            
+
             <div class="flex justify-between font-semibold">
               <span>Total a pagar:</span>
               <span class="text-blue-600">${{ total | number }}</span>
             </div>
-            
+
             <div *ngIf="formaPago === 'efectivo' && montoRecibido > 0" class="border-t border-gray-200 my-2"></div>
-            
+
             <div *ngIf="formaPago === 'efectivo' && montoRecibido > 0" class="flex justify-between font-medium">
               <span>Vuelto:</span>
               <span [class.text-green-600]="vuelto >= 0" [class.text-red-600]="vuelto < 0">
@@ -429,17 +457,18 @@
 
         <!-- Botones de acción -->
         <div class="mt-auto space-y-3">
-          <button (click)="pagarFactura()" 
-                  class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 
+          <button (click)="pagarFactura()"
+            class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 
                          text-white font-medium py-3 px-4 rounded-lg shadow-md transition-all flex items-center justify-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
             Confirmar Pago e Imprimir
           </button>
-          
-          <button (click)="cerrarModal()" 
-                  class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium 
+
+          <button (click)="cerrarModal()" class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium 
                          py-2 px-4 rounded-lg transition-colors">
             Cancelar
           </button>

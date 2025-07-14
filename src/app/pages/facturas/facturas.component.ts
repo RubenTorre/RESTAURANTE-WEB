@@ -5,6 +5,8 @@ import { SupabaseService } from '../../Services/supabase.service';
 import printJS from 'print-js';
 import { UserService } from '../../Services/user.service';
 import Swal from 'sweetalert2';
+import { ConsoleService } from '@ng-select/ng-select';
+import { Router } from '@angular/router';
 
 interface Producto {
   nombre: string;
@@ -98,7 +100,7 @@ mostrarLista: boolean = false;
   };
   
 
-  constructor(private supabase: SupabaseService,private userService: UserService) {}
+  constructor(private supabase: SupabaseService,private userService: UserService, private router:Router) {}
 
   async ngOnInit() {
     this.userService.nombreUsuario$.subscribe(nombre => {
@@ -238,14 +240,20 @@ async pagarFactura() {
 
   // Validación: debe haber una caja abierta
   const cajaAbierta = await this.supabase.obtenerCajaAbiertas();
+  console.log('sesion',cajaAbierta)
   if (!cajaAbierta) {
-    await Swal.fire({
-      icon: 'error',
-      title: 'No hay caja abierta',
-      text: 'Debe abrir una caja antes de realizar pagos.',
-    });
-    return;
-  }
+  Swal.fire({
+    icon: 'error',
+    title: 'No hay caja abierta',
+    text: 'Debe abrir una caja antes de realizar pagos.',
+  }).then((result) => {
+    if (result.isConfirmed || result.isDismissed) {
+      this.router.navigate(['/Cierre/Caja']); // Ajusta la ruta según tu configuración
+    }
+  });
+  return;
+}
+
 
   // Si la forma de pago es crédito, guardar pedido primero
   if (this.formaPago === 'Credito') {

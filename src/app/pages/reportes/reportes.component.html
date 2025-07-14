@@ -1,0 +1,994 @@
+<div class="p-6">
+  <h2 class="text-xl font-semibold text-gray-800 mb-6">Selecciona el tipo de reporte</h2>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!--   
+    <div (click)="abrirModal('reservas')"
+      class="cursor-pointer bg-white hover:bg-amber-50 border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition">
+      <div class="flex items-center mb-3">
+
+        <i class="fas fa-calendar-alt text-amber-500 text-2xl mr-3"></i>
+        <h3 class="text-md font-semibold text-gray-800">Reporte de Reservas</h3>
+      </div>
+      <p class="text-sm text-gray-600">Ver todas las reservas del periodo seleccionado.</p>
+    </div> -->
+   <!--Reporte de ventas-->
+    <div
+      class="cursor-pointer bg-white hover:bg-amber-50 border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition"
+      (click)="abrirModal('ventas')">
+      <div class="flex items-center mb-3">
+        <i class="fas fa-dollar-sign text-amber-500 text-2xl mr-3"></i>
+        <h3 class="text-md font-semibold text-gray-800">Reporte de Ventas</h3>
+      </div>
+      <p class="text-sm text-gray-600">Consulta las ventas por periodos.</p>
+    </div> 
+    <!-- Reporte de Productos -->
+    <div (click)="abrirModal('productos')"
+      class="cursor-pointer bg-white hover:bg-amber-50 border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition">
+      <div class="flex items-center mb-3">
+        <i class="fas fa-hamburger text-amber-500 text-2xl mr-3"></i>
+        <h3 class="text-md font-semibold text-gray-800">Reporte de Productos</h3>
+      </div>
+      <p class="text-sm text-gray-600">Consulta los productos más vendidos o con menos stock.</p>
+    </div>
+    <!-- Reporte de Clientes -->
+    <!-- <div (click)="abrirModal('clientes')"
+      class="cursor-pointer bg-white hover:bg-amber-50 border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition">
+      <div class="flex items-center mb-3">
+        <i class="fas fa-users text-amber-500 text-2xl mr-3"></i>
+        <h3 class="text-md font-semibold text-gray-800">Reporte de Clientes</h3>
+      </div>
+      <p class="text-sm text-gray-600">Clientes frecuentes, nuevos y análisis de consumo.</p>
+    </div> -->
+    <!-- Reporte de Personal -->
+    <div (click)="abrirModal('personal')"
+      class="cursor-pointer bg-white hover:bg-amber-50 border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition">
+      <div class="flex items-center mb-3">
+        <i class="fas fa-user-tie text-amber-500 text-2xl mr-3"></i>
+        <h3 class="text-md font-semibold text-gray-800">Reporte de Personal</h3>
+      </div>
+      <p class="text-sm text-gray-600">Consulta los adelantos y pagos de salarios del equipo.</p>
+    </div>
+
+
+    <!-- Reporte de Movimientos de Caja -->
+    <div (click)="abrirModal('movimientosCaja')"
+      class="cursor-pointer bg-white hover:bg-amber-50 border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition">
+      <div class="flex items-center mb-3">
+        <i class="fas fa-cash-register text-amber-500 text-2xl mr-3"></i>
+        <h3 class="text-md font-semibold text-gray-800">Reporte de Movimientos de Caja</h3>
+      </div>
+      <p class="text-sm text-gray-600">
+        Registro de todos los ingresos y egresos de dinero en la caja.
+      </p>
+    </div>
+
+
+    <!-- Reporte Personalizado -->
+    <!--  <div (click)="abrirModal('personalizado')"
+      class="cursor-pointer bg-white hover:bg-amber-50 border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition">
+      <div class="flex items-center mb-3">
+        <i class="fas fa-chart-bar text-amber-500 text-2xl mr-3"></i>
+        <h3 class="text-md font-semibold text-gray-800">Reporte Personalizado</h3>
+      </div>
+      <p class="text-sm text-gray-600">Combina filtros para crear un reporte a medida.</p>
+    </div> -->
+  </div>
+</div>
+
+<!-- Modal de selección para productos -->
+<div *ngIf="mostrarModalSeleccionProductos"
+  class="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-md bg-black/30 px-4">
+  <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-3xl relative">
+
+    <!-- Botón cerrar -->
+    <button (click)="mostrarModalSeleccionProductos = false" aria-label="Cerrar modal"
+      class="absolute top-3 right-3 text-gray-400 hover:text-red-600 transition text-2xl cursor-pointer">
+      &times;
+    </button>
+
+
+    <!-- Título -->
+    <div class="flex items-center justify-center ">
+      <i class="fas fa-utensils text-amber-500 text-xl mr-2"></i>
+      <h3 class="text-xl font-bold text-gray-800 text-center">Reportes de Productos</h3>
+    </div>
+
+    <!-- Descripción -->
+    <p class="text-gray-600 mb-6 text-sm text-center px-4 max-w-xl mx-auto leading-relaxed">
+      Consulta tus productos más vendidos o el estado de tu inventario.
+    </p>
+
+
+    <!-- Botones de opciones -->
+    <div class="flex flex-col md:flex-row justify-center gap-4 px-4">
+
+      <button (click)="seleccionarTipoReporteProductos('mas-vendidos')"
+        class="flex-1 min-w-[220px] bg-amber-500 hover:bg-amber-600 text-white py-3 px-4 rounded-md flex items-center gap-3 transition cursor-pointer">
+        <i class="fas fa-chart-line text-lg"></i>
+        <div class="text-left leading-tight text-sm">
+          <div class="font-semibold">Productos más vendidos</div>
+          <div class="text-amber-100 text-xs">Los platillos favoritos</div>
+        </div>
+      </button>
+
+      <button (click)="seleccionarTipoReporteProductos('stock')"
+        class="flex-1 min-w-[220px] bg-emerald-500 hover:bg-emerald-600 text-white py-3 px-4 rounded-md flex items-center gap-3 transition cursor-pointer">
+        <i class="fas fa-boxes text-lg"></i>
+        <div class="text-left leading-tight text-sm">
+          <div class="font-semibold">Control de Stock</div>
+          <div class="text-emerald-100 text-xs">Niveles e inventario</div>
+        </div>
+      </button>
+
+    </div>
+  </div>
+</div>
+<!-- Modal de Reporte -->
+<div *ngIf="modalAbierto" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+
+  <div class="bg-white w-full max-w-3xl rounded-lg shadow-xl p-8 relative max-h-[90vh] overflow-y-auto">
+
+    <!-- Botón cerrar -->
+    <button
+      class="absolute top-4 right-5 text-gray-400 hover:text-gray-800 text-3xl font-bold leading-none cursor-pointer"
+      (click)="cerrarModal()" aria-label="Cerrar modal">
+      &times;
+    </button>
+
+    <!-- Título -->
+    <h2 class="text-2xl font-extrabold text-gray-900 mb-6">{{ titulosReportes[reporteActivo] }}</h2>
+
+    <form class="space-y-6" (ngSubmit)="generarReporte()">
+
+      <!-- Contenedor: una sola línea si aplica -->
+      <div *ngIf="reporteActivo === 'personal' || reporteActivo === 'salarios'; else soloPeriodo"
+        class="grid md:grid-cols-2 gap-4 items-end">
+
+        <!-- Input de nombre (buscador inteligente) -->
+        <div class="relative w-full">
+          <label for="elemento" class="block text-sm font-medium text-gray-700 mb-1">Selecciona una persona</label>
+          <input type="text" id="elemento" [(ngModel)]="busquedaElemento" name="elemento" (input)="filtrarElementos()"
+            (blur)="cerrarListaSiNoSeleccionado()"
+            class="w-full rounded-md border border-gray-300 shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-200 px-3 py-3"
+            placeholder="Buscar por nombre..." />
+          <ul *ngIf="mostrarListaElementos && elementosFiltrados.length > 0"
+            class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+            <li *ngFor="let e of elementosFiltrados" (click)="seleccionarElemento(e)"
+              (mousedown)="$event.preventDefault()"
+              class="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-0 flex items-center">
+              <span
+                class="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm font-medium">
+                {{ e.nombre?.charAt(0).toUpperCase() || '' }}
+              </span>
+              <span class="font-medium">{{ e.nombre }}</span>
+
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-semibold mb-2" for="tipoPeriodo">Selecciona el período:</label>
+          <select id="tipoPeriodo"
+            class="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-amber-400 cursor-pointer"
+            [(ngModel)]="filtros.tipoPeriodo" name="tipoPeriodo" required>
+            <option value="" disabled>-- Elige una opción --</option>
+            <option value="dia">Día</option>
+            <option value="semana">Semana</option>
+            <option value="mes">Mes</option>
+            <option value="anio">Año</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- Versión solo selector de período -->
+      <ng-template #soloPeriodo>
+        <div class="w-full">
+          <label class="block text-gray-700 font-semibold mb-2" for="tipoPeriodo">Selecciona el período:</label>
+          <select id="tipoPeriodo"
+            class="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-amber-400 cursor-pointer"
+            [(ngModel)]="filtros.tipoPeriodo" name="tipoPeriodo" required>
+            <option value="" disabled>-- Elige una opción --</option>
+            <option value="dia">Día</option>
+            <option value="semana">Semana</option>
+            <option value="mes">Mes</option>
+            <option value="anio">Año</option>
+          </select>
+        </div>
+      </ng-template>
+
+
+      <!-- Campos dinámicos según periodo seleccionado -->
+
+      <!-- Día -->
+      <div *ngIf="filtros.tipoPeriodo === 'dia'">
+        <label class="block text-gray-700 font-semibold mb-2" for="dia">Selecciona el día:</label>
+        <input type="date" id="dia"
+          class="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-amber-400 cursor-pointer"
+          [(ngModel)]="filtros.fecha" name="fecha" required />
+      </div>
+
+      <!-- Selector mes para semana -->
+      <div *ngIf="filtros.tipoPeriodo === 'semana'">
+        <label class="block text-gray-700 font-semibold mb-2">Selecciona mes y año:</label>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <select id="mes" [(ngModel)]="filtros.mes" name="mes" (change)="calcularSemanasDelMes()" required
+              class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-amber-400 cursor-pointer">
+              <option value="" disabled>--Mes--</option>
+              <option *ngFor="let m of meses" [value]="m.value">{{ m.nombre }}</option>
+            </select>
+          </div>
+          <div>
+            <input id="anio" type="number" min="2000" max="2100" placeholder="Ej. 2025" [(ngModel)]="filtros.anio"
+              name="anio" (change)="calcularSemanasDelMes()" required
+              class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-amber-400" />
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Selector semana -->
+      <div *ngIf="filtros.tipoPeriodo === 'semana' && semanasDelMes.length > 0" class="mt-4">
+        <label for="semana" class="block text-gray-700 font-semibold mb-2">Selecciona la semana:</label>
+        <select id="semana"
+          class="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-amber-400 cursor-pointer"
+          [(ngModel)]="filtros.semanaSeleccionada" name="semanaSeleccionada" required>
+          <option value="" disabled>-- Elige una semana --</option>
+          <option *ngFor="let semana of semanasDelMes" [value]="semana.valor">{{ semana.nombre }}</option>
+        </select>
+      </div>
+
+
+      <!-- Mes -->
+      <div *ngIf="filtros.tipoPeriodo === 'mes'">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="mes" class="block mb-1">Mes</label>
+            <select id="mes" [(ngModel)]="filtros.mes" name="mes" required
+              class="w-full border border-gray-300 rounded-md p-2 cursor-pointer">
+              <option value="" disabled>--Mes--</option>
+              <option *ngFor="let m of meses" [value]="m.value">{{ m.nombre }}</option>
+            </select>
+          </div>
+          <div>
+            <label for="anio" class="block mb-1 text-gray-700 font-semibold">Año</label>
+            <input id="anio" type="number" min="2000" max="2100" placeholder="Ej. 2025" [(ngModel)]="filtros.anio"
+              name="anio" required
+              class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-amber-400 " />
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Año -->
+      <div *ngIf="filtros.tipoPeriodo === 'anio'">
+        <label class="block text-gray-700 font-semibold mb-2" for="anio">Selecciona el año:</label>
+        <input type="number" id="anio" min="2000" max="2100"
+          class="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-amber-400"
+          [(ngModel)]="filtros.anio" name="anio" required />
+      </div>
+
+      <!-- Botón generar -->
+      <div class="flex justify-between items-center mt-6">
+        <button type="button" (click)="limpiarFiltros()"
+          class="bg-gradient-to-r from-gray-300 to-gray-400 hover:from-gray-400 hover:to-gray-500 text-gray-800 font-semibold py-3 px-6 rounded-full shadow flex items-center gap-2 transition duration-300 cursor-pointer group">
+          <span class="text-lg group-hover:rotate-[15deg] transition-transform duration-200">🧹</span>
+          <span>Limpiar filtros</span>
+        </button>
+
+
+        <button type="submit"
+          class="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 transition duration-300 text-white font-semibold text-base px-6 py-3 rounded-full shadow-lg flex items-center gap-2 group cursor-pointer">
+          <span class="text-xl group-hover:animate-pulse">📊</span>
+          <span>Generar Reporte</span>
+        </button>
+
+      </div>
+
+    </form>
+  </div>
+</div>
+<!-- loader -->
+<div *ngIf="cargandoVentas"
+  class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 p-4 sm:p-6">
+  <app-loader [mensaje]="'Cargando datos...'"></app-loader>
+
+</div>
+<!-- Modal de resultados (solo se muestra cuando ya terminó de cargar) -->
+<div *ngIf="mostrarModalResultados && !cargandoVentas"
+  class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 p-4 sm:p-6">
+  <div
+    class="bg-white w-full max-w-6xl max-h-[95vh] overflow-y-auto rounded-3xl shadow-2xl relative ring-1 ring-gray-200">
+    <!-- Botón cerrar con reset de filtros -->
+    <button
+      class="absolute top-4 right-6 text-white/80 hover:text-red-500 hover:bg-white/20 rounded-full w-10 h-10 flex items-center justify-center hover:scale-110 text-3xl font-light transition-all duration-300 cursor-pointer"
+      (click)="cerrarModalResultados()" aria-label="Cerrar modal">
+      ×
+    </button>
+
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-6">
+      <div class="text-center text-white space-y-1">
+        <h2 class="text-3xl md:text-4xl font-bold">📊 Reporte de Ventas</h2>
+        <p class="text-base md:text-lg font-bold tracking-wide text-blue-100">
+          {{ obtenerDescripcionPeriodo() }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Resumen información -->
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-4 px-6 py-4 border-b border-gray-100 bg-gray-50 text-sm text-center">
+      <div class="flex flex-col items-center space-y-2">
+        <div class="w-10 h-10 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-lg">📅</div>
+        <div>
+          <p class="text-[11px] text-gray-500 uppercase font-semibold">Fecha de generación</p>
+          <p class="text-gray-800 font-medium">{{ fechaActual | date: 'longDate' }}</p>
+        </div>
+      </div>
+      <div class="flex flex-col items-center space-y-2">
+        <div class="w-10 h-10 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center text-lg">⏳
+        </div>
+        <div>
+          <p class="text-[11px] text-gray-500 uppercase font-semibold">Tipo de período</p>
+          <p class="text-gray-800 font-medium">
+            {{ filtros.tipoPeriodo === 'anio' ? 'AÑO' : filtros.tipoPeriodo | titlecase }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumen por Forma de Pago -->
+    <section class="px-10 py-6">
+      <div class="flex items-center mb-6 justify-center">
+        <div class="w-9 h-9 bg-green-200 rounded-lg flex items-center justify-center mr-3 text-lg">💰</div>
+        <h3 class="text-xl font-bold text-gray-900">Resumen por Forma de Pago</h3>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-4 justify-center">
+        <ng-container *ngFor="let forma of resumenFormasPago | keyvalue">
+          <div
+            class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:scale-[1.01] hover:shadow-md transition duration-200 cursor-default group flex flex-col items-center text-center min-h-[100px]">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center mb-2 text-2xl group-hover:bg-green-100"
+              [ngClass]="{
+                'bg-green-100 text-green-700': forma.key === 'efectivo',
+                'bg-blue-100 text-blue-700': forma.key === 'tarjeta',
+                'bg-purple-100 text-purple-700': forma.key === 'transferencia',
+                'bg-orange-100 text-orange-700': forma.key === 'digital',
+                'bg-gray-100 text-gray-700': !(forma.key === 'efectivo' || forma.key === 'tarjeta' || forma.key === 'transferencia' || forma.key === 'digital')
+              }">
+              <span *ngIf="forma.key === 'efectivo'">💵</span>
+              <span *ngIf="forma.key === 'tarjeta'">💳</span>
+              <span *ngIf="forma.key === 'transferencia'">📱</span>
+              <span *ngIf="forma.key === 'credito'">⌛</span>
+              <span *ngIf="forma.key === 'pedidosya'">🛵</span>
+              <span *ngIf="forma.key === 'beez'">🐝</span>
+              <span
+                *ngIf="!(forma.key === 'efectivo' || forma.key === 'tarjeta' || forma.key === 'transferencia' || forma.key === 'credito' || forma.key === 'pedidosya' || forma.key === 'beez')">💰</span>
+            </div>
+            <div>
+              <p class="text-[11px] text-gray-500 uppercase font-semibold tracking-wide leading-tight mb-1 capitalize">
+                {{ forma.key }}
+              </p>
+              <p class="text-lg font-bold text-green-700 leading-tight">
+                {{ forma.value | currency: 'USD' }}
+              </p>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </section>
+
+    <!-- Tabla -->
+    <section class="px-10 py-6">
+      <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center justify-center">
+        <span class="text-2xl mr-2">📄</span> Detalle de Facturas
+      </h3>
+
+      <div *ngIf="facturasFiltradas.length > 0">
+        <div class="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden max-h-[400px]">
+          <div
+            class="overflow-x-auto overflow-y-auto max-h-[350px] scrollbar-thin scrollbar-thumb-blue-200 hover:scrollbar-thumb-blue-300 scrollbar-track-transparent">
+            <table class="min-w-full text-sm text-left">
+              <thead
+                class="bg-gray-50 text-gray-600 uppercase text-[11px] font-semibold tracking-wide border-b border-gray-200">
+                <tr>
+                  <th class="px-6 py-3">Fecha</th>
+                  <th class="px-6 py-3">N° Factura</th>
+                  <th class="px-6 py-3">Forma de Pago</th>
+                  <th class="px-6 py-3 text-right">Monto</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr *ngFor="let factura of facturasFiltradas" class="hover:bg-gray-50 transition-colors">
+                  <td class="px-6 py-4">{{ factura.fecha | date: 'shortDate' }}</td>
+                  <td class="px-6 py-4 font-medium">{{ factura.numero_factura }}</td>
+                  <td class="px-6 py-4">
+                    <span
+                      class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold capitalize"
+                      [ngClass]="{
+                    'bg-green-100 text-green-800': factura.forma_pago === 'efectivo',
+                    'bg-blue-100 text-blue-800': factura.forma_pago === 'tarjeta',
+                    'bg-purple-100 text-purple-800': factura.forma_pago === 'transferencia',
+                    'bg-orange-100 text-orange-800': factura.forma_pago === 'digital',
+                    'bg-gray-100 text-gray-800': factura.forma_pago !== 'efectivo' && factura.forma_pago !== 'tarjeta' && factura.forma_pago !== 'transferencia' && factura.forma_pago !== 'digital'
+                  }">
+                      <ng-container [ngSwitch]="factura.forma_pago">
+                        <span *ngSwitchCase="'efectivo'">💵</span>
+                        <span *ngSwitchCase="'tarjeta'">💳</span>
+                        <span *ngSwitchCase="'transferencia'">📱</span>
+                        <span *ngSwitchCase="'credito'">⌛</span>
+                        <span *ngSwitchCase="'pedidosya'">🛵</span>
+                        <span *ngSwitchCase="'beez'">🐝</span>
+                        <span *ngSwitchDefault>💰</span>
+                      </ng-container>
+                      {{ factura.forma_pago | titlecase }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-right font-semibold text-gray-900">
+                    {{ factura.monto | currency: 'USD' }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="bg-gradient-to-r from-gray-50 to-blue-50 px-6 py-4 border-t border-gray-200">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center space-x-2">
+                <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-sm">💰</div>
+                <span class="text-sm font-semibold text-gray-600">Total General:</span>
+              </div>
+              <span class="text-xl font-bold text-green-600">{{ obtenerTotalFacturado() | currency: 'USD' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="facturasFiltradas.length === 0" class="text-center py-16 text-gray-500">
+        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">📭</div>
+        <h3 class="text-xl font-semibold mb-2">No hay resultados</h3>
+        <p class="text-sm max-w-md mx-auto">No se encontraron facturas con los filtros aplicados. Intenta con otro
+          período o criterio.</p>
+      </div>
+
+    </section>
+
+
+    <!-- Botón PDF centrado al final -->
+    <div class="flex justify-center py-6 bg-gray-50 border-t border-gray-200">
+      <button (click)="generarPDF()"
+        class="bg-blue-600 text-white px-6 py-2 rounded-full shadow-md hover:bg-blue-700 hover:scale-105 transform transition duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-blue-300 cursor-pointer"
+        aria-label="Exportar reporte en PDF">
+        🖨️ Exportar PDF
+      </button>
+    </div>
+  </div>
+</div>
+<!-- Modal de resultados para productos más vendidos -->
+<!-- Loader -->
+<div *ngIf="cargandoProductos"
+  class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 p-4 sm:p-6">
+  <app-loader [mensaje]="'Cargando productos más vendidos...'"></app-loader>
+</div>
+<!-- Modal de productos más vendidos -->
+<div *ngIf="mostrarModalProductosMasVendidos && !cargandoProductos"
+  class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+  <div
+    class="bg-white w-full max-w-5xl max-h-[95vh] overflow-y-auto rounded-3xl shadow-2xl relative ring-1 ring-gray-200">
+
+    <!-- Botón cerrar -->
+    <button
+      class="absolute top-4 right-6 text-white/80 hover:text-red-500 hover:bg-white/20 rounded-full w-10 h-10 flex items-center justify-center hover:scale-110 text-3xl font-light transition-all duration-300 cursor-pointer"
+      (click)="mostrarModalProductosMasVendidos = false ; limpiarFiltros()" aria-label="Cerrar modal">
+      ×
+    </button>
+    <!-- Encabezado -->
+    <div class="bg-gradient-to-r from-pink-600 to-red-600 px-6 py-6 rounded-t-3xl">
+      <div class="text-center text-white space-y-1">
+        <h2 class="text-3xl md:text-4xl font-bold">🔥 Productos más vendidos</h2>
+        <p class="text-base md:text-lg font-bold tracking-wide text-pink-100">{{ obtenerDescripcionPeriodo() }}</p>
+      </div>
+    </div>
+
+    <!-- Resumen -->
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-4 px-6 py-4 border-b border-gray-100 bg-gray-50 text-sm text-center">
+      <div class="flex flex-col items-center space-y-2">
+        <div class="w-10 h-10 bg-pink-100 text-pink-700 rounded-full flex items-center justify-center text-lg">📅</div>
+        <div>
+          <p class="text-[11px] text-gray-500 uppercase font-semibold">Fecha de generación</p>
+          <p class="text-gray-800 font-medium">{{ fechaActual | date: 'longDate' }}</p>
+        </div>
+      </div>
+      <div class="flex flex-col items-center space-y-2">
+        <div class="w-10 h-10 bg-red-100 text-red-700 rounded-full flex items-center justify-center text-lg">⏳</div>
+        <div>
+          <p class="text-[11px] text-gray-500 uppercase font-semibold">Tipo de período</p>
+          <p class="text-gray-800 font-medium">
+            {{ filtros.tipoPeriodo === 'anio' ? 'AÑO' : (filtros.tipoPeriodo | titlecase) }}
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <section class="px-10 py-6">
+      <div *ngIf="productosMasVendidos.length > 0">
+        <div class="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden">
+          <div
+            class="overflow-x-auto overflow-y-auto max-h-[350px] scrollbar-thin scrollbar-thumb-pink-200 hover:scrollbar-thumb-pink-300 scrollbar-track-transparent">
+            <table class="min-w-full text-sm text-left">
+              <thead
+                class="bg-gray-50 text-gray-600 uppercase text-[11px] font-semibold tracking-wide border-b border-gray-200">
+                <tr>
+                  <th class="px-6 py-3">Producto</th>
+                  <th class="px-6 py-3 text-center">Cantidad</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr *ngFor="let producto of productosMasVendidos" class="hover:bg-gray-50 transition-colors">
+                  <td class="px-6 py-4 font-medium text-gray-800">{{ producto.nombre }}</td>
+                  <td class="px-6 py-4 text-center">{{ producto.cantidad }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="productosMasVendidos.length === 0" class="text-center py-16 text-gray-500">
+        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">📭</div>
+        <h3 class="text-xl font-semibold mb-2">No hay productos</h3>
+        <p class="text-sm max-w-md mx-auto">No se encontraron productos más vendidos para este período.</p>
+      </div>
+    </section>
+
+    <!-- Botón PDF al final, centrado -->
+    <div class="px-10 py-6 flex justify-center border-t border-gray-200 bg-gray-50">
+      <button
+        class="group text-green-600 border border-green-300 bg-white px-6 py-2 rounded-full text-sm shadow-sm transition duration-300 cursor-pointer flex items-center gap-2 hover:bg-green-50 hover:shadow-md"
+        (click)="exportarProductosMasVendidosPDF(); mostrarModalProductosMasVendidos = false; limpiarFiltros()"
+        aria-label="Exportar PDF">
+        <span class="transition-transform duration-300 group-hover:-translate-y-1 text-lg">
+          🖨️
+        </span>
+        <span class="font-semibold">Exportar PDF</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+<!-- Modal de Stock -->
+<div *ngIf="mostrarModalStock"
+  class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+  <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-4xl space-y-6 relative">
+
+    <!-- Encabezado -->
+    <div class="flex items-center justify-between">
+      <h3 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+        <i class="fas fa-boxes text-emerald-500"></i>
+        Reporte de Stock
+      </h3>
+      <button (click)="cerrarModalStock() ; limpiarFiltrosproducto()" aria-label="Cerrar modal"
+        class="text-red-500 hover:text-red-600 text-3xl font-bold transition cursor-pointer">
+        &times;
+      </button>
+    </div>
+
+    <!-- Filtros -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-50 p-4 rounded-lg shadow-inner">
+      <!-- Categoría -->
+      <div>
+        <label for="categoria" class="block text-sm font-semibold text-gray-700 mb-1">Categoría</label>
+        <select [(ngModel)]="filtroStock.categoria" id="categoria" name="categoria"
+          class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-amber-500 focus:border-amber-500">
+          <option value="">Todas las categorías</option>
+          <option *ngFor="let cat of categorias" [value]="cat.id">
+            {{ cat.nombre }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Estado de stock -->
+      <div>
+        <label for="estadoStock" class="block text-sm font-semibold text-gray-700 mb-1">Estado de Stock</label>
+        <select [(ngModel)]="filtroStock.nivel" id="estadoStock" name="estadoStock"
+          class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-amber-500 focus:border-amber-500">
+          <option value="">Todos los productos</option>
+          <option value="critico">Crítico (bajo mínimo)</option>
+          <option value="agotado">Agotado</option>
+          <option value="suficiente">Suficiente</option>
+        </select>
+      </div>
+
+      <!-- Botón buscar -->
+      <div class="flex items-end">
+        <button (click)="generarReporteStock()"
+          class="w-full bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md text-sm font-semibold shadow cursor-pointer">
+          <i class="fas fa-search mr-2"></i> Buscar
+        </button>
+      </div>
+    </div>
+    <!-- Loader -->
+    <div *ngIf="cargandoVentas"
+      class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 p-4 sm:p-6">
+      <app-loader [mensaje]="'Cargando datos...'"></app-loader>
+    </div>
+
+    <!-- Tabla -->
+    <div
+      class="overflow-x-auto overflow-y-auto max-h-[400px] scrollbar-thin scrollbar-thumb-emerald-300 hover:scrollbar-thumb-emerald-400 scrollbar-track-transparent rounded-lg border border-gray-200"
+      *ngIf="mostrarTabla">
+      <table class="min-w-full divide-y divide-gray-200 rounded-lg">
+        <thead class="bg-emerald-100 text-emerald-800">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-bold uppercase">Producto</th>
+            <th class="px-6 py-3 text-left text-xs font-bold uppercase">Categoría</th>
+            <th class="px-6 py-3 text-left text-xs font-bold uppercase">Stock</th>
+            <th class="px-6 py-3 text-left text-xs font-bold uppercase">Unidad</th>
+            <th class="px-6 py-3 text-left text-xs font-bold uppercase">Estado</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-100">
+          <tr *ngFor="let producto of productosFiltrados"
+            [class.bg-red-50]="(producto.stock_actual || 0) < (producto.stock_minimo || 0)"
+            [class.bg-amber-50]="producto.stock_actual === 0">
+            <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ producto.nombre }}</td>
+            <td class="px-6 py-4 text-sm text-gray-600">{{ producto.categorias?.nombre || 'Sin categoría' }}</td>
+            <td class="px-6 py-4 text-sm text-gray-600">{{ producto.stock_actual || 0 }}</td>
+            <td class="px-6 py-4 text-sm text-gray-600">{{ producto.unidad || 'N/D' }}</td>
+            <td class="px-6 py-4">
+              <span [class]="getEstadoStockClass(producto)">
+                {{ getEstadoStockText(producto) }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="productosFiltrados?.length === 0">
+            <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
+              No se encontraron productos con los filtros seleccionados
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <!-- Botón Generar PDF -->
+    <div class="flex justify-end pt-4" *ngIf="mostrarTabla">
+      <button (click)="exportarPDFsctok()"
+        class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-md text-sm font-semibold shadow cursor-pointer">
+        <i class="fas fa-file-pdf mr-2"></i> Generar PDF
+      </button>
+    </div>
+
+  </div>
+</div>
+<!-- loader -->
+<div *ngIf="cargandoClientes"
+  class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 p-4 sm:p-6">
+  <app-loader [mensaje]="'Cargando datos de clientes...'"></app-loader>
+</div>
+<!-- Modal de resultados (solo se muestra cuando terminó de cargar) -->
+<div *ngIf="mostrarModalGastos && !cargandoClientes"
+  class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 p-4 sm:p-6">
+  <div
+    class="bg-white w-full max-w-6xl max-h-[95vh] overflow-y-auto rounded-3xl shadow-2xl relative ring-1 ring-gray-200">
+
+    <!-- Botón cerrar con reset de filtros -->
+    <button
+      class="absolute top-4 right-6 text-white/80 hover:text-red-500 hover:bg-white/20 rounded-full w-10 h-10 flex items-center justify-center hover:scale-110 text-3xl font-light transition-all duration-300 cursor-pointer"
+      (click)="cerrarModalGastos()" aria-label="Cerrar modal">
+      ×
+    </button>
+
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-6">
+      <div class="text-center text-white space-y-1">
+        <h2 class="text-3xl md:text-4xl font-bold">📋 Reporte de Pagos y Adelantos</h2>
+        <p class="text-base md:text-lg font-bold tracking-wide text-indigo-200">
+          {{ obtenerDescripcionPeriodoEmpleados() }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Resumen información -->
+    <div
+      class="grid grid-cols-1 md:grid-cols-3 gap-4 px-6 py-4 border-b border-gray-100 bg-gray-50 text-sm text-center">
+
+      <!-- Fecha de generación -->
+      <div class="flex flex-col items-center space-y-2">
+        <div class="w-10 h-10 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-lg">📅
+        </div>
+        <div>
+          <p class="text-[11px] text-gray-500 uppercase font-semibold">Fecha de generación</p>
+          <p class="text-gray-800 font-medium">{{ fechaActual | date: 'longDate' }}</p>
+        </div>
+      </div>
+
+      <!-- Tipo de período -->
+      <div class="flex flex-col items-center space-y-2">
+        <div class="w-10 h-10 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center text-lg">⏳
+        </div>
+        <div>
+          <p class="text-[11px] text-gray-500 uppercase font-semibold">Tipo de período</p>
+          <p class="text-gray-800 font-medium">
+            {{ filtros.tipoPeriodo === 'anio' ? 'AÑO' : filtros.tipoPeriodo | titlecase }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Cliente / Empleado -->
+      <div class="flex flex-col items-center space-y-2">
+        <div class="w-10 h-10 bg-yellow-100 text-yellow-700 rounded-full flex items-center justify-center text-lg">👤
+        </div>
+        <div>
+          <p class="text-[11px] text-gray-500 uppercase font-semibold">Empleado</p>
+          <p class="text-gray-800 font-medium">
+            {{ filtros.proveedor || 'Todos' }}
+          </p>
+        </div>
+      </div>
+
+    </div>
+    <!-- Tabla -->
+    <section class="px-10 py-6">
+      <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center justify-center">
+        <span class="text-2xl mr-2">📄</span> Detalle de Movimientos
+      </h3>
+
+      <div *ngIf="gastosFiltrados.length > 0">
+        <div class="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden max-h-[400px]">
+          <div
+            class="overflow-x-auto overflow-y-auto max-h-[350px] scrollbar-thin scrollbar-thumb-indigo-400 hover:scrollbar-thumb-indigo-500 scrollbar-track-transparent">
+            <table class="min-w-full text-sm text-left">
+              <thead
+                class="bg-gray-50 text-gray-600 uppercase text-[11px] font-semibold tracking-wide border-b border-gray-200">
+                <tr>
+                  <th class="px-6 py-3">Fecha</th>
+                  <th class="px-6 py-3">Categoría</th>
+                  <th class="px-6 py-3">Descripción</th>
+                  <th class="px-6 py-3">Método de Pago</th>
+                  <th class="px-6 py-3 text-right">Monto</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr *ngFor="let gasto of gastosFiltrados" class="hover:bg-gray-50 transition-colors">
+                  <td class="px-6 py-4">{{ gasto.fecha | date: 'shortDate' }}</td>
+                  <td class="px-6 py-4 capitalize">{{ gasto.categoria }}</td>
+                  <td class="px-6 py-4">{{ gasto.descripcion || '-' }}</td>
+                  <td class="px-6 py-4 capitalize">{{ gasto.metodo_pago }}</td>
+                  <td class="px-6 py-4 text-right font-semibold text-indigo-700">
+                    {{ gasto.monto | currency:'USD' }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="bg-gradient-to-r from-gray-50 to-indigo-50 px-6 py-4 border-t border-gray-200">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center space-x-2">
+                <div class="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center text-sm">💰</div>
+                <span class="text-sm font-semibold text-gray-600">Total:</span>
+              </div>
+              <span class="text-xl font-bold text-indigo-600">{{ obtenerTotalGastos() | currency:'USD' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="gastosFiltrados.length === 0" class="text-center py-16 text-gray-500">
+        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">📭</div>
+        <h3 class="text-xl font-semibold mb-2">No hay datos</h3>
+        <p class="text-sm max-w-md mx-auto">No se encontraron movimientos con los filtros aplicados.</p>
+      </div>
+    </section>
+
+    <!-- Botón PDF centrado al final -->
+    <div class="flex justify-center py-6 bg-gray-50 border-t border-gray-200">
+      <button (click)=" generarPDFPagosYAdelantos()"
+        class="bg-indigo-600 text-white px-6 py-2 rounded-full shadow-md hover:bg-indigo-700 hover:scale-105 transform transition duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-indigo-300 cursor-pointer"
+        aria-label="Exportar reporte en PDF">
+        🖨️ Exportar PDF
+      </button>
+    </div>
+  </div>
+</div>
+<!-- Loader -->
+<div *ngIf="cargandoCaja"
+  class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 p-4 sm:p-6">
+  <app-loader [mensaje]="'Cargando datos...'"></app-loader>
+</div>
+
+<!-- Modal reporte caja -->
+<div *ngIf="modalReporteCajaAbierto && !cargandoCaja"
+  class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 p-4 sm:p-6">
+  <div
+    class="bg-white w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl relative ring-1 ring-gray-200">
+
+    <!-- Botón cerrar -->
+    <button
+      class="absolute top-4 right-6 text-white/80 hover:text-red-500 hover:bg-white/20 rounded-full w-10 h-10 flex items-center justify-center hover:scale-110 text-3xl font-light transition-all duration-300 cursor-pointer"
+      (click)="modalReporteCajaAbierto = false" aria-label="Cerrar modal">
+      ×
+    </button>
+
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-indigo-600 to-purple-700 px-6 py-6">
+      <div class="text-center text-white space-y-1">
+        <h2 class="text-3xl md:text-4xl font-bold">📋 Reporte Movimientos de Caja</h2>
+        <p class="text-base md:text-lg font-semibold tracking-wide text-indigo-200">
+          {{ obtenerDescripcion() }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Resumen -->
+    <section class="grid grid-cols-1 sm:grid-cols-5 gap-4 px-8 py-6 border-b border-gray-100 bg-gray-50 text-center">
+  <div>
+    <p class="text-xs font-semibold text-gray-500 uppercase">Ingresos por Pedidos</p>
+    <p class="text-2xl font-bold text-green-600">{{ resumenCaja.totalPedidosPagados | currency:'USD' }}</p>
+  </div>
+  <div>
+    <p class="text-xs font-semibold text-gray-500 uppercase">Gastos</p>
+    <p class="text-2xl font-bold text-red-600">{{ resumenCaja.totalGastos | currency:'USD' }}</p>
+  </div>
+  <div>
+    <p class="text-xs font-semibold text-gray-500 uppercase">Ingresos por Facturas</p>
+    <p class="text-2xl font-bold text-blue-600">{{ resumenCaja.totalFacturas | currency:'USD' }}</p>
+  </div>
+  <div>
+    <p class="text-xs font-semibold text-gray-500 uppercase">Pedidos por Cobrar</p>
+    <p class="text-2xl font-bold text-yellow-600">{{ resumenCaja.totalPedidosPendientes | currency:'USD' }}</p>
+  </div>
+  <div>
+    <p class="text-xs font-semibold text-gray-500 uppercase">Saldo Final</p>
+    <p class="text-3xl font-extrabold" [ngClass]="{
+        'text-green-700': (resumenCaja.saldoFinal) >= 0,
+        'text-red-700': (resumenCaja.saldoFinal) < 0
+      }">
+      {{ resumenCaja.saldoFinal | currency:'USD' }}
+    </p>
+  </div>
+</section>
+
+
+    <!-- Ingresos -->
+    <section class="px-8 py-6 border-b border-gray-100">
+      <h3 class="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2">💰 Ingresos</h3>
+      <p class="text-sm text-gray-500 mb-4">
+        Los créditos pagados y las facturas reflejan los ingresos efectivamente recibidos durante el periodo
+        seleccionado.
+      </p>
+
+
+      <!-- creditos Pagados -->
+      <div>
+        <h4 class="font-semibold text-indigo-700 mb-2">🛒 Creditos Pagados</h4>
+        <div *ngIf="pedidosPagados.length > 0"
+          class="overflow-x-auto max-h-40 scrollbar-thin scrollbar-thumb-indigo-300 hover:scrollbar-thumb-indigo-400 scrollbar-track-transparent">
+          <table class="min-w-full text-sm text-left">
+            <thead class="bg-indigo-50 text-indigo-600 uppercase text-xs font-semibold">
+              <tr>
+                <th class="px-4 py-2">Fecha</th>
+                <th class="px-4 py-2">Cliente</th>
+                <th class="px-4 py-2 text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let pedido of pedidosPagados" class="hover:bg-indigo-100">
+                <td class="px-4 py-2">{{ pedido.fecha | date:'shortDate' }}</td>
+                <td class="px-4 py-2">{{ pedido.clientes?.nombre || 'N/A' }}</td>
+                <td class="px-4 py-2 text-right font-semibold text-green-700">{{ pedido.total | currency:'USD' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="pedidosPagados.length === 0" class="text-gray-500 text-center py-6">
+          No hay pedidos pagados para el periodo seleccionado.
+        </div>
+      </div>
+
+      <!-- Facturas -->
+      <div class="mt-6">
+        <h4 class="font-semibold text-blue-700 mb-2">📄 Facturas</h4>
+        <div *ngIf="facturasFiltradas.length > 0"
+          class="overflow-x-auto max-h-40 scrollbar-thin scrollbar-thumb-blue-300 hover:scrollbar-thumb-blue-400 scrollbar-track-transparent">
+          <table class="min-w-full text-sm text-left">
+            <thead class="bg-blue-50 text-blue-600 uppercase text-xs font-semibold">
+              <tr>
+                <th class="px-4 py-2">Fecha</th>
+                <th class="px-4 py-2">N° Factura</th>
+                <th class="px-4 py-2 text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let factura of facturasFiltradas" class="hover:bg-blue-100">
+                <td class="px-4 py-2">{{ factura.fecha | date:'shortDate' }}</td>
+                <td class="px-4 py-2 font-medium">{{ factura.numero_factura }}</td>
+                <td class="px-4 py-2 text-right font-semibold text-blue-700">{{ factura.monto | currency:'USD' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="facturasFiltradas.length === 0" class="text-gray-500 text-center py-6">
+          No hay facturas para el periodo seleccionado.
+        </div>
+      </div>
+    </section>
+
+    <!-- Créditos pendientes -->
+    <section class="px-8 py-6 border-b border-gray-100 bg-yellow-50 rounded-lg mt-6">
+      <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">🕒 Créditos Pendientes</h3>
+      <p class="text-sm text-yellow-800 mb-4">
+        Pedidos que aún están pendientes de pago, representan cuentas por cobrar.
+      </p>
+      <div *ngIf="pedidosPendientes.length > 0"
+        class="overflow-x-auto max-h-48 scrollbar-thin scrollbar-thumb-yellow-400 hover:scrollbar-thumb-yellow-500 scrollbar-track-transparent">
+        <table class="min-w-full text-sm text-left">
+          <thead class="bg-yellow-100 text-yellow-700 uppercase text-xs font-semibold">
+            <tr>
+              <th class="px-4 py-2">Fecha</th>
+              <th class="px-4 py-2">Cliente</th>
+              <th class="px-4 py-2 text-right">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let pedido of pedidosPendientes" class="hover:bg-yellow-200">
+              <td class="px-4 py-2">{{ pedido.fecha | date:'shortDate' }}</td>
+              <td class="px-4 py-2">{{ pedido.clientes?.nombre || 'N/A' }}</td>
+              <td class="px-4 py-2 text-right font-semibold text-yellow-700">{{ pedido.total | currency:'USD' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="pedidosPendientes.length === 0" class="text-yellow-800 text-center py-6">
+        No hay créditos pendientes para el periodo seleccionado.
+      </div>
+    </section>
+
+    <!-- Gastos (Egresos) -->
+    <section class="px-8 py-6 border-b border-gray-100 mt-6">
+      <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">💸 Gastos (Egresos)</h3>
+      <p class="text-sm text-gray-600 mb-4">
+        Gastos realizados durante el periodo seleccionado.
+      </p>
+      <div *ngIf="gastosFiltrados.length > 0"
+        class="overflow-x-auto max-h-48 scrollbar-thin scrollbar-thumb-red-300 hover:scrollbar-thumb-red-400 scrollbar-track-transparent">
+        <table class="min-w-full text-sm text-left">
+          <thead class="bg-red-50 text-red-600 uppercase text-xs font-semibold">
+            <tr>
+              <th class="px-4 py-2">Fecha</th>
+              <th class="px-4 py-2">Concepto</th>
+              <th class="px-4 py-2 text-right">Monto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let gasto of gastosFiltrados" class="hover:bg-red-100">
+              <td class="px-4 py-2">{{ gasto.fecha | date:'shortDate' }}</td>
+              <td class="px-4 py-2">{{ gasto.descripcion || gasto.categoria || 'N/A' }}</td>
+              <td class="px-4 py-2 text-right font-semibold text-red-700">{{ gasto.monto | currency:'USD' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="gastosFiltrados.length === 0" class="text-gray-500 text-center py-6">
+        No hay gastos para el periodo seleccionado.
+      </div>
+    </section>
+
+    <!-- Botón PDF -->
+    <div class="flex justify-center py-6 bg-gray-50 border-t border-gray-200">
+      <button (click)="generarPDFReporteCaja()"
+        class="bg-indigo-600 text-white px-6 py-2 rounded-full shadow-md hover:bg-indigo-700 hover:scale-105 transform transition duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-indigo-300 cursor-pointer"
+        aria-label="Exportar reporte en PDF">
+        🖨️ Exportar PDF
+      </button>
+    </div>
+
+  </div>
+</div>

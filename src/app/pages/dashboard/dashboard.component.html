@@ -1,411 +1,423 @@
 <div class="min-h-screen bg-gray-50 p-6">
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-      <!-- Ventas Totales -->
-      <div class="dashboard-card bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-emerald-500">
-        <div class="p-5">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="text-sm font-medium text-gray-500">Ventas Totales Hoy</p>
-              <h3 class="text-2xl font-bold text-gray-800 mt-1">$1,230.50</h3>
-              <p class="text-xs text-emerald-500 mt-2 flex items-center">
-                <i class="fas fa-arrow-up mr-1"></i> 12% desde ayer
-              </p>
-            </div>
-            <div class="bg-emerald-100 p-3 rounded-lg">
-              <i class="fas fa-dollar-sign text-emerald-500 text-xl"></i>
-            </div>
-          </div>
+  <!-- Header Mejorado -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+        <i class="fas fa-chart-line text-amber-500"></i>
+        Panel de Control
+      </h1>
+    </div>
+   
+  </div>
+<!-- Reservas del Día (Manteniendo tu lógica) -->
+<div class="mb-6">
+  <!-- Header de la sección -->
+  <div class="flex justify-between items-center mb-4">
+    <h3 class="text-lg font-semibold text-gray-800 ">Reservaciones este mes</h3>
+    <button (click)="irAReservaciones()" class="text-sm text-amber-600 hover:text-amber-700 font-medium flex items-center cursor-pointer">
+      Ver todas <i class="fas fa-chevron-right ml-1 text-xs cursor-pointer"></i>
+    </button>
+  </div>
+
+  <!-- Contenedor de tarjetas -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <!-- Tarjeta de reservación -->
+    <div *ngFor="let reservation of reservacionesDelMes" 
+         (click)="irAReservaciones()" class="border border-gray-200 rounded-lg p-4 bg-white hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1 cursor-pointer">
+      
+      <!-- Header de la tarjeta -->
+      <div class="flex justify-between items-start mb-2 ">
+        <!-- Motivo principal con icono -->
+        <div class="flex items-center">
+          <i class="far fa-calendar-alt text-amber-500 mr-2"></i>
+          <h4 class="text-md font-semibold text-gray-800 truncate">
+            {{ reservation.motivo }}
+          </h4>
         </div>
-        <div class="bg-gradient-to-r from-emerald-500 to-emerald-400 h-1"></div>
+        
+        <!-- Estado (puedes agregar lógica para diferentes estados) -->
+        <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-800">
+          Confirmada
+        </span>
       </div>
-  
-      <!-- Pedidos Activos -->
-      <div class="dashboard-card bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-amber-500">
-        <div class="p-5">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="text-sm font-medium text-gray-500">Pedidos Activos</p>
-              <h3 class="text-2xl font-bold text-gray-800 mt-1">5</h3>
-              <p class="text-xs text-amber-500 mt-2">2 en preparación, 3 pendientes</p>
-            </div>
-            <div class="bg-amber-100 p-3 rounded-lg">
-              <i class="fas fa-utensils text-amber-500 text-xl"></i>
-            </div>
-          </div>
+
+     
+      <!-- Fecha y hora -->
+      <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+        <div>
+          <p class="text-xs text-gray-500 mb-1">Fecha</p>
+          <p class="text-sm font-medium text-gray-800">
+            {{ reservation.fecha | date: 'dd MMM, y' }}
+          </p>
         </div>
-        <div class="bg-gradient-to-r from-amber-500 to-amber-400 h-1"></div>
-      </div>
-  
-      <!-- Gastos del Día -->
-      <div class="dashboard-card bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-rose-500">
-        <div class="p-5">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="text-sm font-medium text-gray-500">Gastos del Día</p>
-              <h3 class="text-2xl font-bold text-gray-800 mt-1">$450.75</h3>
-              <p class="text-xs text-rose-500 mt-2 flex items-center">
-                <i class="fas fa-arrow-down mr-1"></i> 5% desde ayer
-              </p>
-            </div>
-            <div class="bg-rose-100 p-3 rounded-lg">
-              <i class="fas fa-file-invoice-dollar text-rose-500 text-xl"></i>
-            </div>
-          </div>
+        <div>
+          <p class="text-xs text-gray-500 mb-1">Hora</p>
+          <p class="text-sm font-medium text-gray-800">
+            {{ reservation.hora || '19:00' }}
+          </p>
         </div>
-        <div class="bg-gradient-to-r from-rose-500 to-rose-400 h-1"></div>
-      </div>
-  
-      <!-- Balance Neto -->
-      <div class="dashboard-card bg-white rounded-xl shadow-md overflow-hidden border-l-4 border-blue-500">
-        <div class="p-5">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="text-sm font-medium text-gray-500">Balance Neto</p>
-              <h3 class="text-2xl font-bold text-gray-800 mt-1">$779.75</h3>
-              <p class="text-xs text-blue-500 mt-2 flex items-center">
-                <i class="fas fa-arrow-up mr-1"></i> 8% desde ayer
-              </p>
-            </div>
-            <div class="bg-blue-100 p-3 rounded-lg">
-              <i class="fas fa-chart-pie text-blue-500 text-xl"></i>
-            </div>
-          </div>
-        </div>
-        <div class="bg-gradient-to-r from-blue-500 to-blue-400 h-1"></div>
+       
       </div>
     </div>
-  
-    <!-- Charts Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-      <!-- Ventas Diarias Chart -->
-      <div class="bg-white rounded-xl shadow-md p-6">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="font-semibold text-gray-700">Ventas Diarias</h3>
-          <div class="flex space-x-2">
-            <button class="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-md">Semana</button>
-            <button class="text-xs text-gray-500 px-2 py-1 rounded-md">Mes</button>
-            <button class="text-xs text-gray-500 px-2 py-1 rounded-md">Año</button>
-          </div>
-        </div>
-        <div class="chart-container">
-          <canvas id="salesChart"></canvas>
-        </div>
-      </div>
-  
-      <!-- Gastos por Categoría Chart -->
-      <div class="bg-white rounded-xl shadow-md p-6">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="font-semibold text-gray-700">Gastos por Categoría</h3>
-          <button class="text-gray-400 hover:text-gray-600">
-            <i class="fas fa-ellipsis-v"></i>
-          </button>
-        </div>
-        <div class="chart-container">
-          <canvas id="expensesChart"></canvas>
-        </div>
+
+    <!-- Loading -->
+    <div *ngIf="isLoadingReservations" class="col-span-3 flex justify-center items-center h-32">
+      <div class="flex flex-col items-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-500 mb-2"></div>
+        <p class="text-gray-500 text-sm">Cargando reservaciones...</p>
       </div>
     </div>
-  
-    <!-- Platos Más Vendidos y Stock Bajo -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-      <!-- Platos Más Vendidos -->
-      <div class="bg-white rounded-xl shadow-md p-6">
-        <h3 class="font-semibold text-gray-700 mb-4">Platos Más Vendidos</h3>
-        <div class="space-y-4">
-          <div class="flex items-center">
-            <img src="assets/placeholder.svg" alt="Plato 1" class="w-12 h-12 rounded-lg object-cover mr-4">
-            <div class="flex-1">
-              <div class="flex justify-between">
-                <h4 class="font-medium">Paella Valenciana</h4>
-                <span class="text-amber-600 font-medium">32 vendidos</span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-                <div class="bg-amber-500 h-2 rounded-full" style="width: 85%"></div>
-              </div>
-            </div>
-          </div>
-          <div class="flex items-center">
-            <img src="assets/placeholder.svg" alt="Plato 2" class="w-12 h-12 rounded-lg object-cover mr-4">
-            <div class="flex-1">
-              <div class="flex justify-between">
-                <h4 class="font-medium">Risotto de Setas</h4>
-                <span class="text-amber-600 font-medium">28 vendidos</span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-                <div class="bg-amber-500 h-2 rounded-full" style="width: 75%"></div>
-              </div>
-            </div>
-          </div>
-          <div class="flex items-center">
-            <img src="assets/placeholder.svg" alt="Plato 3" class="w-12 h-12 rounded-lg object-cover mr-4">
-            <div class="flex-1">
-              <div class="flex justify-between">
-                <h4 class="font-medium">Solomillo Wellington</h4>
-                <span class="text-amber-600 font-medium">24 vendidos</span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-                <div class="bg-amber-500 h-2 rounded-full" style="width: 65%"></div>
-              </div>
-            </div>
-          </div>
-          <div class="flex items-center">
-            <img src="assets/placeholder.svg" alt="Plato 4" class="w-12 h-12 rounded-lg object-cover mr-4">
-            <div class="flex-1">
-              <div class="flex justify-between">
-                <h4 class="font-medium">Tiramisú Clásico</h4>
-                <span class="text-amber-600 font-medium">20 vendidos</span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-                <div class="bg-amber-500 h-2 rounded-full" style="width: 55%"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+
+    <!-- No hay reservas -->
+    <div *ngIf="!isLoadingReservations && reservacionesDelMes.length === 0" 
+         class="col-span-3 text-center py-8 bg-gray-50 rounded-lg">
+      <div class="text-gray-300 mb-3">
+        <i class="far fa-calendar-check text-4xl"></i>
       </div>
-  
-      <!-- Productos con Stock Bajo -->
-      <div class="bg-white rounded-xl shadow-md p-6">
-        <h3 class="font-semibold text-gray-700 mb-4">Productos con Stock Bajo</h3>
-        <div class="space-y-4">
-          <div class="flex items-center p-3 bg-red-50 rounded-lg">
-            <div class="bg-red-100 p-2 rounded-lg mr-4">
-              <i class="fas fa-exclamation-triangle text-red-500"></i>
-            </div>
-            <div class="flex-1">
-              <div class="flex justify-between">
-                <h4 class="font-medium">Langostinos frescos</h4>
-                <span class="text-red-600 font-medium">3 kg</span>
-              </div>
-              <p class="text-xs text-gray-500">Nivel crítico</p>
-            </div>
-            <button class="text-xs bg-red-100 text-red-600 px-3 py-1 rounded-full">
-              Pedir
-            </button>
-          </div>
-          <div class="flex items-center p-3 bg-red-50 rounded-lg">
-            <div class="bg-red-100 p-2 rounded-lg mr-4">
-              <i class="fas fa-exclamation-triangle text-red-500"></i>
-            </div>
-            <div class="flex-1">
-              <div class="flex justify-between">
-                <h4 class="font-medium">Aceite de trufa</h4>
-                <span class="text-red-600 font-medium">2 botellas</span>
-              </div>
-              <p class="text-xs text-gray-500">Nivel crítico</p>
-            </div>
-            <button class="text-xs bg-red-100 text-red-600 px-3 py-1 rounded-full">
-              Pedir
-            </button>
-          </div>
-          <div class="flex items-center p-3 bg-amber-50 rounded-lg">
-            <div class="bg-amber-100 p-2 rounded-lg mr-4">
-              <i class="fas fa-exclamation-circle text-amber-500"></i>
-            </div>
-            <div class="flex-1">
-              <div class="flex justify-between">
-                <h4 class="font-medium">Queso Parmesano</h4>
-                <span class="text-amber-600 font-medium">4 kg</span>
-              </div>
-              <p class="text-xs text-gray-500">Nivel bajo</p>
-            </div>
-            <button class="text-xs bg-amber-100 text-amber-600 px-3 py-1 rounded-full">
-              Pedir
-            </button>
-          </div>
-          <div class="flex items-center p-3 bg-amber-50 rounded-lg">
-            <div class="bg-amber-100 p-2 rounded-lg mr-4">
-              <i class="fas fa-exclamation-circle text-amber-500"></i>
-            </div>
-            <div class="flex-1">
-              <div class="flex justify-between">
-                <h4 class="font-medium">Vino Tinto Reserva</h4>
-                <span class="text-amber-600 font-medium">5 botellas</span>
-              </div>
-              <p class="text-xs text-gray-500">Nivel bajo</p>
-            </div>
-            <button class="text-xs bg-amber-100 text-amber-600 px-3 py-1 rounded-full">
-              Pedir
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  
-    <!-- Tabla de Pedidos Recientes -->
-    <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="font-semibold text-gray-700">Pedidos Recientes</h3>
-        <button class="text-sm text-amber-600 hover:text-amber-700 font-medium">Ver todos</button>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="min-w-full">
-          <thead>
-            <tr class="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              <th class="px-6 py-3 rounded-l-lg"># Pedido</th>
-              <th class="px-6 py-3">Cliente</th>
-              <th class="px-6 py-3">Fecha</th>
-              <th class="px-6 py-3">Estado</th>
-              <th class="px-6 py-3">Total</th>
-              <th class="px-6 py-3 rounded-r-lg">Acciones</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-            <tr>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="font-medium">#001</span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <img src="https://randomuser.me/api/portraits/men/1.jpg" class="w-8 h-8 rounded-full mr-2">
-                  <span>Juan Pérez</span>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                12 Mayo, 14:30
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">
-                  Pendiente
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap font-medium">
-                $45.00
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <button class="text-amber-600 hover:text-amber-900 mr-3">Ver</button>
-                <button class="text-gray-600 hover:text-gray-900">Editar</button>
-              </td>
-            </tr>
-            <tr>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="font-medium">#002</span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <img src="https://randomuser.me/api/portraits/women/2.jpg" class="w-8 h-8 rounded-full mr-2">
-                  <span>María López</span>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                12 Mayo, 13:45
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
-                  En preparación
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap font-medium">
-                $30.00
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <button class="text-amber-600 hover:text-amber-900 mr-3">Ver</button>
-                <button class="text-gray-600 hover:text-gray-900">Editar</button>
-              </td>
-            </tr>
-            <tr>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="font-medium">#003</span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <img src="https://randomuser.me/api/portraits/men/3.jpg" class="w-8 h-8 rounded-full mr-2">
-                  <span>Carlos García</span>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                12 Mayo, 12:15
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                  Completado
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap font-medium">
-                $60.00
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <button class="text-amber-600 hover:text-amber-900 mr-3">Ver</button>
-                <button class="text-gray-600 hover:text-gray-900">Editar</button>
-              </td>
-            </tr>
-            <tr>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="font-medium">#004</span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <img src="https://randomuser.me/api/portraits/women/4.jpg" class="w-8 h-8 rounded-full mr-2">
-                  <span>Ana Martínez</span>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                12 Mayo, 11:30
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                  Completado
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap font-medium">
-                $75.50
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <button class="text-amber-600 hover:text-amber-900 mr-3">Ver</button>
-                <button class="text-gray-600 hover:text-gray-900">Editar</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  
-    <!-- Reservas del Día -->
-    <div class="bg-white rounded-xl shadow-md p-6">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="font-semibold text-gray-700">Reservas del Día</h3>
-        <button class="text-sm text-amber-600 hover:text-amber-700 font-medium">Ver calendario</button>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-          <div class="flex justify-between items-start">
-            <div>
-              <h4 class="font-medium">Mesa 5 - 4 personas</h4>
-              <p class="text-sm text-gray-500 mt-1">Familia Rodríguez</p>
-            </div>
-            <span class="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full">13:30</span>
-          </div>
-          <div class="flex items-center mt-3 text-xs text-gray-500">
-            <i class="fas fa-utensils mr-1"></i>
-            <span>Celebración de cumpleaños</span>
-          </div>
-        </div>
-        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-          <div class="flex justify-between items-start">
-            <div>
-              <h4 class="font-medium">Mesa 8 - 2 personas</h4>
-              <p class="text-sm text-gray-500 mt-1">Sr. y Sra. Gómez</p>
-            </div>
-            <span class="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full">14:00</span>
-          </div>
-          <div class="flex items-center mt-3 text-xs text-gray-500">
-            <i class="fas fa-utensils mr-1"></i>
-            <span>Aniversario</span>
-          </div>
-        </div>
-        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-          <div class="flex justify-between items-start">
-            <div>
-              <h4 class="font-medium">Mesa 12 - 6 personas</h4>
-              <p class="text-sm text-gray-500 mt-1">Grupo Empresarial</p>
-            </div>
-            <span class="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full">20:30</span>
-          </div>
-          <div class="flex items-center mt-3 text-xs text-gray-500">
-            <i class="fas fa-utensils mr-1"></i>
-            <span>Cena de negocios</span>
-          </div>
-        </div>
-      </div>
+      <p class="text-gray-500 mb-1">No hay reservas para este mes</p>
+      <p class="text-gray-400 text-xs mb-3">Parece que no hay reservaciones programadas</p>
+      <button class="text-white bg-amber-500 hover:bg-amber-600 text-sm font-medium px-4 py-2 rounded-lg transition">
+        <i class="fas fa-plus mr-1"></i> Crear reservación
+      </button>
     </div>
   </div>
+</div>
+
+
+  <!-- Stats Cards - Versión Mejorada (Misma lógica) -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5 mb-6">
+    <!-- Ventas Totales Hoy -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+      <div class="p-5">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Ventas Hoy</p>
+            <h3 class="text-2xl font-bold text-gray-800 mt-1">
+              {{ isLoadingStats ? '...' : (totalVentasHoy | currency:'USD':'symbol':'1.2-2') }}
+            </h3>
+            <div class="flex items-center text-xs mt-2">
+              <span class="text-emerald-500 flex items-center">
+                <i class="fas fa-arrow-up mr-1"></i> Últimas ventas
+              </span>
+            </div>
+          </div>
+          <div class="bg-emerald-50 p-3 rounded-lg text-emerald-500">
+            <i class="fas fa-dollar-sign text-xl"></i>
+          </div>
+        </div>
+      </div>
+      <div class="bg-gradient-to-r from-emerald-500 to-emerald-400 h-1 w-full"></div>
+    </div>
+
+    <!-- Pedidos Activos (Manteniendo tu lógica) -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+      <div class="p-5">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Pedidos Activos</p>
+            <h3 class="text-2xl font-bold text-gray-800 mt-1">
+              {{ isLoadingStats ? '...' : pedidosActivos }}
+            </h3>
+            <p class="text-xs text-amber-500 mt-2">En proceso</p>
+          </div>
+          <div class="bg-amber-50 p-3 rounded-lg text-amber-500">
+            <i class="fas fa-utensils text-xl"></i>
+          </div>
+        </div>
+      </div>
+      <div class="bg-gradient-to-r from-amber-500 to-amber-400 h-1 w-full"></div>
+    </div>
+
+    <!-- Gastos del Día (Manteniendo tu lógica) -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+      <div class="p-5">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Gastos Hoy</p>
+            <h3 class="text-2xl font-bold text-gray-800 mt-1">
+              {{ isLoadingStats ? '...' : (gastosHoy | currency:'USD':'symbol':'1.2-2') }}
+            </h3>
+            <p class="text-xs text-rose-500 mt-2 flex items-center">
+              <i class="fas fa-chart-line mr-1"></i> Resumen diario
+            </p>
+          </div>
+          <div class="bg-rose-50 p-3 rounded-lg text-rose-500">
+            <i class="fas fa-file-invoice-dollar text-xl"></i>
+          </div>
+        </div>
+      </div>
+      <div class="bg-gradient-to-r from-rose-500 to-rose-400 h-1 w-full"></div>
+    </div>
+
+    <!-- Balance Neto (Manteniendo tu lógica) -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+      <div class="p-5">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Balance Neto</p>
+            <h3 class="text-2xl font-bold text-gray-800 mt-1">
+              {{ isLoadingStats ? '...' : (balanceNeto | currency:'USD':'symbol':'1.2-2') }}
+            </h3>
+            <p class="text-xs text-blue-500 mt-2 flex items-center">
+              <i class="fas fa-chart-pie mr-1"></i> Total acumulado
+            </p>
+          </div>
+          <div class="bg-blue-50 p-3 rounded-lg text-blue-500">
+            <i class="fas fa-wallet text-xl"></i>
+          </div>
+        </div>
+      </div>
+      <div class="bg-gradient-to-r from-blue-500 to-blue-400 h-1 w-full"></div>
+    </div>
+
+    <!-- Ventas del Mes (Manteniendo tu lógica) -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+      <div class="p-5">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Ventas Mes</p>
+            <h3 class="text-2xl font-bold text-gray-800 mt-1">
+              {{ isLoadingStats ? '...' : (totalVentasMes | currency:'USD':'symbol':'1.2-2') }}
+            </h3>
+            <p class="text-xs text-indigo-500 mt-2 flex items-center">
+              <i class="fas fa-calendar-alt mr-1"></i> Acumulado mensual
+            </p>
+          </div>
+          <div class="bg-indigo-50 p-3 rounded-lg text-indigo-500">
+            <i class="fas fa-calendar-week text-xl"></i>
+          </div>
+        </div>
+      </div>
+      <div class="bg-gradient-to-r from-indigo-500 to-indigo-400 h-1 w-full"></div>
+    </div>
+  </div>
+<!-- Ventas Diarias Chart -->
+<div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-6">
+  <div  class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+   <div>
+        <h3 class="font-semibold text-gray-800 text-lg">{{ getTituloPeriodo() }}</h3>
+        <p class="text-sm text-gray-500">Desglose por método de pago</p>
+      </div>
+    <div class="flex space-x-2 bg-gray-100 p-1 rounded-lg ">
+        <button
+          class="text-xs px-3 py-1 rounded-md transition-colors cursor-pointer"
+          [ngClass]="{
+            'bg-white shadow-sm text-amber-600': periodoSeleccionado === 'dia',
+            'text-gray-600 hover:text-amber-600': periodoSeleccionado !== 'dia'
+          }"
+          (click)="cambiarPeriodo('dia')"
+        >
+          Día
+        </button>
+        <button
+          class="text-xs px-3 py-1 rounded-md transition-colors cursor-pointer"
+          [ngClass]="{
+            'bg-white shadow-sm text-amber-600': periodoSeleccionado === 'mes',
+            'text-gray-600 hover:text-amber-600': periodoSeleccionado !== 'mes'
+          }"
+          (click)="cambiarPeriodo('mes')"
+        >
+          Mes
+        </button>
+        <button
+          class="text-xs px-3 py-1 rounded-md transition-colors cursor-pointer"
+          [ngClass]="{
+            'bg-white shadow-sm text-amber-600': periodoSeleccionado === 'anio',
+            'text-gray-600 hover:text-amber-600': periodoSeleccionado !== 'anio'
+          }"
+          (click)="cambiarPeriodo('anio')"
+        >
+          Año
+        </button>
+      </div>
+  </div>
+
+  <div class="chart-container h-96 w-full">
+    <canvas #ventasMetodoPagoChart></canvas>
+  </div>
+</div>
+  <!-- Gráfico de gastos y ventas (Manteniendo tu lógica pero con mejor diseño) -->
+ <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-6">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+    <div>
+      <h3 class="font-semibold text-gray-800 text-lg">Ventas vs Gastos</h3>
+      <p class="text-sm text-gray-500">Análisis por {{ periodo | titlecase }}</p>
+    </div>
+    <div class="flex space-x-2 bg-gray-100 p-1 rounded-lg">
+      <button
+        class="text-xs px-3 py-1 rounded-md transition-colors cursor-pointer"
+        [ngClass]="{
+          'bg-white shadow-sm text-amber-600': periodo === 'dia',
+          'text-gray-600 hover:text-amber-600': periodo !== 'dia'
+        }"
+        (click)="loadDataAndPrepareChart('dia')"
+      >
+        Día
+      </button>
+      <button
+        class="text-xs px-3 py-1 rounded-md transition-colors cursor-pointer"
+        [ngClass]="{
+          'bg-white shadow-sm text-amber-600': periodo === 'mes',
+          'text-gray-600 hover:text-amber-600': periodo !== 'mes'
+        }"
+        (click)="loadDataAndPrepareChart('mes')"
+      >
+        Mes
+      </button>
+      <button
+        class="text-xs px-3 py-1 rounded-md transition-colors cursor-pointer"
+        [ngClass]="{
+          'bg-white shadow-sm text-amber-600': periodo === 'anio',
+          'text-gray-600 hover:text-amber-600': periodo !== 'anio'
+        }"
+        (click)="loadDataAndPrepareChart('anio')"
+      >
+        Año
+      </button>
+    </div>
+  </div>
+
+  <div class="chart-container h-96 w-full relative">
+    <canvas #ventasGastosChart></canvas>
+  </div>
+</div>
+
+
+  <!-- Sección Inferior (2 columnas) -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Platos Más Vendidos (Manteniendo tu lógica) -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h3 class="font-semibold text-gray-800 text-lg">Platos Más Vendidos</h3>
+          <p class="text-sm text-gray-500">Productos más populares</p>
+        </div>
+        <div class="flex space-x-2 bg-gray-100 p-1 rounded-lg">
+          <button
+            class="text-xs px-2 py-1 rounded transition-colors cursor-pointer"
+            [ngClass]="{
+              'bg-white shadow-sm text-amber-600': filtroPeriodo === 'diario',
+              'text-gray-600 hover:text-amber-600': filtroPeriodo !== 'diario'
+            }"
+            (click)="filtroPeriodo = 'diario'; cargarTopProductos()"
+          >
+            Día
+          </button>
+          <button
+            class="text-xs px-2 py-1 rounded transition-colors cursor-pointer"
+            [ngClass]="{
+              'bg-white shadow-sm text-amber-600': filtroPeriodo === 'semanal',
+              'text-gray-600 hover:text-amber-600': filtroPeriodo !== 'semanal'
+            }"
+            (click)="filtroPeriodo = 'semanal'; cargarTopProductos()"
+          >
+            Semana
+          </button>
+          <button
+            class="text-xs px-2 py-1 rounded transition-colors cursor-pointer"
+            [ngClass]="{
+              'bg-white shadow-sm text-amber-600': filtroPeriodo === 'mensual',
+              'text-gray-600 hover:text-amber-600': filtroPeriodo !== 'mensual'
+            }"
+            (click)="filtroPeriodo = 'mensual'; cargarTopProductos()"
+          >
+            Mes
+          </button>
+          <button
+            class="text-xs px-2 py-1 rounded transition-colors cursor-pointer"
+            [ngClass]="{
+              'bg-white shadow-sm text-amber-600': filtroPeriodo === 'anual',
+              'text-gray-600 hover:text-amber-600': filtroPeriodo !== 'anual'
+            }"
+            (click)="filtroPeriodo = 'anual'; cargarTopProductos()"
+          >
+            Año
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div *ngFor="let product of topProducts" class="flex items-center group hover:bg-gray-50 p-2 rounded-lg transition-colors">
+          <div class="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center mr-3 text-amber-600">
+            <i class="fas fa-utensils text-lg"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-center">
+              <h4 class="font-medium text-gray-800 truncate">{{ product.nombre }}</h4>
+              <span class="text-amber-600 font-medium text-sm">{{ product.vendidos }} vendidos</span>
+            </div>
+            <div class="w-full bg-gray-100 rounded-full h-2 mt-2">
+              <div class="bg-amber-500 h-2 rounded-full" [style.width.%]="product.porcentaje"></div>
+            </div>
+            <div class="flex justify-between text-xs text-gray-500 mt-1">
+              <span>Total: {{ product.total | currency:'USD':'symbol':'1.2-2' }}</span>
+              <span>{{ product.porcentaje | number:'1.0-1' }}%</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="isLoadingProducts" class="flex justify-center py-6">
+          <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-500"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stock Crítico (Manteniendo tu lógica) -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h3 class="font-semibold text-gray-800 text-lg">Stock Crítico</h3>
+          <p class="text-sm text-gray-500">Productos que necesitan atención</p>
+        </div>
+        <span class="bg-red-100 text-red-800 text-xs px-2.5 py-1 rounded-full font-medium">
+          {{ lowStockProducts.length }} items
+        </span>
+      </div>
+
+      <div class="space-y-3">
+        <div *ngFor="let product of lowStockProducts" class="flex items-center p-3 rounded-lg border transition-colors"
+          [ngClass]="{
+            'border-red-200 bg-red-50 hover:bg-red-100': product.nivel === 'crítico',
+            'border-amber-200 bg-amber-50 hover:bg-amber-100': product.nivel === 'bajo'
+          }">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center mr-3"
+            [ngClass]="{
+              'bg-red-100 text-red-600': product.nivel === 'crítico',
+              'bg-amber-100 text-amber-600': product.nivel === 'bajo'
+            }">
+            <i class="fas text-lg"
+              [ngClass]="{
+                'fa-triangle-exclamation': product.nivel === 'crítico',
+                'fa-exclamation-circle': product.nivel === 'bajo'
+              }"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-center">
+              <h4 class="font-medium text-gray-800 truncate text-sm">{{ product.nombre }}</h4>
+              <span class="font-semibold text-sm"
+                [ngClass]="{
+                  'text-red-600': product.nivel === 'crítico',
+                  'text-amber-600': product.nivel === 'bajo'
+                }">
+                {{ product.stock_actual }} unidades
+              </span>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Nivel {{ product.nivel }}</p>
+          </div>
+        </div>
+
+        <div *ngIf="isLoadingProducts" class="flex justify-center py-6">
+          <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-500"></div>
+        </div>
+
+        <div *ngIf="!isLoadingProducts && lowStockProducts.length === 0" class="text-center py-6 text-gray-400 text-sm">
+          No hay productos con stock bajo
+        </div>
+      </div>
+
+      
+    </div>
+  </div>
+
+  
+</div>

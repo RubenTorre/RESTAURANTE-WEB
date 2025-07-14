@@ -63,6 +63,16 @@ export const routes: Routes = [
                 loadComponent:() => import('./pages/cierre-caja/cierre-caja.component')
 
             },
+            {
+                path:'menu/reservaciones',
+                loadComponent:() => import('./pages/reservaciones/reservaciones.component')
+
+            },
+             {
+                path:'reportes',
+                loadComponent:() => import('./pages/reportes/reportes.component')
+
+            },
         ]
     }
 ];

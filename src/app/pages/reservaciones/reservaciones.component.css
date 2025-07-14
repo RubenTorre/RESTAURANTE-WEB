@@ -1,0 +1,191 @@
+::ng-deep ng-select {
+  background-color: rgba(255, 255, 255, 0.9) !important; /* Fondo blanco semitransparente */
+  border: 1px solid #fcd34d; /* borde ámbar (como en tu diseño) */
+  border-radius: 0.5rem; /* bordes redondeados */
+}
+
+::ng-deep ng-select .ng-select-container {
+  background-color: white !important;
+  padding-left: 0.5rem; /* para que el icono no tape el texto */
+  padding-top: 0.4rem;
+  min-height: 2.5rem;
+  border-radius: 0.5rem;
+}
+
+::ng-deep ng-select .ng-dropdown-panel {
+  background-color: white !important;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgb(0 0 0 / 0.1);
+}
+
+
+
+::ng-deep ng-select .icon-left {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #d97706; /* color ámbar */
+  pointer-events: none;
+}
+.icon-margin-right {
+  margin-right: 8px;
+}
+::ng-deep ng-select i.fas {
+  color: #feae33;
+}
+::ng-deep ng-select .ng-select-container {
+  cursor: pointer !important;
+}
+  body {
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .reservation-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .reservation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .confirmed {
+            border-left-color: #10B981;
+        }
+        
+        .pending {
+            border-left-color: #F59E0B;
+        }
+        
+        .cancelled {
+            border-left-color: #EF4444;
+        }
+        
+        .in-table {
+            border-left-color: #3B82F6;
+        }
+        
+        .gradient-border {
+            border-image: linear-gradient(to right, #F59E0B, #F97316);
+            border-image-slice: 1;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(to right, #F59E0B, #F97316);
+        }
+        
+        .hover-scale {
+            transition: transform 0.2s ease;
+        }
+        
+        .hover-scale:hover {
+            transform: scale(1.03);
+        }
+        /* Estilos modernos para FullCalendar */
+.modern-calendar {
+  --fc-border-color: #f1f5f9;
+  --fc-daygrid-event-dot-width: 5px;
+}
+
+.modern-calendar .fc-header-toolbar {
+  padding: 0.5rem;
+  margin-bottom: 0.5rem !important;
+}
+
+.modern-calendar .fc-toolbar-title {
+  font-size: 0.9rem !important;
+  font-weight: 600;
+  color: #374151;
+}
+
+.modern-calendar .fc-button {
+  padding: 0.3rem 0.5rem !important;
+  font-size: 0.75rem !important;
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  color: #4b5563 !important;
+  transition: all 0.2s;
+}
+
+.modern-calendar .fc-button:hover {
+  background-color: #f9fafb !important;
+  color: #111827 !important;
+}
+
+.modern-calendar .fc-button-active {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+.modern-calendar .fc-col-header-cell {
+  padding: 0.5rem 0 !important;
+}
+
+.modern-calendar .fc-col-header-cell-cushion {
+  font-size: 0.7rem !important;
+  font-weight: 500;
+  color: #6b7280;
+  text-decoration: none !important;
+}
+
+.modern-calendar .fc-daygrid-day {
+  padding: 2px !important;
+  cursor: pointer;
+}
+
+.modern-calendar .fc-daygrid-day-number {
+  font-size: 0.75rem !important;
+  padding: 0.25rem !important;
+  color: #4b5563;
+}
+
+.modern-calendar .fc-daygrid-day:hover .fc-daygrid-day-number {
+  background-color: #f3f4f6;
+  border-radius: 9999px;
+}
+
+.modern-calendar .fc-daygrid-day.fc-day-today {
+  background-color: #f0fdf4 !important;
+}
+
+.modern-calendar .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+  color: #059669;
+  font-weight: 600;
+}
+
+.modern-calendar .fc-event {
+  font-size: 0.65rem !important;
+  padding: 0.1rem 0.2rem !important;
+  border-radius: 0.25rem !important;
+  border: none !important;
+  cursor: pointer;
+}
+
+.modern-calendar .fc-event:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.modern-calendar .fc-daygrid-event {
+  margin: 0.1rem 0.2rem !important;
+}/* Versión más llamativa */
+.fc-daygrid-day:hover {
+  background-color: #f1f5f9 !important;
+  transition: all 0.2s ease;
+}
+
+.fc-daygrid-day-number {
+  transition: all 0.2s ease;
+  padding: 0.25em;
+}
+
+.fc-daygrid-day-number:hover {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}

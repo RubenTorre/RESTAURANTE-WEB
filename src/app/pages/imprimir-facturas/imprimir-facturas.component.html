@@ -1,125 +1,123 @@
 <!-- Sección de Impresión de Pedidos -->
 <div class="px-4 py-6">
-    <!-- Título principal -->
-    <div class="mb-6 text-center">
-      <h2 class="text-3xl font-bold text-gray-800">Pedidos para Imprimir</h2>
-      <p class="text-gray-500 mt-2">Seleccione un pedido para generar el ticket de cocina</p>
-    </div>
-  
-    <!-- Lista de pedidos -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      <div *ngFor="let pedido of pedidosDelDia" 
-           (click)="abrirModal(pedido)"
-           class="cursor-pointer bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 border border-gray-100 overflow-hidden">
-        <!-- Encabezado con color de acento -->
-        <div class="bg-blue-600 px-4 py-3">
-          <div class="flex justify-between items-center">
-            <h3 class="text-xl font-bold text-white">
-  Mesa {{ pedido.mesa_id }}
-  <span *ngIf="pedido.mesa_id === 30"> - Pedidos Ya</span>
-  <span *ngIf="pedido.mesa_id === 31"> - Pedidos Beez</span>
-</h3>
+  <!-- Título principal -->
+  <div class="mb-6 text-center">
+    <h2 class="text-3xl font-bold text-gray-800">Pedidos para Imprimir</h2>
+    <p class="text-gray-500 mt-2">Seleccione un pedido para generar el ticket de cocina</p>
+  </div>
 
-            <span class="text-xs bg-white text-blue-600 px-2 py-1 rounded-full font-semibold">
-  🕒 {{ getHoraCruda(pedido.fecha) }}
-</span>
+  <!-- Lista de pedidos -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div *ngFor="let pedido of pedidosDelDia" (click)="abrirModal(pedido)"
+      class="cursor-pointer bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 border border-gray-100 overflow-hidden">
+      <!-- Encabezado con color de acento -->
+      <div class="bg-blue-600 px-4 py-3">
+        <div class="flex justify-between items-center">
+          <h3 class="text-xl font-bold text-white">
+            Mesa {{ pedido.mesa_id }}
+            <span *ngIf="pedido.mesa_id === 30"> - Pedidos Ya</span>
+            <span *ngIf="pedido.mesa_id === 31"> - Pedidos Beez</span>
+          </h3>
 
-            
-          </div>
-          <p class="text-sm text-blue-100 mt-1">Mesero: {{ pedido.mesero_nombre }}</p>
+          <span class="text-xs bg-white text-blue-600 px-2 py-1 rounded-full font-semibold">
+            🕒 {{ getHoraCruda(pedido.fecha) }}
+          </span>
+
+
         </div>
-  
-        <!-- Contenido de productos -->
-        <div class="p-4">
-          <ul class="space-y-2">
-            <li *ngFor="let prod of pedido.productos.slice(0, 3)" 
-                class="flex justify-between items-start border-b border-gray-100 pb-2">
-              <span class="font-medium text-gray-700">{{ prod.nombre }}</span>
-              <span class="bg-gray-100 text-gray-800 text-xs font-bold px-2 py-1 rounded-full">
-                {{ prod.cantidad }}x
-              </span>
-            </li>
-            <li *ngIf="pedido.productos.length > 3" 
-                class="text-center text-sm text-gray-500 italic pt-1">
-              +{{ pedido.productos.length - 3 }} productos más...
+        <p class="text-sm text-blue-100 mt-1">Mesero: {{ pedido.mesero_nombre }}</p>
+      </div>
+
+      <!-- Contenido de productos -->
+      <div class="p-4">
+        <ul class="space-y-2">
+          <li *ngFor="let prod of pedido.productos.slice(0, 3)"
+            class="flex justify-between items-start border-b border-gray-100 pb-2">
+            <span class="font-medium text-gray-700">{{ prod.nombre }}</span>
+            <span class="bg-gray-100 text-gray-800 text-xs font-bold px-2 py-1 rounded-full">
+              {{ prod.cantidad }}x
+            </span>
+          </li>
+          <li *ngIf="pedido.productos.length > 3" class="text-center text-sm text-gray-500 italic pt-1">
+            +{{ pedido.productos.length - 3 }} productos más...
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para imprimir -->
+<div *ngIf="pedidoSeleccionado" class="fixed inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
+
+    <!-- Encabezado -->
+    <div class="bg-gray-800 text-white px-6 py-4">
+      <div class="flex justify-between items-center">
+        <h3 class="text-xl font-bold flex items-center gap-2">
+          Ticket Cocina - Mesa {{ pedidoSeleccionado.mesa_id }}
+          <span *ngIf="pedidoSeleccionado.mesa_id === 30 || pedidoSeleccionado.mesa_id === 31"
+            class="text-sm font-semibold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">
+            {{ pedidoSeleccionado.mesa_id === 30 ? 'Pedidos Ya' : 'Pedidos Beez' }}
+          </span>
+        </h3>
+
+<button (click)="cerrarModal()" class="text-gray-300 hover:text-red-600 cursor-pointer text-2xl">&times;</button>
+      </div>
+      <div class="flex justify-between text-sm mt-2">
+        <span class="text-gray-300">Mesero: {{ pedidoSeleccionado.mesero_nombre }}</span>
+        <span class="text-gray-400"> 🕒 {{ getHoraCruda(pedidoSeleccionado.fecha) }}
+        </span>
+
+
+      </div>
+    </div>
+
+    <!-- Productos -->
+    <div class="max-h-[60vh] overflow-y-auto p-6 space-y-6">
+      <div *ngFor="let prod of pedidoSeleccionado.productos"
+        class="bg-white shadow-sm rounded-lg p-4 border border-gray-200">
+        <!-- Encabezado del producto -->
+        <div class="flex justify-between items-start mb-3">
+          <div>
+            <p class="text-base font-semibold text-gray-800">{{ prod.nombre }}</p>
+          </div>
+          <span class="bg-gray-100 text-gray-800 text-xs font-medium px-3 py-1 rounded-full">
+            {{ prod.cantidad }}x
+          </span>
+        </div>
+
+        <!-- Sección: Lo que se quita -->
+        <div *ngIf="prod.modificaciones?.length" class="mb-3">
+          <ul class="list-disc list-inside text-sm text-gray-700 space-y-0.5">
+            <li *ngFor="let mod of prod.modificaciones">{{ mod }}</li>
+          </ul>
+        </div>
+
+        <!-- Sección: Lo que se agrega -->
+        <div *ngIf="prod.extras?.length">
+          <ul class="list-disc list-inside text-sm text-gray-700 space-y-0.5">
+            <li *ngFor="let extra of prod.extras">
+              {{ extra.nombre }}
             </li>
           </ul>
         </div>
       </div>
     </div>
-  </div>
-  
-  <!-- Modal para imprimir -->
-  <div *ngIf="pedidoSeleccionado" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-fade-in">
-      
-      <!-- Encabezado -->
-      <div class="bg-gray-800 text-white px-6 py-4">
-        <div class="flex justify-between items-center">
-          <h3 class="text-xl font-bold flex items-center gap-2">
-  Ticket Cocina - Mesa {{ pedidoSeleccionado.mesa_id }}
-  <span 
-    *ngIf="pedidoSeleccionado.mesa_id === 30 || pedidoSeleccionado.mesa_id === 31"
-    class="text-sm font-semibold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full"
-  >
-    {{ pedidoSeleccionado.mesa_id === 30 ? 'Pedidos Ya' : 'Pedidos Beez' }}
-  </span>
-</h3>
 
-          <button (click)="cerrarModal()" class="text-gray-300 hover:text-white text-2xl">&times;</button>
-        </div>
-        <div class="flex justify-between text-sm mt-2">
-          <span class="text-gray-300">Mesero: {{ pedidoSeleccionado.mesero_nombre }}</span>
-          <span class="text-gray-400">  🕒 {{ getHoraCruda(pedidoSeleccionado.fecha) }}
-</span>
 
-          
-        </div>
-      </div>
-  
-      <!-- Productos -->
-<div class="max-h-[60vh] overflow-y-auto p-6 space-y-6">
-  <div *ngFor="let prod of pedidoSeleccionado.productos" class="bg-white shadow-sm rounded-lg p-4 border border-gray-200">
-    <!-- Encabezado del producto -->
-    <div class="flex justify-between items-start mb-3">
-      <div>
-        <p class="text-base font-semibold text-gray-800">{{ prod.nombre }}</p>
-      </div>
-      <span class="bg-gray-100 text-gray-800 text-xs font-medium px-3 py-1 rounded-full">
-        {{ prod.cantidad }}x
-      </span>
-    </div>
+    <!-- Botón -->
+    <div class="border-t border-gray-200 px-6 py-4">
+      <button (click)="imprimirTicket()"
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300 cursor-pointer flex items-center justify-center">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+    stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+  </svg>
+  Imprimir Ticket
+</button>
 
-    <!-- Sección: Lo que se quita -->
-    <div *ngIf="prod.modificaciones?.length" class="mb-3">
-      <ul class="list-disc list-inside text-sm text-gray-700 space-y-0.5">
-        <li *ngFor="let mod of prod.modificaciones">{{ mod }}</li>
-      </ul>
-    </div>
-
-    <!-- Sección: Lo que se agrega -->
-    <div *ngIf="prod.extras?.length">
-      <ul class="list-disc list-inside text-sm text-gray-700 space-y-0.5">
-        <li *ngFor="let extra of prod.extras">
-          {{ extra.nombre }}
-        </li>
-      </ul>
     </div>
   </div>
 </div>
-
-  
-      <!-- Botón -->
-      <div class="border-t border-gray-200 px-6 py-4">
-        <button (click)="imprimirTicket()"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-          </svg>
-          Imprimir Ticket
-        </button>
-      </div>
-    </div>
-  </div>
-  

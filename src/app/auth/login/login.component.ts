@@ -82,7 +82,12 @@ export class LoginComponent {
       this.isLoading = false;
     }
   }
-  
+  showPassword = false;
+
+toggleShowPassword() {
+  this.showPassword = !this.showPassword;
+}
+
   
   // Función de registro
   async register() {

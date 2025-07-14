@@ -1,22 +1,13 @@
 <!-- Botón de hamburguesa para móviles -->
-<button class="mobile-menu-btn" 
-        (click)="toggleMobileMenu()" 
-        *ngIf="isMobileView && forceCollapsed">
+<button class="mobile-menu-btn" (click)="toggleMobileMenu()" *ngIf="isMobileView && forceCollapsed">
   <i class="bi bi-list" title="menu"></i>
 </button>
 
 <!-- Backdrop oscuro para móviles -->
-<div class="sidebar-backdrop" 
-     *ngIf="isMobileView && !forceCollapsed"
-     (click)="closeMenuOnMobile()"></div>
+<div class="sidebar-backdrop" *ngIf="isMobileView && !forceCollapsed" (click)="closeMenuOnMobile()"></div>
 
 <!-- Contenedor del menú lateral -->
-<div 
-  #sidebarContainer
-  class="sidebar-container"
-  [class.expanded]="!forceCollapsed"
-  [class.mobile-view]="isMobileView"
->
+<div #sidebarContainer class="sidebar-container" [class.expanded]="!forceCollapsed" [class.mobile-view]="isMobileView">
   <!-- Header (solo visible cuando está expandido) -->
   <div *ngIf="!forceCollapsed" class="header-section">
     <img src="assets/splash/logo.jpg" alt="Logo" class="logo">
@@ -27,28 +18,21 @@
   <ul class="menu-list">
     <li *ngFor="let item of visibleMenuItems">
       <!-- Ítem principal -->
-      <div class="menu-item" 
-           (click)="!isMobileView && toggleSubmenu(item)">
+      <div class="menu-item" (click)="!isMobileView && toggleSubmenu(item)">
         <i [class]="item.icon + ' menu-icon'"></i>
         <span class="menu-label">{{ item.label }}</span>
-        <i *ngIf="item.submenus"
-           class="bi chevron-icon"
-           [class.bi-chevron-down]="!item.expanded"
-           [class.bi-chevron-up]="item.expanded"></i>
+        <i *ngIf="item.submenus" class="bi chevron-icon" [class.bi-chevron-down]="!item.expanded"
+          [class.bi-chevron-up]="item.expanded"></i>
       </div>
 
       <!-- Submenús: Siempre visibles en móviles, por clic en desktop -->
-      <div *ngIf="item.submenus && (isMobileView || item.expanded)" 
-           class="submenu-container">
-       <a *ngFor="let sub of item.submenus"
-        class="submenu-item"
-        [routerLink]="sub.route"
-        (click)="handleSubmenuItemClick(sub, item)"
-        [routerLinkActive]="!sub.action ? 'bg-gray-700' : ''"
-        [class.cursor-pointer]="sub.action">
-        <i [class]="sub.icon + ' submenu-icon'"></i>
-        <span class="submenu-label">{{ sub.label }}</span>
-      </a>
+      <div *ngIf="item.submenus && (isMobileView || item.expanded)" class="submenu-container">
+        <a *ngFor="let sub of item.submenus" class="submenu-item" [routerLink]="sub.route"
+          (click)="handleSubmenuItemClick(sub, item)" [routerLinkActive]="!sub.action ? 'bg-gray-700' : ''"
+          [class.cursor-pointer]="sub.action">
+          <i [class]="sub.icon + ' submenu-icon'"></i>
+          <span class="submenu-label">{{ sub.label }}</span>
+        </a>
 
       </div>
     </li>

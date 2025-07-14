@@ -53,7 +53,9 @@ usuariosDesactivados: Usuario[] = [];
       if (a.rol === 'administrador' && b.rol !== 'administrador') return -1;
       if (a.rol !== 'administrador' && b.rol === 'administrador') return 1;
       return 0;
+     
     });
+     console.log(usuarios)
   
     // Filtrar por estado activo/desactivado
     this.usuariosActivos = this.usuarios.filter(u => u.activo);
