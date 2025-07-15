@@ -283,23 +283,25 @@
         </div>
     </div>
 
-    <!-- Modal de nueva reservación -->
- <div *ngIf="modalAbierto" class="fixed inset-0 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+ <!-- Modal de nueva reservación -->
+<div *ngIf="modalAbierto" class="fixed inset-0 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
   <!-- Modal - Estilo gourmet -->
-  <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden 
-              border border-amber-100/30 relative">
+  <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl w-full max-w-2xl 
+              overflow-y-auto max-h-[90vh] border border-amber-100/30 relative">
     <!-- Decoración sutil -->
     <div class="absolute -top-10 -right-10 w-24 h-24 bg-amber-200/20 rounded-full"></div>
     <div class="absolute -bottom-8 -left-8 w-20 h-20 bg-rose-200/20 rounded-full"></div>
-    
+
     <!-- Header con estilo restaurante -->
     <div class="flex justify-between items-center p-6 border-b border-amber-100/40 bg-gradient-to-r from-amber-50/50 to-white">
       <div class="flex items-center gap-3">
         <i class="fas fa-utensils text-amber-600 text-xl"></i>
-        <h3 class="text-2xl font-semibold text-gray-800 font-serif">Reserva en <span class="text-amber-600">A Fuego Lento</span></h3>
+        <h3 class="text-2xl font-semibold text-gray-800 font-serif">
+          Reserva en <span class="text-amber-600">A Fuego Lento</span>
+        </h3>
       </div>
       <button type="button" class="text-gray-500 hover:text-amber-600 transition-all transform hover:rotate-90 cursor-pointer" 
-             aria-label="cerrar" (click)="cerrarModal()">
+              aria-label="cerrar" (click)="cerrarModal()">
         <i class="fas fa-times text-xl"></i>
       </button>
     </div>
@@ -316,54 +318,44 @@
                    class="w-full pl-10 pr-4 py-2.5 border border-amber-100 rounded-lg bg-white/80
                           focus:ring-2 focus:ring-amber-500/50 focus:border-amber-300 transition-all
                           placeholder-gray-400/70" 
-                          aria-label="nombre cliente">
+                   aria-label="nombre cliente">
           </div>
         </div>
 
-       <div class="relative">
-<label class="block text-sm font-medium text-gray-700 mb-1 pl-1">Motivo de la reserva</label>
-<div class="relative">
-  <ng-select
-    [(ngModel)]="reserva.motivo"
-    [items]="motivos"
-    bindLabel="label"
-    bindValue="value"
-    placeholder="Selecciona un motivo"
-    [searchable]="false"
-    class="custom-ng-select"
-  >
-    <!-- Plantilla para opciones desplegadas -->
-    <ng-template ng-option-tmp let-item="item">
-      <i [class]="item.icon" style="margin-right: 8px;"></i> {{ item.label }}
-    </ng-template>
+        <div class="relative">
+          <label class="block text-sm font-medium text-gray-700 mb-1 pl-1">Motivo de la reserva</label>
+          <div class="relative">
+            <ng-select
+              [(ngModel)]="reserva.motivo"
+              [items]="motivos"
+              bindLabel="label"
+              bindValue="value"
+              placeholder="Selecciona un motivo"
+              [searchable]="false"
+              class="custom-ng-select">
+              <!-- Opciones -->
+              <ng-template ng-option-tmp let-item="item">
+                <i [class]="item.icon" style="margin-right: 8px;"></i> {{ item.label }}
+              </ng-template>
+              <!-- Opción seleccionada -->
+              <ng-template ng-label-tmp let-item="item">
+                <i [class]="item.icon" class="icon-margin-right"></i> {{ item.label }}
+              </ng-template>
+            </ng-select>
+          </div>
 
-    <!-- Plantilla para la opción seleccionada -->
-    <ng-template ng-label-tmp let-item="item">
-<i [class]="item.icon" class="icon-margin-right"></i> {{ item.label }}
-
-    </ng-template>
-  </ng-select>
-</div>
-
-
-  
-
-<!-- Mostrar solo si el motivo es "otro" -->
-<div class="relative mt-4" *ngIf="reserva.motivo === 'otro'">
-  <label class="block text-sm font-medium text-gray-700 mb-1 pl-1">Especifica el motivo</label>
-  <div class="relative">
-    <i class="fas fa-pen absolute left-3 top-3 text-amber-500/80"></i>
-    <input [(ngModel)]="reserva.motivo_otro" name="motivo_otro" type="text"
-           class="w-full pl-10 pr-4 py-2.5 border border-amber-100 rounded-lg bg-white/80
-                  focus:ring-2 focus:ring-amber-500/50 focus:border-amber-300 transition-all
-                  placeholder-gray-400/70"
-           placeholder="Ej. Fiesta sorpresa, propuesta, etc.">
-  
-  </div>
-  </div>
-
-  
-
+          <!-- Mostrar solo si el motivo es "otro" -->
+          <div class="relative mt-4" *ngIf="reserva.motivo === 'otro'">
+            <label class="block text-sm font-medium text-gray-700 mb-1 pl-1">Especifica el motivo</label>
+            <div class="relative">
+              <i class="fas fa-pen absolute left-3 top-3 text-amber-500/80"></i>
+              <input [(ngModel)]="reserva.motivo_otro" name="motivo_otro" type="text"
+                     class="w-full pl-10 pr-4 py-2.5 border border-amber-100 rounded-lg bg-white/80
+                            focus:ring-2 focus:ring-amber-500/50 focus:border-amber-300 transition-all
+                            placeholder-gray-400/70"
+                     placeholder="Ej. Fiesta sorpresa, propuesta, etc.">
+            </div>
+          </div>
         </div>
 
         <div class="relative">
@@ -374,21 +366,18 @@
                    class="w-full pl-10 pr-4 py-2.5 border border-amber-100 rounded-lg bg-white/80
                           focus:ring-2 focus:ring-amber-500/50 focus:border-amber-300 transition-all
                           placeholder-gray-400/70"
-                          aria-label="personas">
+                   aria-label="personas">
           </div>
         </div>
-<div class="relative">
-  <label class="block text-sm font-medium text-gray-700 mb-1 pl-1">Mesas</label>
-  <input
-    [(ngModel)]="reserva.mesa_id"
-    name="mesa_id"
-    type="text"
-    placeholder="Ejemplo: 4,5 o mesa 4 y mesa 5"
-    class="w-full pl-3 pr-4 py-2.5 border border-amber-100 rounded-lg bg-white/80
-           focus:ring-2 focus:ring-amber-500/50 focus:border-amber-300 transition-all
-           placeholder-gray-400/70"
-  />
-</div>
+
+        <div class="relative">
+          <label class="block text-sm font-medium text-gray-700 mb-1 pl-1">Mesas</label>
+          <input [(ngModel)]="reserva.mesa_id" name="mesa_id" type="text"
+                 placeholder="Ejemplo: 4,5 o mesa 4 y mesa 5"
+                 class="w-full pl-3 pr-4 py-2.5 border border-amber-100 rounded-lg bg-white/80
+                        focus:ring-2 focus:ring-amber-500/50 focus:border-amber-300 transition-all
+                        placeholder-gray-400/70" />
+        </div>
 
         <div class="relative">
           <label class="block text-sm font-medium text-gray-700 mb-1 pl-1">Fecha</label>
@@ -398,19 +387,18 @@
                    class="w-full pl-10 pr-4 py-2.5 border border-amber-100 rounded-lg bg-white/80
                           focus:ring-2 focus:ring-amber-500/50 focus:border-amber-300 transition-all
                           placeholder-gray-400/70"
-                          aria-label="fecha de reserva">
+                   aria-label="fecha de reserva">
           </div>
         </div>
 
         <div class="relative">
           <label for="hora">Hora</label>
-<select id="hora" [(ngModel)]="reserva.hora" name="hora" required
-        class="w-full pl-3 pr-4 py-2.5 border rounded-lg bg-white/80
-               focus:ring-2 focus:ring-amber-500/50 focus:border-amber-300 transition-all
-               placeholder-gray-400/70">
-  <option *ngFor="let hora of opcionesHoras" [value]="hora">{{ hora }}</option>
-</select>
-        
+          <select id="hora" [(ngModel)]="reserva.hora" name="hora" required
+                  class="w-full pl-3 pr-4 py-2.5 border rounded-lg bg-white/80
+                         focus:ring-2 focus:ring-amber-500/50 focus:border-amber-300 transition-all
+                         placeholder-gray-400/70">
+            <option *ngFor="let hora of opcionesHoras" [value]="hora">{{ hora }}</option>
+          </select>
         </div>
 
         <div class="md:col-span-2 relative">
@@ -434,7 +422,7 @@
               (click)="cerrarModal()">
         <i class="fas fa-times"></i> Cancelar
       </button>
-      <button type="submit"(click)="guardarReservacion()"
+      <button type="submit" (click)="guardarReservacion()"
               class="px-6 py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white rounded-lg
                      hover:from-amber-700 hover:to-amber-600 transition-all hover:shadow-md
                      focus:ring-2 focus:ring-amber-400/50 flex items-center gap-2 cursor-pointer">
@@ -443,11 +431,13 @@
     </div>
   </div>
 </div>
+
 <!--modal editar reservacion-->
 <div *ngIf="modalEdicionAbierto" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl transform transition-all duration-200 animate-in slide-in-from-bottom-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] h-auto overflow-y-auto transform transition-all duration-200 animate-in slide-in-from-bottom-4">
+    
     <!-- Header -->
-    <div class="flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-2xl">
+    <div class="flex justify-between items-center p-4 sm:p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-2xl">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
           <i class="fas fa-edit text-blue-600"></i>
@@ -458,9 +448,9 @@
         <i class="fas fa-times text-sm"></i>
       </button>
     </div>
-    
+
     <!-- Body -->
-    <div class="p-6 space-y-6 max-h-96 overflow-y-auto">
+    <div class="p-4 sm:p-6 space-y-6">
       <!-- Nombre -->
       <div class="space-y-2">
         <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
@@ -469,7 +459,7 @@
         </label>
         <input 
           [(ngModel)]="reservacionSeleccionada.nombre_cliente" 
-          class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white hover:border-gray-300" 
+          class="w-full max-w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white hover:border-gray-300" 
           placeholder="Ingrese el nombre completo"
         />
       </div>
@@ -482,7 +472,7 @@
         </label>
         <input 
           [(ngModel)]="reservacionSeleccionada.motivo" 
-          class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white hover:border-gray-300" 
+          class="w-full max-w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white hover:border-gray-300" 
           placeholder="Ej: Cena familiar, reunión de trabajo..."
         />
       </div>
@@ -531,7 +521,7 @@
             type="date" 
             [(ngModel)]="reservacionSeleccionada.fecha" 
             class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white hover:border-gray-300" 
-           aria-label="fecha"/>
+            aria-label="fecha"/>
         </div>
 
         <!-- Hora -->
@@ -544,7 +534,7 @@
             type="time" 
             [(ngModel)]="reservacionSeleccionada.hora" 
             class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white hover:border-gray-300" 
-          aria-label="hora"/>
+            aria-label="hora"/>
         </div>
       </div>
 
@@ -557,14 +547,14 @@
         <textarea 
           [(ngModel)]="reservacionSeleccionada.comentarios" 
           rows="3"
-          class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white hover:border-gray-300 resize-none" 
+          class="w-full max-w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white hover:border-gray-300 resize-none" 
           placeholder="Comentarios especiales, alergias, preferencias..."
         ></textarea>
       </div>
     </div>
 
     <!-- Footer -->
-    <div class="flex justify-end gap-3 p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+    <div class="flex justify-end gap-3 p-4 sm:p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
       <button 
         (click)="cerrarModalEdicion()" 
         class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 hover:border-gray-400 transition-all duration-200 font-medium flex items-center gap-2 cursor-pointer"
@@ -580,6 +570,7 @@
         Guardar Cambios
       </button>
     </div>
+    
   </div>
 </div>
 
