@@ -1,134 +1,138 @@
-<div class="min-h-screen bg-white text-black flex flex-col md:flex-row">    
-    <div class="flex-1 p-4 md:p-6">
-  
-      <!-- Encabezado -->
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <h1 class="text-3xl font-bold text-black">Inventario</h1>
-  
-        <div class="flex gap-3 flex-wrap">
-            <!-- Botón Nuevo Producto -->
-            <button (click)="abrirModalRegistroProducto()" 
-            class="flex items-center gap-2 px-6 py-3 bg-[#FF9800] text-white rounded-lg hover:bg-[#FB8C00] transition cursor-pointer">
-        <i class="fas fa-box"></i> Nuevo Producto
-    </button>
-    
-            <!-- Botón Categorías -->
-            <button (click)="mostrarModalCategorias = true"
-                    class="flex items-center gap-2 px-6 py-3 bg-[#FFC107] text-black rounded-lg hover:bg-[#FFB300] transition cursor-pointer">
-              <i class="bi bi-tags-fill"></i> Categorías
-            </button>
-          </div>
+<div class="min-h-screen bg-white text-black flex flex-col md:flex-row">
+  <div class="flex-1 p-4 md:p-6">
+
+    <!-- Encabezado -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+      <h1 class="text-3xl font-bold text-black">Inventario</h1>
+
+      <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+        <!-- Botón Nuevo Producto -->
+        <button (click)="abrirModalRegistroProducto()"
+          class="flex justify-center items-center gap-2 w-full md:w-auto px-6 py-3 bg-[#FF9800] text-white rounded-lg hover:bg-[#FB8C00] transition cursor-pointer whitespace-nowrap">
+          <i class="fas fa-box"></i> Nuevo Producto
+        </button>
+
+        <!-- Botón Categorías -->
+        <button (click)="mostrarModalCategorias = true"
+          class="flex justify-center items-center gap-2 w-full md:w-auto px-6 py-3 bg-[#FFC107] text-black rounded-lg hover:bg-[#FFB300] transition cursor-pointer whitespace-nowrap">
+          <i class="bi bi-tags-fill"></i> Categorías
+        </button>
       </div>
-  
-      <!-- Filtros -->
-      <div class="bg-gray-100 rounded-xl shadow-lg p-4 mb-6">
-        <div class="flex flex-col md:flex-row gap-4">
-  
-          <!-- Búsqueda -->
-          <div class="flex-1 relative">
-            <input type="text" [(ngModel)]="searchTerm" (input)="applyFilter()" 
-                   placeholder="Buscar productos..." 
-                   class="w-full pl-10 pr-4 py-2 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-black bg-white placeholder-gray-500">
-            <i class="fas fa-search absolute left-3 top-3 text-gray-600"></i>
-          </div>
-  
-          <!-- Filtro por categoría -->
-          <select [(ngModel)]="selectedCategory" (change)="applyFilter()" 
-                  class="px-4 py-2 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-black bg-white" 
-                  title="categoría">
-            <option value="">Todas las categorías</option>
-            <option *ngFor="let category of categories" [value]="category">
-              {{ category }}
-            </option>
-          </select>
-  
+    </div>
+
+    <!-- Filtros -->
+    <div class="bg-gray-100 rounded-xl shadow-lg p-4 mb-6">
+      <div class="flex flex-col md:flex-row gap-4">
+
+        <!-- Búsqueda -->
+        <div class="flex-1 relative">
+          <input type="text" [(ngModel)]="searchTerm" (input)="applyFilter()" placeholder="Buscar productos..."
+            class="w-full pl-10 pr-4 py-2 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-black bg-white placeholder-gray-500">
+          <i class="fas fa-search absolute left-3 top-3 text-gray-600"></i>
         </div>
+
+        <!-- Filtro por categoría -->
+        <select [(ngModel)]="selectedCategory" (change)="applyFilter()"
+          class="px-4 py-2 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-black bg-white"
+          title="categoría">
+          <option value="">Todas las categorías</option>
+          <option *ngFor="let category of categories" [value]="category">
+            {{ category }}
+          </option>
+        </select>
+
       </div>
-  
-      <!-- Tabla de productos -->
-      <div class="bg-gray-100 rounded-xl shadow-lg overflow-x-auto">
-        <table class="min-w-full divide-y divide-black">
-          <thead class="tabla-encabezado">
-            <tr>
-              <th *ngFor="let column of columns" class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide">
-                {{ column.label }}
-              </th>
-              <th class="px-6 py-3"></th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-black">
-            <tr *ngFor="let product of paginatedProducts()" class="hover:bg-gray-200 transition duration-200">
-              <td class="px-6 py-4 whitespace-nowrap font-medium text-black">{{ product.nombre }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ product.categorias?.nombre }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs font-semibold rounded-full"
-                      [ngClass]="{
+    </div>
+
+    <!-- Tabla de productos -->
+    <div class="bg-gray-100 rounded-xl shadow-lg overflow-x-auto">
+      <table class="min-w-full divide-y divide-black">
+        <thead class="tabla-encabezado">
+          <tr>
+            <th *ngFor="let column of columns"
+              class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide">
+              {{ column.label }}
+            </th>
+            <th class="px-6 py-3"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-black">
+          <tr *ngFor="let product of paginatedProducts()" class="hover:bg-gray-200 transition duration-200">
+            <td class="px-6 py-4 whitespace-nowrap font-medium text-black">{{ product.nombre }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ product.categorias?.nombre }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 inline-flex text-xs font-semibold rounded-full" [ngClass]="{
                         'bg-green-100 text-green-800': product.stock_actual > product.stock_minimo,
                         'bg-red-100 text-red-800': product.stock_actual <= product.stock_minimo
                       }">
-                  {{ product.stock_actual }} / {{ product.stock_minimo }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ product.costo_unitario | currency }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span [ngClass]="product.activo ? 'text-green-700 font-semibold' : 'text-red-700 font-semibold'">
-                  {{ product.activo ? 'Disponible' : 'No disponible' }}
-                </span>
-              </td>
-              <td class="px-6 py-4 text-right">
-                <button (click)="abrirModalEditar(product)" class="text-sm text-blue-600 hover:text-blue-800 hover:underline mr-3 cursor-pointer">Editar</button>
-                <button (click)="confirmarEliminar(product.id)" class="text-sm text-red-600 hover:text-red-800 hover:underline cursor-pointer">Eliminar</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-  
-      <!-- Paginación -->
-      <div class="mt-6 flex items-center justify-center gap-6">
-  
-        <!-- Botón Anterior -->
-        <button class="px-4 py-2 bg-black text-white font-medium rounded-full shadow-lg hover:bg-[#FFC107] hover:text-black transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-50" title="bu"
-                [disabled]="currentPage === 1" (click)="cambiarPagina(-1)">
-          <span class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-            </svg>
-          </span>
-        </button>
-  
-        <!-- Texto de Páginas -->
-        <div class="text-sm text-black font-medium">
-          {{ currentPage }} de {{ totalPages() }}
-        </div>
-  
-        <!-- Botón Siguiente -->
-        <button class="px-4 py-2 bg-black text-white font-medium rounded-full shadow-lg hover:bg-[#FFC107] hover:text-black transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-50" title="bu"
-                [disabled]="currentPage * itemsPerPage >= products.length" (click)="cambiarPagina(1)">
-          <span class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </span>
-        </button>
-  
-      </div>
-  
+                {{ product.stock_actual }} / {{ product.stock_minimo }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ product.costo_unitario | currency }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span [ngClass]="product.activo ? 'text-green-700 font-semibold' : 'text-red-700 font-semibold'">
+                {{ product.activo ? 'Disponible' : 'No disponible' }}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <button (click)="abrirModalEditar(product)"
+                class="text-sm text-blue-600 hover:text-blue-800 hover:underline mr-3 cursor-pointer">Editar</button>
+              <button (click)="confirmarEliminar(product.id)"
+                class="text-sm text-red-600 hover:text-red-800 hover:underline cursor-pointer">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+
+    <!-- Paginación -->
+    <div class="mt-6 flex items-center justify-center gap-6">
+
+      <!-- Botón Anterior -->
+      <button
+        class="px-4 py-2 bg-black text-white font-medium rounded-full shadow-lg hover:bg-[#FFC107] hover:text-black transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-50"
+        title="bu" [disabled]="currentPage === 1" (click)="cambiarPagina(-1)">
+        <span class="flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+        </span>
+      </button>
+
+      <!-- Texto de Páginas -->
+      <div class="text-sm text-black font-medium">
+        {{ currentPage }} de {{ totalPages() }}
+      </div>
+
+      <!-- Botón Siguiente -->
+      <button
+        class="px-4 py-2 bg-black text-white font-medium rounded-full shadow-lg hover:bg-[#FFC107] hover:text-black transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-50"
+        title="bu" [disabled]="currentPage * itemsPerPage >= products.length" (click)="cambiarPagina(1)">
+        <span class="flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </span>
+      </button>
+
+    </div>
+
   </div>
-  
+</div>
+
 
 <!-- Modal de listado  -->
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-2"
-     *ngIf="mostrarModalCategorias">
-  
+  *ngIf="mostrarModalCategorias">
+
   <!-- Modal con fondo blanco y detalles en negro, naranja y amarillo -->
-  <div class="bg-white text-black rounded-xl w-full max-w-4xl shadow-2xl border border-yellow-600 relative max-h-[90vh] flex flex-col overflow-hidden">
-  
+  <div
+    class="bg-white text-black rounded-xl w-full max-w-4xl shadow-2xl border border-yellow-600 relative max-h-[90vh] flex flex-col overflow-hidden">
+
     <!-- Botón de cierre (X) -->
     <button (click)="cerrarModalCategorias()"
-            class="absolute top-3 right-3 text-black bg-orange-500 hover:bg-orange-600 rounded-full w-8 h-8 flex items-center justify-center transition duration-200 cursor-pointer"
-            title="Cerrar">
+      class="absolute top-3 right-3 text-black bg-orange-500 hover:bg-orange-600 rounded-full w-8 h-8 flex items-center justify-center transition duration-200 cursor-pointer"
+      title="Cerrar">
       <i class="bi bi-x-lg text-base"></i>
     </button>
 
@@ -139,8 +143,9 @@
 
     <!-- Botón agregar -->
     <div class="px-4 py-3 bg-white border-b border-yellow-500 flex justify-end">
-      <button class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition cursor-pointer text-sm"
-              (click)="abrirModalAgregarCategoria()">
+      <button
+        class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition cursor-pointer text-sm"
+        (click)="abrirModalAgregarCategoria()">
         <i class="fas fa-plus mr-2"></i>Agregar categoría
       </button>
     </div>
@@ -157,37 +162,37 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let cat of categoriasPaginadas" 
-              class="hover:bg-orange-500 transition cursor-pointer border-b border-gray-300">
+          <tr *ngFor="let cat of categoriasPaginadas"
+            class="hover:bg-orange-500 transition cursor-pointer border-b border-gray-300">
             <td class="px-4 py-3 text-gray-900">{{ cat.nombre }}</td>
             <td class="px-4 py-3 text-gray-600">{{ cat.descripcion || '-' }}</td>
             <td class="px-4 py-3 text-center space-x-2">
-                <button class="text-sm text-blue-500 hover:text-blue-700 hover:underline cursor-pointer"
+              <button class="text-sm text-blue-500 hover:text-blue-700 hover:underline cursor-pointer"
                 (click)="abrirModalEditarCategoria(cat)">
-          Editar
-        </button>
+                Editar
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-    
+
     <!-- Paginación -->
     <div class="flex justify-center items-center gap-2 p-4 bg-white border-t border-yellow-500">
       <!-- Botón anterior con ícono -->
-      <button (click)="cambiarPagina(-1)" 
-              [disabled]="currentPage === 1"
-              class="p-2 bg-white text-black rounded-full hover:bg-orange-500 disabled:opacity-40 cursor-pointer transition duration-200" title="bu">
+      <button (click)="cambiarPagina(-1)" [disabled]="currentPage === 1"
+        class="p-2 bg-white text-black rounded-full hover:bg-orange-500 disabled:opacity-40 cursor-pointer transition duration-200"
+        title="bu">
         <i class="bi bi-chevron-left text-lg"></i>
       </button>
-    
+
       <!-- Información de página -->
       <span class="text-sm text-black">{{ currentPage }} de {{ totalPages() }}</span>
-    
+
       <!-- Botón siguiente con ícono -->
-      <button (click)="cambiarPagina(1)" 
-              [disabled]="currentPage === totalPages()"
-              class="p-2 bg-white text-black rounded-full hover:bg-orange-500 disabled:opacity-40 cursor-pointer transition duration-200" title="bu">
+      <button (click)="cambiarPagina(1)" [disabled]="currentPage === totalPages()"
+        class="p-2 bg-white text-black rounded-full hover:bg-orange-500 disabled:opacity-40 cursor-pointer transition duration-200"
+        title="bu">
         <i class="bi bi-chevron-right text-lg"></i>
       </button>
     </div>
@@ -195,15 +200,15 @@
 </div>
 <!-- Modal agregar -categorias -->
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-     *ngIf="mostrarModalAgregarCategoria">
+  *ngIf="mostrarModalAgregarCategoria">
 
   <!-- Modal container -->
   <div class="bg-white rounded-2xl shadow-xl border border-yellow-600 w-full max-w-md relative overflow-hidden">
 
     <!-- Cerrar (X) -->
     <button (click)="cerrarModalAgregarCategoria()"
-            class="absolute top-3 right-3 text-black hover:bg-orange-500 hover:text-white bg-yellow-200 rounded-full w-8 h-8 flex items-center justify-center transition cursor-pointer"
-            title="Cerrar">
+      class="absolute top-3 right-3 text-black hover:bg-orange-500 hover:text-white bg-yellow-200 rounded-full w-8 h-8 flex items-center justify-center transition cursor-pointer"
+      title="Cerrar">
       <i class="bi bi-x-lg text-sm"></i>
     </button>
 
@@ -220,27 +225,25 @@
 
       <div class="space-y-1">
         <label class="text-sm font-medium text-gray-800">Nombre <span class="text-red-500">*</span></label>
-        <input [(ngModel)]="nuevaCategoria.nombre"
-               placeholder="Ej: Frutas, Bebidas..."
-               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-orange-500 transition">
+        <input [(ngModel)]="nuevaCategoria.nombre" placeholder="Ej: Frutas, Bebidas..."
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-orange-500 transition">
       </div>
 
       <div class="space-y-1">
         <label class="text-sm font-medium text-gray-800">Descripción</label>
-        <textarea [(ngModel)]="nuevaCategoria.descripcion"
-                  placeholder="Opcional"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-orange-500 transition min-h-[80px] resize-none"></textarea>
+        <textarea [(ngModel)]="nuevaCategoria.descripcion" placeholder="Opcional"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-orange-500 transition min-h-[80px] resize-none"></textarea>
       </div>
     </div>
 
     <!-- Botones -->
     <div class="flex justify-end px-6 py-4 bg-white border-t border-yellow-600 gap-3">
       <button (click)="cerrarModalAgregarCategoria()"
-              class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition cursor-pointer">
+        class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition cursor-pointer">
         Cancelar
       </button>
       <button (click)="guardarCategoria()"
-              class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition flex items-center gap-2 cursor-pointer">
+        class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition flex items-center gap-2 cursor-pointer">
         <i class="bi bi-save"></i> Guardar
       </button>
     </div>
@@ -248,306 +251,385 @@
   </div>
 </div>
 <!-- Modal de Edición de Categoría -->
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-2" *ngIf="mostrarModalEditarCategoria">
-  
-    <!-- Modal con fondo blanco y detalles en negro, naranja y amarillo -->
-    <div class="bg-white text-black rounded-xl w-full max-w-md shadow-2xl border border-yellow-600 relative max-h-[90vh] flex flex-col overflow-hidden">
-    
-      <!-- Botón de cierre (X) -->
-      <button (click)="cerrarModalEditarCategoria()"
-              class="absolute top-3 right-3 text-black bg-orange-500 hover:bg-orange-600 rounded-full w-8 h-8 flex items-center justify-center transition duration-200 cursor-pointer"
-              title="Cerrar">
-        <i class="bi bi-x-lg text-base"></i>
-      </button>
-  
-      <!-- Encabezado -->
-      <div class="bg-white text-black px-4 py-4 flex items-center justify-between border-b border-yellow-500">
-        <h2 class="text-lg font-semibold">Editar Categoría</h2>
-      </div>
-  
-      <!-- Contenido del modal para editar -->
-      <div class="px-4 py-4">
-        <form (ngSubmit)="guardarEdicionCategoria()">
-          <div class="mb-4">
-            <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
-            <input id="nombre" [(ngModel)]="categoriaEditando.nombre" name="nombre" type="text"
-                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                   required>
-          </div>
-          <div class="mb-4">
-            <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
-            <input id="descripcion" [(ngModel)]="categoriaEditando.descripcion" name="descripcion" type="text"
-                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500">
-          </div>
-          <div class="flex justify-end gap-3">
-            <button type="button" (click)="cerrarModalEditarCategoria()" class="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 cursor-pointer">
-              Cancelar
-            </button>
-            <button type="submit" class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 cursor-pointer">
-              Guardar Cambios
-            </button>
-          </div>
-        </form>
-      </div>
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-2"
+  *ngIf="mostrarModalEditarCategoria">
+
+  <!-- Modal con fondo blanco y detalles en negro, naranja y amarillo -->
+  <div
+    class="bg-white text-black rounded-xl w-full max-w-md shadow-2xl border border-yellow-600 relative max-h-[90vh] flex flex-col overflow-hidden">
+
+    <!-- Botón de cierre (X) -->
+    <button (click)="cerrarModalEditarCategoria()"
+      class="absolute top-3 right-3 text-black bg-orange-500 hover:bg-orange-600 rounded-full w-8 h-8 flex items-center justify-center transition duration-200 cursor-pointer"
+      title="Cerrar">
+      <i class="bi bi-x-lg text-base"></i>
+    </button>
+
+    <!-- Encabezado -->
+    <div class="bg-white text-black px-4 py-4 flex items-center justify-between border-b border-yellow-500">
+      <h2 class="text-lg font-semibold">Editar Categoría</h2>
+    </div>
+
+    <!-- Contenido del modal para editar -->
+    <div class="px-4 py-4">
+      <form (ngSubmit)="guardarEdicionCategoria()">
+        <div class="mb-4">
+          <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
+          <input id="nombre" [(ngModel)]="categoriaEditando.nombre" name="nombre" type="text"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+            required>
+        </div>
+        <div class="mb-4">
+          <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+          <input id="descripcion" [(ngModel)]="categoriaEditando.descripcion" name="descripcion" type="text"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500">
+        </div>
+        <div class="flex justify-end gap-3">
+          <button type="button" (click)="cerrarModalEditarCategoria()"
+            class="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 cursor-pointer">
+            Cancelar
+          </button>
+          <button type="submit"
+            class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 cursor-pointer">
+            Guardar Cambios
+          </button>
+        </div>
+      </form>
     </div>
   </div>
-  
+</div>
+
 <!--modal registro de productos-->
 <div class="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-lg" *ngIf="mostrarModalRegistroProducto">
-    <div class="bg-white/90 rounded-xl shadow-2xl border border-amber-500/30 w-[90vw] max-w-md max-h-[90vh] my-4 flex flex-col overflow-hidden backdrop-blur-md">
-  
-      <!-- Encabezado -->
-      <div class="bg-black/60 px-6 py-4 border-b border-amber-500/20 flex justify-between items-center backdrop-blur-sm sticky top-0 z-10">
-        <h3 class="text-xl font-bold text-amber-500">
-          <i class="fas fa-utensils mr-2 text-amber-400"></i>Registrar Producto
-        </h3>
-        <button (click)="cerrarModalRegistroProducto()" class="text-amber-400 hover:text-white transition-transform hover:scale-110 cursor-pointer" title="Cerrar">
-          <i class="fas fa-times text-lg"></i>
-        </button>
-      </div>
-  
-      <!-- Contenido principal -->
-      <div class="p-6 space-y-4 bg-white/90 backdrop-blur-sm overflow-y-auto flex-1">
-        <form (ngSubmit)="registrarProducto()">
-  
-          <!-- Mensaje de error -->
-          <div *ngIf="error" class="bg-red-900/40 text-amber-100 p-3 rounded-lg border border-red-700/40 mb-4 backdrop-blur-xs">
-            <i class="fas fa-exclamation-circle mr-2"></i>{{ error }}
-          </div>
-  
-          <!-- Grupo 1: Información básica -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Nombre -->
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-amber-400 mb-1">Nombre *</label>
-              <input [(ngModel)]="nombre" name="nombre" type="text"
-                     class="w-full px-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500 placeholder-gray-500 backdrop-blur-xs"
-                     placeholder="Ej: Lomo de Atún" required>
-            </div>
-            
-            <!-- Categoría -->
-            <div>
-              <label class="block text-sm font-medium text-amber-400 mb-1">Categoría *</label>
-              <div class="relative">
-                <select [(ngModel)]="categoria_id" name="categoria_id"
-                        class="w-full px-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500 appearance-none backdrop-blur-xs" aria-label="categoria">
-                  <option value="" class="text-gray-500 bg-white">Seleccionar...</option>
-                  <option *ngFor="let cat of categorias" [value]="cat.id" class="bg-white text-black">{{ cat.nombre }}</option>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-amber-400">
-                  <i class="fas fa-chevron-down text-sm"></i>
-                </div>
-              </div>
-            </div>
+  <div
+    class="bg-white/90 rounded-xl shadow-2xl border border-amber-500/30 w-[90vw] max-w-md max-h-[90vh] my-4 flex flex-col overflow-hidden backdrop-blur-md">
 
-            <!-- Unidad -->
-            <div>
-              <label class="block text-sm font-medium text-amber-400 mb-1">Unidad *</label>
-              <select [(ngModel)]="unidad" name="unidad"
-                      class="w-full px-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500 backdrop-blur-xs" aria-label="unidad"
-                      (change)="calcularCostoUnitario()">
-                <option value="">Seleccionar...</option>
-                <option value="lb">Libra</option>
-                <option value="cantidad">Unidad</option>
-                <option value="l">Litro</option>
+    <!-- Encabezado -->
+    <div
+      class="bg-black/60 px-6 py-4 border-b border-amber-500/20 flex justify-between items-center backdrop-blur-sm sticky top-0 z-10">
+      <h3 class="text-xl font-bold text-amber-500">
+        <i class="fas fa-utensils mr-2 text-amber-400"></i>Registrar Producto
+      </h3>
+      <button (click)="cerrarModalRegistroProducto()"
+        class="text-amber-400 hover:text-white transition-transform hover:scale-110 cursor-pointer" title="Cerrar">
+        <i class="fas fa-times text-lg"></i>
+      </button>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="p-6 space-y-4 bg-white/90 backdrop-blur-sm overflow-y-auto flex-1">
+      <form (ngSubmit)="registrarProducto()">
+
+        <!-- Mensaje de error -->
+        <div *ngIf="error"
+          class="bg-red-900/40 text-amber-100 p-3 rounded-lg border border-red-700/40 mb-4 backdrop-blur-xs">
+          <i class="fas fa-exclamation-circle mr-2"></i>{{ error }}
+        </div>
+
+        <!-- Grupo 1: Información básica -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Nombre -->
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-amber-400 mb-1">Nombre *</label>
+            <input [(ngModel)]="nombre" name="nombre" type="text"
+              class="w-full px-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500 placeholder-gray-500 backdrop-blur-xs"
+              placeholder="Ej: Lomo de Atún" required>
+          </div>
+
+          <!-- Categoría -->
+          <div>
+            <label class="block text-sm font-medium text-amber-400 mb-1">Categoría *</label>
+            <div class="relative">
+              <select [(ngModel)]="categoria_id" name="categoria_id"
+                class="w-full px-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500 appearance-none backdrop-blur-xs"
+                aria-label="categoria">
+                <option value="" class="text-gray-500 bg-white">Seleccionar...</option>
+                <option *ngFor="let cat of categorias" [value]="cat.id" class="bg-white text-black">{{ cat.nombre }}
+                </option>
               </select>
-            </div>
-          </div>
-
-          <!-- Grupo 2: Detalles de peso (solo para kg/lb) -->
-          <div *ngIf="unidad === 'kg' || unidad === 'lb'" class="grid grid-cols-2 gap-4 mt-4">
-            <!-- Peso total -->
-            <div>
-              <label class="block text-sm font-medium text-amber-400 mb-1">Peso total *</label>
-              <div class="relative">
-                <input [(ngModel)]="pesoTotal" 
-                       name="pesoTotal"
-                       (input)="calcularCostoUnitario()"
-                       type="number" 
-                       min="0.01" 
-                       step="0.01"
-                       class="w-full pl-10 pr-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500"
-                       placeholder="Ej: 2.5">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <span class="text-gray-500">{{ unidad === 'kg' ? 'kg' : 'lb' }}</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Gramos por unidad -->
-            <div>
-              <label class="block text-sm font-medium text-amber-400 mb-1">Gramos por corte *</label>
-              <div class="relative">
-                <input [(ngModel)]="gramosPorUnidad" 
-                       name="gramosPorUnidad"
-                       (input)="calcularCostoUnitario()"
-                       type="number" 
-                       min="1" 
-                       step="1"
-                       class="w-full pl-10 pr-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500"
-                       placeholder="Ej: 250">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <span class="text-gray-500">g</span>
-                </div>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-amber-400">
+                <i class="fas fa-chevron-down text-sm"></i>
               </div>
             </div>
           </div>
 
-          <!-- Grupo 3: Costos -->
-          <div class="grid grid-cols-2 gap-4 mt-4">
-            <!-- Costo total -->
-            <div>
-              <label class="block text-sm font-medium text-amber-400 mb-1">Costo total *</label>
-              <div class="relative">
-                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
-                <input [(ngModel)]="costo_total"
-                       name="costo_total"
-                       (input)="calcularCostoUnitario()"
-                       type="number"
-                       min="0.01"
-                       step="0.01"
-                       class="w-full pl-8 pr-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500"
-                       placeholder="Ej: 90.00">
-              </div>
-            </div>
+          <!-- Unidad -->
+          <div>
+            <label class="block text-sm font-medium text-amber-400 mb-1">Unidad *</label>
+            <select [(ngModel)]="unidad" name="unidad"
+              class="w-full px-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500 backdrop-blur-xs"
+              aria-label="unidad" (change)="calcularCostoUnitario()">
+              <option value="">Seleccionar...</option>
+              <option value="lb">Libra</option>
+              <option value="cantidad">Unidad</option>
+              <option value="l">Litro</option>
+            </select>
+          </div>
+        </div>
 
-            <!-- Stock actual -->
-            <div>
-              <label class="block text-sm font-medium text-amber-400 mb-1">Stock actual *</label>
-              <div class="relative">
-                <input [(ngModel)]="stock_actual" 
-                       name="stock_actual"
-                       [readonly]="(unidad === 'kg' || unidad === 'lb')"
-                       (input)="calcularCostoUnitario()"
-                       type="number" 
-                       [min]="(unidad === 'kg' || unidad === 'lb') ? '1' : '0.1'" 
-                       [step]="(unidad === 'kg' || unidad === 'lb') ? '1' : '0.1'"
-                       class="w-full pl-10 pr-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500 backdrop-blur-xs"
-                       [class.bg-gray-100]="(unidad === 'kg' || unidad === 'lb')"
-                       placeholder="Ej: {{ (unidad === 'kg' || unidad === 'lb') ? '100 (cortes)' : '100.5' }}"
-                       required>
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                  </svg>
-                </div>
+        <!-- Grupo 2: Detalles de peso (solo para kg/lb) -->
+        <div *ngIf="unidad === 'kg' || unidad === 'lb'" class="grid grid-cols-2 gap-4 mt-4">
+          <!-- Peso total -->
+          <div>
+            <label class="block text-sm font-medium text-amber-400 mb-1">Peso total *</label>
+            <div class="relative">
+              <input [(ngModel)]="pesoTotal" name="pesoTotal" (input)="calcularCostoUnitario()" type="number" min="0.01"
+                step="0.01"
+                class="w-full pl-10 pr-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500"
+                placeholder="Ej: 2.5">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <span class="text-gray-500">{{ unidad === 'kg' ? 'kg' : 'lb' }}</span>
               </div>
             </div>
           </div>
 
-          <!-- Grupo 4: Costo unitario (solo) -->
-          <div class="mt-4">
-            <label class="block text-sm font-medium text-amber-400 mb-1">Costo unitario *</label>
+          <!-- Gramos por unidad -->
+          <div>
+            <label class="block text-sm font-medium text-amber-400 mb-1">Gramos por corte *</label>
+            <div class="relative">
+              <input [(ngModel)]="gramosPorUnidad" name="gramosPorUnidad" (input)="calcularCostoUnitario()"
+                type="number" min="1" step="1"
+                class="w-full pl-10 pr-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500"
+                placeholder="Ej: 250">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <span class="text-gray-500">g</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Grupo extra: Detalles para litros -->
+        <div *ngIf="unidad === 'l'" class="grid grid-cols-2 gap-4 mt-4">
+          <!-- Litros totales -->
+          <div>
+            <label class="block text-sm font-medium text-amber-400 mb-1">Litros totales *</label>
+            <div class="relative">
+              <input [(ngModel)]="litrosTotales" name="litrosTotales" (input)="calcularCostoUnitario()" type="number"
+                min="0.01" step="0.01"
+                class="w-full pl-10 pr-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500"
+                placeholder="Ej: 5.0">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <span class="text-gray-500">L</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mililitros por unidad -->
+          <div>
+            <label class="block text-sm font-medium text-amber-400 mb-1">ml por unidad *</label>
+            <div class="relative">
+              <input [(ngModel)]="mililitrosPorUnidad" name="mililitrosPorUnidad" (input)="calcularCostoUnitario()"
+                type="number" min="1" step="1"
+                class="w-full pl-10 pr-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500"
+                placeholder="Ej: 500">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <span class="text-gray-500">ml</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grupo 3: Costos -->
+        <div class="grid grid-cols-2 gap-4 mt-4">
+          <!-- Costo total -->
+          <div>
+            <label class="block text-sm font-medium text-amber-400 mb-1">Costo total *</label>
             <div class="relative">
               <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
-              <input [(ngModel)]="costo_unitario" 
-                     name="costo_unitario" 
-                     type="number" 
-                     readonly
-                     class="w-full pl-8 pr-4 py-2 bg-gray-100 text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500"
-                     title="Costo calculado automáticamente">
-            </div>
-            <div *ngIf="unidad === 'kg' || unidad === 'lb'" class="text-xs text-gray-500 mt-1">
-              Costo por corte de {{ gramosPorUnidad || 0 }}g
-            </div>
-            <div *ngIf="unidad === 'cantidad'" class="text-xs text-gray-500 mt-1">
-              Costo por unidad individual
+              <input [(ngModel)]="costo_total" name="costo_total" (input)="calcularCostoUnitario()" type="number"
+                min="0.01" step="0.01"
+                class="w-full pl-8 pr-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500"
+                placeholder="Ej: 90.00">
             </div>
           </div>
-          
-          <!-- Botones -->
-          <div class="flex justify-end gap-3 pt-6 sticky bottom-0 bg-white/90 pb-2 -mx-6 px-6 border-t border-amber-500/20 mt-4">
-            <button type="submit" [disabled]="isLoading"
-                    class="px-5 py-2 bg-amber-600 text-black font-medium rounded-lg hover:bg-amber-500 transition-colors flex items-center backdrop-blur-xs cursor-pointer">
-              <i class="fas fa-save mr-2"></i>
-              <span>{{ isLoading ? 'Guardando...' : 'Guardar' }}</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-</div>
-  <!-- Modal para editar producto -->
-  <div *ngIf="mostrarModalEditar" class="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-lg">
-    <!-- Fondo oscuro desenfocado -->
-    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 cursor-pointer" (click)="cerrarModalEditar()"></div>
-  
-    <!-- Modal -->
-    <div class="bg-white/90 rounded-xl shadow-2xl border border-amber-500/30 w-[90vw] max-w-md flex flex-col overflow-hidden backdrop-blur-md relative mx-4">
-      
-      <!-- Header -->
-      <div class="flex items-center justify-between px-6 py-4 bg-black/60 border-b border-amber-500/20 backdrop-blur-sm">
-        <h2 class="text-xl font-bold text-amber-500">
-          <i class="fas fa-edit mr-2 text-amber-400"></i>Editar Producto
-        </h2>
-        <button 
-          type="button" 
-          (click)="cerrarModalEditar()" 
-          class="text-amber-400 hover:text-white transition-transform hover:scale-110 cursor-pointer"
-          title="Cerrar"
-        >
-          <i class="fas fa-times text-lg"></i>
-        </button>
-      </div>
-      
-      <!-- Contenido -->
-      <div class="p-6 space-y-4 bg-white/90 backdrop-blur-sm">
-        <form (ngSubmit)="guardarCambiosProducto()" class="space-y-5">
-          
-          <!-- Nombre del producto -->
-          <div>
-            <label for="nombre" class="block text-sm font-medium text-amber-400 mb-1">Nombre del Producto *</label>
-            <input 
-              [(ngModel)]="productoEditando.nombre" 
-              name="nombre" 
-              id="nombre"
-              type="text" 
-              placeholder="Ej: Pizza Margarita"
-              class="w-full px-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500 placeholder-gray-500 backdrop-blur-xs"
-              required
-            >
-          </div>
-  
+
           <!-- Stock actual -->
           <div>
-            <label for="stock" class="block text-sm font-medium text-amber-400 mb-1">Stock Actual *</label>
-            <input 
-              [(ngModel)]="productoEditando.stock_actual" 
-              name="stock_actual" 
-              id="stock"
-              type="number" 
-              placeholder="Ej: 20"
-              class="w-full px-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500 placeholder-gray-500 backdrop-blur-xs"
-              required
-            >
+            <label class="block text-sm font-medium text-amber-400 mb-1">Stock actual *</label>
+            <div class="relative">
+              <input [(ngModel)]="stock_actual" name="stock_actual" [readonly]="(unidad === 'kg' || unidad === 'lb')"
+                (input)="calcularCostoUnitario()" type="number"
+                [min]="(unidad === 'kg' || unidad === 'lb') ? '1' : '0.1'"
+                [step]="(unidad === 'kg' || unidad === 'lb') ? '1' : '0.1'"
+                class="w-full pl-10 pr-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500 backdrop-blur-xs"
+                [class.bg-gray-100]="(unidad === 'kg' || unidad === 'lb')"
+                placeholder="Ej: {{ (unidad === 'kg' || unidad === 'lb') ? '100 (cortes)' : '100.5' }}" required>
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </div>
+            </div>
           </div>
-  
-          <!-- Botones -->
-          <div class="flex justify-end gap-4 pt-6">
-            <!-- Botón de Cancelar -->
-<button 
-type="button" 
-(click)="cerrarModalEditar()" 
-class="px-5 py-2 bg-white border border-gray-300 text-black rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 transition font-semibold shadow-sm backdrop-blur-xs cursor-pointer hover:shadow-md hover:border-gray-400"
->
-Cancelar
-</button>
+        </div>
 
-<!-- Botón de Guardar -->
-<button 
-type="submit" 
-class="px-5 py-2 bg-amber-600 text-black font-medium rounded-lg hover:bg-amber-500 transition-colors flex items-center backdrop-blur-xs cursor-pointer hover:shadow-md hover:bg-amber-400"
->
-<i class="fas fa-save mr-2 cursor-pointer"></i>Guardar
-</button>
-
+        <!-- Grupo 4: Costo unitario (solo) -->
+        <div class="mt-4">
+          <label class="block text-sm font-medium text-amber-400 mb-1">Costo unitario *</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+            <input [(ngModel)]="costo_unitario" name="costo_unitario" type="number" readonly
+              class="w-full pl-8 pr-4 py-2 bg-gray-100 text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500"
+              title="Costo calculado automáticamente">
           </div>
-  
-        </form>
-      </div>
-  
+
+          <!-- Texto explicativo según unidad -->
+          <div *ngIf="unidad === 'kg' || unidad === 'lb'" class="text-xs text-gray-500 mt-1">
+            Costo por corte de {{ gramosPorUnidad || 0 }}g
+          </div>
+          <div *ngIf="unidad === 'cantidad'" class="text-xs text-gray-500 mt-1">
+            Costo por unidad individual
+          </div>
+          <div *ngIf="unidad === 'l'" class="text-xs text-gray-500 mt-1">
+            Costo por presentación de {{ mililitrosPorUnidad || 0 }} ml
+          </div>
+        </div>
+
+
+        <!-- Botones -->
+        <div
+          class="flex justify-end gap-3 pt-6 sticky bottom-0 bg-white/90 pb-2 -mx-6 px-6 border-t border-amber-500/20 mt-4">
+          <button type="submit" [disabled]="isLoading"
+            class="px-5 py-2 bg-amber-600 text-black font-medium rounded-lg hover:bg-amber-500 transition-colors flex items-center backdrop-blur-xs cursor-pointer">
+            <i class="fas fa-save mr-2"></i>
+            <span>{{ isLoading ? 'Guardando...' : 'Guardar' }}</span>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
-  
-  
-  
+</div>
+<!-- Modal para editar producto -->
+<div *ngIf="mostrarModalEditar" class="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-lg">
+  <!-- Fondo oscuro -->
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" (click)="cerrarModalEditar()"></div>
+
+  <!-- Modal -->
+  <div
+    class="bg-white/90 rounded-xl shadow-2xl border border-amber-500/30 w-[95vw] max-w-md flex flex-col overflow-hidden backdrop-blur-md relative mx-4">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 bg-black/60 border-b border-amber-500/20">
+      <h2 class="text-xl font-bold text-amber-500">
+        <i class="fas fa-edit mr-2 text-amber-400"></i>Editar Producto
+      </h2>
+      <button (click)="cerrarModalEditar()" aria-label="cerrar"
+        class="text-amber-400 hover:text-white transition-transform hover:scale-110">
+        <i class="fas fa-times text-lg"></i>
+      </button>
+    </div>
+
+    <!-- Contenido -->
+    <div class="p-6 space-y-4 overflow-y-auto max-h-[80vh]">
+      <form (ngSubmit)="guardarCambiosProducto()" class="space-y-4">
+
+        <!-- Nombre -->
+        <div>
+          <label class="block text-sm font-medium text-amber-400 mb-1">Nombre *</label>
+          <input [(ngModel)]="productoEditando.nombre" name="nombre" type="text" aria-label="nombre"
+            class="w-full px-4 py-2 bg-white text-black border border-gray-700 rounded-lg focus:ring-amber-500"
+            required>
+        </div>
+
+        <!-- Unidad -->
+        <div>
+          <label class="block text-sm font-medium text-amber-400 mb-1">Unidad *</label>
+          <select [(ngModel)]="productoEditando.unidad" name="unidad" aria-label="unidad"
+            class="w-full px-4 py-2 border border-gray-700 rounded-lg focus:ring-amber-500"
+            (change)="calcularCostoUnitarioEditar()">
+            <option value="cantidad">Unidad</option>
+            <option value="lb">Libra</option>
+            <option value="kg">Kilogramo</option>
+            <option value="l">Litro</option>
+          </select>
+        </div>
+
+        <!-- Stock actual (base) -->
+        <div>
+          <label class="block text-sm font-medium text-amber-400 mb-1">Stock actual (existente)</label>
+          <input [value]="productoEditando.stock_base" readonly aria-label="stock actual"
+            class="w-full px-4 py-2 bg-gray-100 text-black border border-gray-700 rounded-lg">
+        </div>
+
+        <!-- Nuevo stock calculado -->
+        <div>
+          <label class="block text-sm font-medium text-amber-400 mb-1">Nuevo stock </label>
+          <input [value]="nuevoStock" readonly aria-label="stock nuevo"
+            class="w-full px-4 py-2 bg-gray-100 text-black border border-gray-700 rounded-lg">
+        </div>
+
+        <!-- Stock total (suma) -->
+        <div>
+          <label class="block text-sm font-medium text-amber-400 mb-1">Stock total (existente + nuevo)</label>
+          <input [value]="productoEditando.stock_actual" readonly aria-label="stock total"
+            class="w-full px-4 py-2 bg-gray-100 text-black border border-gray-700 rounded-lg">
+        </div>
+
+
+
+        <!-- Costo total -->
+        <div>
+          <label class="block text-sm font-medium text-amber-400 mb-1">Costo total</label>
+          <input type="number" [(ngModel)]="productoEditando.costo_total" name="costo_total"
+            (input)="calcularCostoUnitarioEditar()" class="w-full px-4 py-2 bg-white border border-gray-700 rounded-lg"
+            placeholder="Ej: 100.00">
+        </div>
+
+        <!-- Gramos por unidad y peso total (si es lb/kg) -->
+        <div *ngIf="productoEditando.unidad === 'lb' || productoEditando.unidad === 'kg'"
+          class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-amber-400 mb-1">Gramos por unidad</label>
+            <input type="number" [(ngModel)]="productoEditando.gramosPorUnidad" name="gramosPorUnidad"
+              (input)="calcularCostoUnitarioEditar()"
+              class="w-full px-4 py-2 bg-white border border-gray-700 rounded-lg" placeholder="Ej: 250">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-amber-400 mb-1">Peso total ({{ productoEditando.unidad
+              }})</label>
+            <input type="number" [(ngModel)]="productoEditando.pesoTotal" name="pesoTotal"
+              (input)="calcularCostoUnitarioEditar()"
+              class="w-full px-4 py-2 bg-white border border-gray-700 rounded-lg" placeholder="Ej: 5">
+          </div>
+        </div>
+
+
+
+        <!-- Litros totales y ml por unidad (si es litro) -->
+        <div *ngIf="productoEditando.unidad === 'l'" class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-amber-400 mb-1">Litros totales</label>
+            <input type="number" [(ngModel)]="productoEditando.litrosTotales" name="litrosTotales"
+              (input)="calcularCostoUnitarioEditar()" aria-label="litros totales"
+              class="w-full px-4 py-2 bg-white border border-gray-700 rounded-lg">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-amber-400 mb-1">ml por unidad</label>
+            <input type="number" [(ngModel)]="productoEditando.mililitrosPorUnidad" name="mililitrosPorUnidad"
+              (input)="calcularCostoUnitarioEditar()" aria-label="mililitros"
+              class="w-full px-4 py-2 bg-white border border-gray-700 rounded-lg">
+          </div>
+        </div>
+
+        <!-- Costo unitario -->
+        <div>
+          <label class="block text-sm font-medium text-amber-400 mb-1">Costo unitario</label>
+          <input type="number" [(ngModel)]="productoEditando.costo_unitario" name="costo_unitario" readonly
+            aria-label="costo unitario" class="w-full px-4 py-2 bg-gray-100 border border-gray-700 rounded-lg">
+        </div>
+
+        <!-- Botones -->
+        <div class="flex justify-end gap-4 pt-4">
+          <button type="button" (click)="cerrarModalEditar()"
+            class="px-4 py-2 bg-white border border-gray-300 text-black rounded-lg hover:bg-gray-100">Cancelar</button>
+          <button type="submit"
+            class="px-4 py-2 bg-amber-600 text-black font-medium rounded-lg hover:bg-amber-500 flex items-center">
+            <i class="fas fa-save mr-2"></i>Guardar
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
