@@ -3,6 +3,7 @@ import { SupabaseService } from '../../Services/supabase.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { UserService } from '../../Services/user.service';
 interface Usuario {
   id: string;
   email: string;
@@ -37,13 +38,18 @@ export default class UsuariosComponent {
   usuariosActivos: Usuario[] = [];
   usuariosDesactivados: Usuario[] = [];
 
+rolActual: string = '';
 
-
-  constructor(private supabaseService: SupabaseService) { }
+  constructor(private supabaseService: SupabaseService ,
+    private userService: UserService
+  ) { }
 
   ngOnInit() {
-    this.cargarUsuarios();
-  }
+    this.userService.rolUsuario$.subscribe(rol => {
+    this.rolActual = rol.toLowerCase();
+  });
+  this.cargarUsuarios();
+}
 
   async cargarUsuarios() {
     const usuarios = await this.supabaseService.obtenerUsuarios();

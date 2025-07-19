@@ -13,92 +13,107 @@
   <!-- Responsive Table -->
   <!-- Tabla de Usuarios Activos -->
   <div class="overflow-x-auto bg-white rounded-2xl shadow-md p-6 w-full max-w-6xl mx-auto mb-10">
-    <h2 class="text-lg font-semibold mb-4 text-green-700">Usuarios Activos</h2>
-    <table class="min-w-full text-sm text-gray-800">
-      <thead class="bg-gray-900 text-white">
-        <tr>
-          <th class="px-6 py-4 text-center">Nombre</th>
-          <th class="px-6 py-4 text-center">Rol</th>
-          <th class="px-6 py-4 text-center">Fecha creación</th>
-          <th class="px-6 py-4 text-center">Acciones</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-200">
-        <tr *ngFor="let usuario of usuariosActivos" class="hover:bg-gray-50">
-          <td class="px-6 py-4 text-center">{{ usuario.nombre }}</td>
-          <td class="px-6 py-4 text-center">
-            <span *ngIf="usuario.rol === 'administrador'"
-              class="px-3 py-1 text-xs rounded-full bg-orange-100 text-orange-800">Administrador</span>
-            <span *ngIf="usuario.rol === 'mesero'"
-              class="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Mesero</span>
-            <span *ngIf="usuario.rol === 'cajero'"
-              class="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Cajero</span>
-            <span *ngIf="usuario.rol === 'gerente'"
-              class="px-3 py-1 text-xs rounded-full bg-purple-100 text-blue-800">Gerente</span>
+  <h2 class="text-lg font-semibold mb-4 text-green-700">Usuarios Activos</h2>
+  <table class="min-w-full text-sm text-gray-800">
+    <thead class="bg-gray-900 text-white">
+      <tr>
+        <th class="px-6 py-4 text-center">Nombre</th>
+        <th class="px-6 py-4 text-center">Rol</th>
+        <th class="px-6 py-4 text-center">Fecha creación</th>
+        <th class="px-6 py-4 text-center">Acciones</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200">
+      <tr *ngFor="let usuario of usuariosActivos" class="hover:bg-gray-50">
+        <td class="px-6 py-4 text-center">{{ usuario.nombre }}</td>
+        <td class="px-6 py-4 text-center">
+          <span *ngIf="usuario.rol === 'administrador'"
+                class="px-3 py-1 text-xs rounded-full bg-orange-100 text-orange-800">Administrador</span>
+          <span *ngIf="usuario.rol === 'mesero'"
+                class="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Mesero</span>
+          <span *ngIf="usuario.rol === 'cajero'"
+                class="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Cajero</span>
+          <span *ngIf="usuario.rol === 'gerente'"
+                class="px-3 py-1 text-xs rounded-full bg-purple-100 text-blue-800">Gerente</span>
+        </td>
+        <td class="px-6 py-4 text-center">{{ usuario.created_at | date:'short' }}</td>
+        <td class="px-6 py-4">
+          <div class="flex justify-center gap-2">
+            <!-- Botones para Administrador: puede editar/eliminar todos menos administradores -->
+            <button *ngIf="rolActual === 'administrador' && usuario.rol !== 'administrador'"
+                    (click)="editarUsuario(usuario)"
+                    class="text-sm px-3 py-1 rounded-lg bg-orange-50 text-orange-700 hover:bg-orange-100">
+              Editar
+            </button>
+            <button *ngIf="rolActual === 'administrador' && usuario.rol !== 'administrador'"
+                    (click)="eliminarUsuario(usuario)"
+                    class="text-sm px-3 py-1 rounded-lg bg-red-50 text-red-700 hover:bg-red-100">
+              Eliminar
+            </button>
 
-          </td>
-          <td class="px-6 py-4 text-center">{{ usuario.created_at | date:'short' }}</td>
-          <td class="px-6 py-4">
-            <div class="flex justify-center gap-2">
-              <button *ngIf="usuario.rol !== 'administrador' && usuario.rol !== 'gerente'"
-                (click)="editarUsuario(usuario)"
-                class="text-sm px-3 py-1 rounded-lg bg-orange-50 text-orange-700 hover:bg-orange-100">
-                Editar
-              </button>
-              <button *ngIf="usuario.rol !== 'administrador' && usuario.rol !== 'gerente'"
-                (click)="eliminarUsuario(usuario)"
-                class="text-sm px-3 py-1 rounded-lg bg-red-50 text-red-700 hover:bg-red-100">
-                Eliminar
-              </button>
-            </div>
-          </td>
+            <!-- Botones para Gerente: solo puede editar/eliminar mesero y cajero -->
+            <button *ngIf="rolActual === 'gerente' && (usuario.rol === 'mesero' || usuario.rol === 'cajero')"
+                    (click)="editarUsuario(usuario)"
+                    class="text-sm px-3 py-1 rounded-lg bg-orange-50 text-orange-700 hover:bg-orange-100">
+              Editar
+            </button>
+            <button *ngIf="rolActual === 'gerente' && (usuario.rol === 'mesero' || usuario.rol === 'cajero')"
+                    (click)="eliminarUsuario(usuario)"
+                    class="text-sm px-3 py-1 rounded-lg bg-red-50 text-red-700 hover:bg-red-100">
+              Eliminar
+            </button>
+          </div>
+        </td>
+      </tr>
+      <tr *ngIf="usuariosActivos.length === 0">
+        <td colspan="4" class="px-6 py-10 text-center text-gray-400">No hay usuarios activos</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-        </tr>
-        <tr *ngIf="usuariosActivos.length === 0">
-          <td colspan="4" class="px-6 py-10 text-center text-gray-400">No hay usuarios activos</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 
   <!-- Tabla de Usuarios Desactivados -->
-  <div class="overflow-x-auto bg-white rounded-2xl shadow-md p-6 w-full max-w-6xl mx-auto">
-    <h2 class="text-lg font-semibold mb-4 text-red-700">Usuarios Desactivados</h2>
-    <table class="min-w-full text-sm text-gray-800">
-      <thead class="bg-gray-200 text-gray-700">
-        <tr>
-          <th class="px-6 py-4 text-center">Nombre</th>
-          <th class="px-6 py-4 text-center">Rol</th>
-          <th class="px-6 py-4 text-center">Fecha creación</th>
-          <th class="px-6 py-4 text-center">Acciones</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-100">
-        <tr *ngFor="let usuario of usuariosDesactivados" class="hover:bg-gray-50">
-          <td class="px-6 py-4 text-center">{{ usuario.nombre }}</td>
-          <td class="px-6 py-4 text-center">
-            <span *ngIf="usuario.rol === 'administrador'"
-              class="px-3 py-1 text-xs rounded-full bg-orange-100 text-orange-800">Administrador</span>
-            <span *ngIf="usuario.rol === 'mesero'"
-              class="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Mesero</span>
-            <span *ngIf="usuario.rol === 'cajero'"
-              class="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Cajero</span>
-            <span *ngIf="usuario.rol === 'gerente'"
-              class="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Gerente</span>
+  <div *ngIf="rolActual === 'administrador' || rolActual === 'gerente'"
+     class="overflow-x-auto bg-white rounded-2xl shadow-md p-6 w-full max-w-6xl mx-auto">
+  <h2 class="text-lg font-semibold mb-4 text-red-700">Usuarios Desactivados</h2>
+  <table class="min-w-full text-sm text-gray-800">
+    <thead class="bg-gray-200 text-gray-700">
+      <tr>
+        <th class="px-6 py-4 text-center">Nombre</th>
+        <th class="px-6 py-4 text-center">Rol</th>
+        <th class="px-6 py-4 text-center">Fecha creación</th>
+        <th class="px-6 py-4 text-center">Acciones</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      <tr *ngFor="let usuario of usuariosDesactivados" class="hover:bg-gray-50">
+        <td class="px-6 py-4 text-center">{{ usuario.nombre }}</td>
+        <td class="px-6 py-4 text-center">
+          <span *ngIf="usuario.rol === 'administrador'"
+            class="px-3 py-1 text-xs rounded-full bg-orange-100 text-orange-800">Administrador</span>
+          <span *ngIf="usuario.rol === 'mesero'"
+            class="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Mesero</span>
+          <span *ngIf="usuario.rol === 'cajero'"
+            class="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Cajero</span>
+          <span *ngIf="usuario.rol === 'gerente'"
+            class="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Gerente</span>
+        </td>
+        <td class="px-6 py-4 text-center">{{ usuario.created_at | date:'short' }}</td>
+        <td class="px-6 py-4 text-center">
+          <button (click)="activarUsuario(usuario)"
+                  class="text-sm px-3 py-1 rounded-lg bg-green-100 text-green-700 hover:bg-green-200">
+            Activar
+          </button>
+        </td>
+      </tr>
+      <tr *ngIf="usuariosDesactivados.length === 0">
+        <td colspan="4" class="px-6 py-10 text-center text-gray-400">No hay usuarios desactivados</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-          </td>
-          <td class="px-6 py-4 text-center">{{ usuario.created_at | date:'short' }}</td>
-          <td class="px-6 py-4 text-center">
-            <button (click)="activarUsuario(usuario)"
-              class="text-sm px-3 py-1 rounded-lg bg-green-100 text-green-700 hover:bg-green-200">Activar</button>
-          </td>
-        </tr>
-        <tr *ngIf="usuariosDesactivados.length === 0">
-          <td colspan="4" class="px-6 py-10 text-center text-gray-400">No hay usuarios desactivados</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 
 
 
