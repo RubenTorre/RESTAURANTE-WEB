@@ -124,6 +124,8 @@ mesaVirtualPedidosBezz: Mesa = {
   nombre: 'Pedidos Bezz',
   estado: 'virtual' as any
 };
+procesandoPedido: boolean = false;
+
 
 
   constructor(private supabaseService: SupabaseService,private userService: UserService,
@@ -316,13 +318,18 @@ calcularTotalCarrito(): number {
   
 
  // Método para confirmar e imprimir
- async confirmarYImprimir() {
+async confirmarYImprimir() {
+  if (this.procesandoPedido) {
+    return; // 🚫 Evita doble clic
+  }
+
   if (!this.mesaSeleccionada) {
     Swal.fire('Error', 'No se ha seleccionado mesa', 'error');
     return;
   }
 
-  // Crear la factura (usando TU estructura actual)
+  this.procesandoPedido = true; // 🔒 Bloquea el botón al primer clic
+
   const factura = {
     numero_factura: uuidv4(),
     productos: this.carrito.map(item => ({
@@ -330,11 +337,9 @@ calcularTotalCarrito(): number {
       precio: item.precio_venta,
       cantidad: item.cantidad ?? 1,
       modificaciones: item.modificaciones || [],
-      // (Opcional) Si quieres guardar los extras por producto:
       extras: item.extras || [] 
     })),
-    // CAMBIO CLAVE: Usar calcularTotalCarrito() para el total
-    total: this.calcularTotalCarrito(), // <-- Aquí se incluyen extras
+    total: this.calcularTotalCarrito(),
     fecha: getLocalDateTimeString(),
     mesa_id: this.mesaSeleccionada.id,
     mesero_nombre: this.nombreUsuario,
@@ -343,7 +348,9 @@ calcularTotalCarrito(): number {
   };
 
   try {
+    // 🚀 Aquí puede tardar si el internet está lento
     const facturaCreada = await this.supabaseService.crearPedido(factura);
+
     if (facturaCreada) {
       this.imprimirTicketTermico();
       this.mostrarVistaPrevia = false;
@@ -354,8 +361,12 @@ calcularTotalCarrito(): number {
   } catch (error) {
     console.error('Error al crear factura:', error);
     Swal.fire('Error', 'No se pudo crear la factura', 'error');
+  } finally {
+    this.procesandoPedido = false; // 🔓 Reactiva el botón cuando termine
   }
 }
+
+
 
 
 
